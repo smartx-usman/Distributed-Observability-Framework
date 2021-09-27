@@ -3,7 +3,7 @@ Set of monitoring and observability tools developed for AIDA project.
 
 ### Setup a Kubernetes cluster
 ```shell
-./setup-kubernetes-cluster.sh
+./kubernetes/create-kubernetes-cluster.sh
 ```
 
 ### Install Helm package manager
