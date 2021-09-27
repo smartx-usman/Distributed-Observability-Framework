@@ -1,12 +1,12 @@
 # IIoT-Edge-Observability
 Set of monitoring and observability tools developed for AIDA project.
 
-###Setup a Kubernetes cluster
+### Setup a Kubernetes cluster
 ```shell
 ./setup-kubernetes-cluster.sh
 ```
 
-###Install Helm package manager
+### Install Helm package manager
 ```shell
 curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
 sudo apt-get install apt-transport-https --yes
@@ -15,4 +15,4 @@ sudo apt-get -y update
 sudo apt-get -y install helm
 ```
 
-###Deploy monitoring/observability functions
+### Deploy monitoring/observability functions
