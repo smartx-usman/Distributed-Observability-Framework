@@ -2,7 +2,7 @@
 You need to have Istio up and running. Let’s install the istio operator:
 
 ```
-curl -L https://istio.io/downloadIstio | | ISTIO_VERSION=1.11.3 sh -
+curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.11.3 sh -
 cd istio-1.11.3 
 export PATH=$PWD/bin:$PATH
 ```
