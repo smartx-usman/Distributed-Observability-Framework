@@ -32,4 +32,10 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: tracing
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: visualization
