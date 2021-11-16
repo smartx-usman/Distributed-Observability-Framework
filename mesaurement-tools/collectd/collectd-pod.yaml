@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: collectd-node-metrics
+  labels:
+    environment: production
+    app: collectd-node-metrics-svc
+spec:
+  containers:
+  - name: collectd-node-metrics-container
+    #image: usman476/kafka-protobuf-console
+    image: usman476/aida-collectd:latest
+    #args: ["-KAFKA_BROKER_LIST", "bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"]
+    imagePullPolicy: "IfNotPresent"
+  restartPolicy: OnFailure
+  nodeSelector:
+    kubernetes.io/hostname: observability-vm-1
