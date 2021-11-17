@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: collectd-node-metrics
+  namespace: measurement
   labels:
     environment: production
     app: collectd-node-metrics-svc
