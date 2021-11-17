@@ -9,9 +9,12 @@ metadata:
 spec:
   containers:
   - name: collectd-node-metrics-container
-    #image: usman476/kafka-protobuf-console
     image: usman476/aida-collectd:latest
-    #args: ["-KAFKA_BROKER_LIST", "bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"]
+    env:
+      - name: HOSTNAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
     imagePullPolicy: "IfNotPresent"
   restartPolicy: OnFailure
   nodeSelector:
