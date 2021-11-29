@@ -1,5 +1,5 @@
 ---
-clusterName: "observabilitycluster"
+clusterName: "es"
 nodeGroup: "master"
 
 # The service that non master groups will try to connect to when joining the cluster
@@ -225,7 +225,8 @@ clusterHealthCheckParams: "wait_for_status=green&timeout=1s"
 schedulerName: ""
 
 imagePullSecrets: []
-nodeSelector: {}
+nodeSelector:
+  kubernetes.io/hostname: observability-vm-1
 tolerations: []
 
 # Enabling this will publically expose your Elasticsearch instance.
