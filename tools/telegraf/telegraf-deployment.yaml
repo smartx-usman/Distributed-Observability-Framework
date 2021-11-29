@@ -1,0 +1,139 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf
+  namespace: measurement
+  labels:
+    k8s-app: telegraf
+data:
+ telegraf.conf: |+
+   [agent]
+     interval= "10s"
+     round_interval= true
+     metric_batch_size= 1000
+     metric_buffer_limit= 10000
+     collection_jitter= "0s"
+     flush_interval= "10s"
+     flush_jitter= "0s"
+     precision= ""
+     debug= false
+     quiet= false
+     logfile= ""
+     hostname= "$HOSTNAME"
+     omit_hostname= false
+
+   [[outputs.kafka]]
+     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"]
+     topic = "telegraf"
+     [outputs.kafka.topic_suffix]
+       method = "measurement"
+       separator = "_"
+
+   [[inputs.cpu]]
+     percpu = true
+     totalcpu = true
+     collect_cpu_time = false
+     report_active = false
+   [[inputs.disk]]
+     ignore_fs = ["tmpfs", "devtmpfs", "devfs"]
+   [[inputs.diskio]]
+   [[inputs.kernel]]
+   [[inputs.mem]]
+   [[inputs.dmcache]]
+     ## Whether to report per-device stats or not
+     per_device = true
+   [[inputs.net]]
+     interfaces= ["eth*", "ens*"]
+     ignore_protocol_stats= true
+   [[inputs.processes]]
+   [[inputs.swap]]
+   [[inputs.system]]
+   [[inputs.docker]]
+     endpoint = "unix:///var/run/docker.sock"
+     perdevice_include = ["cpu"]
+     total_include = ["cpu", "blkio", "network"]
+#   [[inputs.kubernetes]]
+#     url = "https://172.16.23.1:6443"
+#     insecure_skip_verify = true
+
+---
+# Section: Daemonset
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: telegraf
+  namespace: measurement
+  labels:
+    k8s-app: telegraf
+spec:
+  selector:
+    matchLabels:
+      name: telegraf
+  template:
+    metadata:
+      labels:
+        name: telegraf
+    spec:
+      containers:
+      - name: telegraf
+        image: telegraf:1.20.4
+        #args:
+        #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+        env:
+        - name: HOSTIP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: "HOST_PROC"
+          value: "/rootfs/proc"
+        - name: "HOST_SYS"
+          value: "/rootfs/sys"
+#        - name: ENV
+#          valueFrom:
+#            secretKeyRef:
+#              name: telegraf
+#              key: default-token-fzthz
+        volumeMounts:
+        - name: sys
+          mountPath: /rootfs/sys
+          readOnly: true
+        - name: proc
+          mountPath: /rootfs/proc
+          readOnly: true
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+        - name: utmp
+          mountPath: /var/run/utmp
+          readOnly: true
+        - name: config
+          mountPath: /etc/telegraf
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: utmp
+        hostPath:
+          path: /var/run/utmp
+      - name: config
+        configMap:
+          name: telegraf
