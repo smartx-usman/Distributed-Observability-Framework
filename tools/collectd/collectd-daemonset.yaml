@@ -24,6 +24,7 @@ spec:
       containers:
       - name: collectd-node-metrics
         image: usman476/aida-collectd:latest
+        imagePullPolicy: "IfNotPresent"
         env:
           - name: HOSTNAME
             valueFrom:
