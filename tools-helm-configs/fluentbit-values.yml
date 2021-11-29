@@ -190,8 +190,8 @@ config:
   inputs: |
     [INPUT]
         Name tail
-        Path /var/log/containers/*.log
-        multiline.parser docker, cri
+        Path /var/log/containers/*istio-proxy*.log
+        multiline.parser cri
         Tag kube.*
         Mem_Buf_Limit 5MB
         Skip_Long_Lines On
@@ -225,7 +225,9 @@ config:
         match                  *
         host                   loki-0.loki-headless.store.svc.cluster.local
         port                   3100
-        labels                 job=fluentbit
+        tenant_id ""
+        labels job=fluentbit
+        label_keys $trace_id
         auto_kubernetes_labels on
 
     #Name es
@@ -240,11 +242,11 @@ config:
   ## https://docs.fluentbit.io/manual/pipeline/parsers
   customParsers: |
     [PARSER]
-        Name docker_no_time
-        Format json
-        Time_Keep Off
-        Time_Key time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L
+        Name cri
+        Format regex
+        Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<message>.*)$
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
 
   # This allows adding more files with arbitary filenames to /fluent-bit/etc by providing key/value pairs.
   # The key becomes the filename, the value becomes the file content.
