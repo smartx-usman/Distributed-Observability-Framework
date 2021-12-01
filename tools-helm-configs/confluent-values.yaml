@@ -80,7 +80,7 @@ cp-kafka:
 ## Schema Registry
 ## ------------------------------------------------------
 cp-schema-registry:
-  enabled: false
+  enabled: true
   image: confluentinc/cp-schema-registry
   imageTag: 6.1.0
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
@@ -89,6 +89,10 @@ cp-schema-registry:
   #  - name: "regcred"
   heapOptions: "-Xms256M -Xmx256M"
   resources: {}
+  kafka:
+    bootstrapServers: "PLAINTEXT://bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"
+  nodeSelector:
+    kubernetes.io/hostname: observability-vm-1
   ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
   ## and remove the curly braces after 'resources:'
   #  limits:
@@ -140,7 +144,9 @@ cp-kafka-connect:
     "max.poll.records": "200"
     "max.poll.interval.ms": "150000"
   kafka:
-    bootstrapServers: "PLAINTEXT://bitnami-kafka-0.bitnami-kafka-headless.transport.svc.cluster.local:9092"
+    bootstrapServers: "PLAINTEXT://bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"
+  nodeSelector:
+    kubernetes.io/hostname: observability-vm-1
   prometheus:
   ## JMX Exporter Configuration
   ## ref: https://github.com/prometheus/jmx_exporter
@@ -166,7 +172,7 @@ cp-kafka-connect:
 ## KSQL Server
 ## ------------------------------------------------------
 cp-ksql-server:
-  enabled: true
+  enabled: false
   image: confluentinc/cp-ksqldb-server
   imageTag: 6.1.0
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
@@ -177,8 +183,9 @@ cp-ksql-server:
   ksql:
     headless: false
   kafka:
-    bootstrapServers: "PLAINTEXT://bitnami-kafka-0.bitnami-kafka-headless.transport.svc.cluster.local:9092"  
-
+    bootstrapServers: "PLAINTEXT://bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"
+  nodeSelector:
+    kubernetes.io/hostname: observability-vm-1
 ## ------------------------------------------------------
 ## Control Center
 ## ------------------------------------------------------
