@@ -1,0 +1,99 @@
+curl -XPOST "10.152.183.190:9200/_security/role/es_sink_connector_role?pretty" -H 'Content-Type: application/json' -d'
+{
+  "indices": [
+    {
+      "names": [ "*" ],
+      "privileges": ["create_index", "read", "write", "view_index_metadata"]
+    }
+  ]
+}'
+
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    --data '{
+    "name": "elasticsearch-sink-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+        "tasks.max": 1,
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable": "false",
+        "value.converter.schemas.enable": "false",
+        "topics": "node-metrics",
+        "key.ignore": "true",
+        "connection.url": "http://observabilitycluster-master-0.observabilitycluster-master-headless.elasticsearch.svc.cluster.local:9200",
+        "type.name": "kafka-connect",
+        "connect.elastic.kcql" : "INSERT INTO kubernetes_logs_index SELECT * FROM node-metrics",
+        "drop.invalid.message": "true",
+        "key.ignore": "true",
+        "schema.ignore": "true",
+        "behavior.on.malformed.documents": "IGNORE",
+        "max.poll.records": 100,
+        "batch.size": 500,
+        "request.timeout.ms": 300000,
+        "max.buffered.records": 5000,
+        "heartbeat.interval.ms": 1000,
+        "max.poll.interval.ms": 900000,
+        "session.timeout.ms": 600000
+        }
+    }' http://10.97.157.192:8083/connectors
+
+
+
+curl -X DELETE 10.103.247.74:8083/connectors/elasticsearch-sink-connector
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    --data '{
+    "name": "elasticsearch-sink-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+        "tasks.max": 1,
+        "key.converter": "io.confluent.connect.protobuf.ProtobufConverter",
+        "key.converter.schema.registry.url": "http://confluent-cp-schema-registry-98c4d7587-m229f.confluent-cp-schema-registry.svc.cluster.local:8081",
+        "value.converter": "io.confluent.connect.protobuf.ProtobufConverter",
+        "value.converter.schema.registry.url": "http://confluent-cp-schema-registry-98c4d7587-m229f.confluent-cp-schema-registry.svc.cluster.local:8081",
+
+        "key.converter.schemas.enable": "false",
+        "value.converter.schemas.enable": "false",
+        "topics": "node-metrics",
+        "key.ignore": "true",
+        "connection.url": "http://es-master-0.es-master-headless.store.svc.cluster.local:9200",
+        "type.name": "kafka-connect",
+        "connect.elastic.kcql" : "INSERT INTO node-metrics-index SELECT * FROM node-metrics",
+        "drop.invalid.message": "true",
+        "key.ignore": "true",
+        "schema.ignore": "true",
+        "behavior.on.malformed.documents": "IGNORE",
+        "max.poll.records": 100,
+        "batch.size": 500,
+        "request.timeout.ms": 300000,
+        "max.buffered.records": 5000,
+        "heartbeat.interval.ms": 1000,
+        "max.poll.interval.ms": 900000,
+        "session.timeout.ms": 600000
+        }
+    }' http://10.103.247.74:8083/connectors
+
+
+#Add Kubernetes node
+2  sudo visudo
+3  sudo apt -y update && sudo apt -y upgrade
+6  sudo vim /etc/hostname
+7  sudo vim /etc/hosts
+10  hostnamectl set-hostname worker-vm-2
+12  hostnamectl
+13  sudo vim /etc/multipath.conf
+14  sudo systemctl restart multipathd.service
+15  sudo systemctl restart multipath-tools.service
+18  sudo snap install microk8s --classic --channel=1.18
+18  sudo snap refresh microk8s --classic --channel=1.19
+18  sudo snap refresh microk8s --classic --channel=1.20
+20  sudo usermod -a -G microk8s javid
+21  sudo chown -f -R javid ~/.kube
+22  microk8s status
+
+#Kubernetes dashboard token
+token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
+microk8s kubectl -n kube-system describe secret $token
