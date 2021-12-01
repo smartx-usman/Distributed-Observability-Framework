@@ -16,9 +16,9 @@ curl https://raw.githubusercontent.com/confluentinc/cp-helm-charts/master/values
 #vim confluent-values.yaml
 helm repo add confluentinc https://confluentinc.github.io/cp-helm-charts/
 helm repo update
-helm install confluent -n kafka -f confluent-values.yaml confluentinc/cp-helm-charts
-#curl 10.152.183.30:8083/connector-plugins | jq
-#curl 10.152.183.30:8083/connectors | jq
+helm upgrade --install confluent -n delivery -f confluent-values.yaml confluentinc/cp-helm-charts
+#curl 10.103.247.74:8083/connector-plugins | jq
+#curl 10.103.247.74:8083/connectors | jq
 
 #Elasticsearch
 curl https://raw.githubusercontent.com/elastic/helm-charts/7.13/elasticsearch/values.yaml > elasticsearch-values.yaml
