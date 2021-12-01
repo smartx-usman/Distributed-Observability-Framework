@@ -1,3 +1,10 @@
+#Create telegraf user on each node in cluster
+sudo useradd -M telegraf
+sudo usermod -aG docker telegraf
+
+sudo groupmod -g 1002 telegraf
+sudo groupmod -g 1001 docker
+
 #Create monitoring functions namespaces
 kubectl apply -f namespaces/create-namespaces.yaml
 
@@ -57,3 +64,6 @@ helm upgrade --install tempo -n=tracing -f tempo-values.yaml grafana/tempo
 # Open Telemetry Collector
 kubectl apply -n tracing -f https://raw.githubusercontent.com/antonioberben/examples/master/opentelemetry-collector/otel.yaml
 kubectl apply -n tracing -f otel-configmap.yaml
+
+# Telegraf Agents
+kubectl apply -n measurement -f tools/telegraf/telegraf-deployment.yaml
