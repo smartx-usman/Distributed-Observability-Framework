@@ -32,7 +32,7 @@ image:
 # -- Image pull secrets for Docker images
 imagePullSecrets: []
 
-# -- Annotations for the SaemonSet
+# -- Annotations for the DaemonSet
 annotations: {}
 
 # -- The update strategy for the DaemonSet
@@ -110,13 +110,13 @@ nodeSelector: {}
 affinity: {}
 
 # -- Tolerations for pods. By default, pods will be scheduled on master/control-plane nodes.
-#tolerations:
-#  - key: node-role.kubernetes.io/master
-#    operator: Exists
-#    effect: NoSchedule
-#  - key: node-role.kubernetes.io/control-plane
-#    operator: Exists
-#    effect: NoSchedule
+tolerations:
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
 
 # -- Default volumes that are mounted into pods. In most cases, these should not be changed.
 # Use `extraVolumes`/`extraVolumeMounts` for additional custom volumes.
@@ -232,7 +232,6 @@ config:
   # -- The Loki address to post logs to.
   # Must be reference in `config.file` to configure `client.url`.
   # See default config in `values.yaml`
-  #lokiAddress: http://loki-gateway/loki/api/v1/push
   lokiAddress: http://loki-0.loki-headless.store.svc.cluster.local:3100/loki/api/v1/push
   # -- A section of reusable snippets that can be reference in `config.file`.
   # Custom snippets may be added in order to reduce redundancy.

@@ -5,6 +5,8 @@ sudo usermod -aG docker telegraf
 sudo groupmod -g 1002 telegraf
 sudo groupmod -g 1001 docker
 
+# Also change permission on the file /var/lib/docker.sock
+
 #Create monitoring functions namespaces
 kubectl apply -f namespaces/create-namespaces.yaml
 
@@ -48,8 +50,8 @@ helm upgrade --install loki -n=store -f loki-values.yaml grafana/loki
 #Grafana URL: http://loki-0.loki-headless.store.svc.cluster.local:3100
 
 #Promtail for logs (collection)
-curl https://raw.githubusercontent.com/grafana/helm-charts/tempo-distributed-0.9.14/charts/promtail/values.yaml > promtail.yaml
-helm upgrade --install promtail -n=measurement -f promtail.yaml grafana/promtail
+curl https://raw.githubusercontent.com/grafana/helm-charts/promtail-3.9.1/charts/promtail/values.yaml > promtail-values.yaml
+helm upgrade --install promtail -n=measurement -f promtail-values.yaml grafana/promtail
 
 #Kibana
 helm install kibana --version 7.13.4 -n visualization -f kibana-values.yaml elastic/kibana
