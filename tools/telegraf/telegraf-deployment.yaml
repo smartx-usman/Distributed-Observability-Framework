@@ -23,7 +23,7 @@ data:
      omit_hostname= false
 
    [[outputs.kafka]]
-     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.delivery.svc.cluster.local:9092"]
+     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.monitoring.svc.cluster.local:9092"]
      topic = "telegraf"
      [outputs.kafka.topic_suffix]
        method = "measurement"
@@ -58,9 +58,9 @@ data:
      total = true
      perdevice_include = ["cpu", "blkio", "network"]
      total_include = ["cpu", "blkio", "network"]
-#   [[inputs.kubernetes]]
-#     url = "https://172.16.23.1:6443"
-#     insecure_skip_verify = true
+   [[inputs.kubernetes]]
+     url = "https://$HOSTIP:6443"
+     insecure_skip_verify = true
 
 ---
 # Section: Daemonset
