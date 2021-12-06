@@ -1,12 +1,6 @@
 #Rancher
 helm install rancher rancher-latest/rancher   --namespace cattle-system   --set hostname=kubernetes-master
 
-#Kafka bitnami
-sudo mkdir /opt/kafka #create dir on the vm where kafka will be deployed
-curl https://raw.githubusercontent.com/bitnami/charts/master/bitnami/kafka/values.yaml > kafka-values.yaml
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install bitnami -n delivery -f kafka-values.yaml bitnami/kafka
-
 #Confluent Zookeeper Kafka Connect
 #docker build -t usman476/aida-kafka-connect:latest .
 #docker push -t usman476/aida-kafka-connect:latest
