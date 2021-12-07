@@ -14,11 +14,10 @@ helm upgrade --install confluent -n delivery -f confluent-values.yaml confluenti
 #curl 10.103.247.74:8083/connector-plugins | jq
 #curl 10.103.247.74:8083/connectors | jq
 
-#Elasticsearch
-curl https://raw.githubusercontent.com/elastic/helm-charts/7.13/elasticsearch/values.yaml > elasticsearch-values.yaml
-helm repo add elastic https://helm.elastic.co
-helm install elasticsearch -n elasticsearch elastic/elasticsearch -f elasticsearch-values.yaml
-#curl "10.152.183.134:9200/_aliases?pretty"
+#Kibana
+helm install kibana --version 7.13.4 -n monitoring -f kibana-values.yaml elastic/kibana
+#helm install kibana -n elasticsearch -f kibana-values.yaml elastic/kibana
+#kubectl -n elasticsearch port-forward svc/kibana-kibana 5601:5601
 
 #Fluentbit
 curl https://raw.githubusercontent.com/fluent/helm-charts/main/charts/fluent-bit/values.yaml > fluentbit-values.yml

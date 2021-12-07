@@ -22,6 +22,12 @@ sudo mkdir /opt/kafka #create dir on the vm where kafka will be deployed
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm upgrade --install bitnami -n monitoring -f kafka-values.yaml bitnami/kafkaf
 
+#Elasticsearch
+curl https://raw.githubusercontent.com/elastic/helm-charts/7.13/elasticsearch/values.yaml > elasticsearch-values.yaml
+helm repo add elastic https://helm.elastic.co
+helm upgrade --install elasticsearch -n monitoring elastic/elasticsearch -f elasticsearch-values.yaml
+#curl "10.152.183.134:9200/_aliases?pretty"
+
 #Prometheus
 sudo mkdir /opt/prometheus #create dir on the node where prometheus will be deployed
 #curl https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/prometheus/values.yaml > prometheus-values.yaml
@@ -60,11 +66,6 @@ helm upgrade --install loki -n=monitoring -f loki-values.yaml grafana/loki
 #Promtail for logs (collection)
 curl https://raw.githubusercontent.com/grafana/helm-charts/promtail-3.9.1/charts/promtail/values.yaml > promtail-values.yaml
 helm upgrade --install promtail -n=measurement -f promtail-values.yaml grafana/promtail
-
-#Kibana
-helm install kibana --version 7.13.4 -n monitoring -f kibana-values.yaml elastic/kibana
-#helm install kibana -n elasticsearch -f kibana-values.yaml elastic/kibana
-#kubectl -n elasticsearch port-forward svc/kibana-kibana 5601:5601
 
 # Tempo for traces
 curl https://raw.githubusercontent.com/grafana/helm-charts/main/charts/tempo/values.yaml > tempo-values.yaml
