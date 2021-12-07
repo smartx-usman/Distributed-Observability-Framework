@@ -77,4 +77,5 @@ kubectl apply -n monitoring -f https://raw.githubusercontent.com/antonioberben/e
 kubectl apply -n monitoring -f otel-configmap.yaml
 
 # Telegraf Agents
+kubectl apply -f tools/telegraf/telegraf-serviceaccount.yaml
 kubectl apply -n measurement -f tools/telegraf/telegraf-deployment.yaml
