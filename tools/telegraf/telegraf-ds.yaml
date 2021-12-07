@@ -8,7 +8,7 @@ metadata:
 data:
  telegraf.conf: |+
    [agent]
-     interval= "10s"
+     interval= "5s"
      round_interval= true
      metric_batch_size= 1000
      metric_buffer_limit= 10000
@@ -43,9 +43,6 @@ data:
    [[inputs.diskio]]
    [[inputs.kernel]]
    [[inputs.mem]]
-   [[inputs.dmcache]]
-     ## Whether to report per-device stats or not
-     per_device = true
    [[inputs.net]]
      interfaces= ["eth*", "ens*"]
      ignore_protocol_stats= true
@@ -59,7 +56,8 @@ data:
      perdevice_include = ["cpu", "blkio", "network"]
      total_include = ["cpu", "blkio", "network"]
    [[inputs.kubernetes]]
-     url = "https://$HOSTIP:6443"
+     url = "https://$HOSTIP:10250"
+     bearer_token_string = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkhmX1NLNXRTbnBOdThoMm5KbHl1V3JHSHRYazRaLWI5anMwTjg5bjduTHcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJtZWFzdXJlbWVudCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJ0ZWxlZ3JhZi10b2tlbi04aHc1YiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJ0ZWxlZ3JhZiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjYxZmQwOWFlLTZmOTEtNGFkNi05YTYwLWQyMGExNjlmYmQyMyIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDptZWFzdXJlbWVudDp0ZWxlZ3JhZiJ9.h8dzVvvyGD_NLLfg2co7Or1NWBzUL68FX7yrLkzH9Iho1XkcLhnkRkerfhUmPGL0hycOj9M5RId4FTpfPNVobVgOTB6ulTCi_G2sDqP8IDdJWk8RfNpwMr_NSmqCqrc379WlcL3Lki2gh1b3dFv8vQeelV9YQhEjBf7jn41HOj51exeHs7DNvBZDoOIGF0dXJfTV20CrT-Tf5meqCY53LhWrqANLRIKVj2C4n0NWLAndrKALPhkEYRlZkpNoxsgo-zMYxXay1ac9oW_CeJRUICHjbwpwFkFV08NKhEUei3HkN8nSu0Ri5Mn8K3Zi1AtaaYrwawJlKLSkMdWHMrpbUg"
      insecure_skip_verify = true
 
 ---
@@ -110,8 +108,8 @@ spec:
 #        - name: ENV
 #          valueFrom:
 #            secretKeyRef:
-#              name: telegraf
-#              key: default-token-fzthz
+#              name: default
+#              key: default-token-tf6nh
         volumeMounts:
         - name: sys
           mountPath: /rootfs/sys
