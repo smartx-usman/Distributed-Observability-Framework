@@ -9,39 +9,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: monitoring
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: delivery
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: connect
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: fusion
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: store
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: tracing
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: visualization
