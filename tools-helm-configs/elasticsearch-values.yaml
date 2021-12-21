@@ -13,12 +13,14 @@ roles:
   ingest: "true"
   data: "true"
   remote_cluster_client: "true"
-  ml: "false"
+  ml: "true"
 
 replicas: 1
 minimumMasterNodes: 1
 
 esMajorVersion: ""
+
+clusterDeprecationIndexing: "false"
 
 # Allows you to add any config files in /usr/share/elasticsearch/config/
 # such as elasticsearch.yml and log4j2.properties
@@ -59,10 +61,11 @@ hostAliases: []
 #  - "bar.local"
 
 image: "docker.elastic.co/elasticsearch/elasticsearch"
-imageTag: "7.13.5-SNAPSHOT"
+imageTag: "7.16.2"
 imagePullPolicy: "IfNotPresent"
 
-podAnnotations: {}
+podAnnotations:
+  {}
   # iam.amazonaws.com/role: es-cluster
 
 # additionals labels
@@ -73,12 +76,13 @@ esJavaOpts: "" # example: "-Xmx1g -Xms1g"
 resources:
   requests:
     cpu: "1000m"
-    memory: "1024Mi"
+    memory: "2Gi"
   limits:
     cpu: "1000m"
-    memory: "1024Mi"
+    memory: "2Gi"
 
-initResources: {}
+initResources:
+  {}
   # limits:
   #   cpu: "25m"
   #   # memory: "128Mi"
@@ -89,7 +93,7 @@ initResources: {}
 networkHost: "0.0.0.0"
 
 volumeClaimTemplate:
-  accessModes: [ "ReadWriteOnce" ]
+  accessModes: ["ReadWriteOnce"]
   resources:
     requests:
       storage: 10Gi
@@ -98,6 +102,7 @@ rbac:
   create: false
   serviceAccountAnnotations: {}
   serviceAccountName: ""
+  automountToken: true
 
 podSecurityPolicy:
   create: false
@@ -125,21 +130,25 @@ persistence:
     enabled: false
   annotations: {}
 
-extraVolumes: []
+extraVolumes:
+  []
   # - name: extras
   #   emptyDir: {}
 
-extraVolumeMounts: []
+extraVolumeMounts:
+  []
   # - name: extras
   #   mountPath: /usr/share/extras
   #   readOnly: true
 
-extraContainers: []
+extraContainers:
+  []
   # - name: do-something
   #   image: busybox
   #   command: ['do', 'something']
 
-extraInitContainers: []
+extraInitContainers:
+  []
   # - name: do-something
   #   image: busybox
   #   command: ['do', 'something']
@@ -174,6 +183,7 @@ httpPort: 9200
 transportPort: 9300
 
 service:
+  enabled: true
   labels: {}
   labelsHeadless: {}
   type: ClusterIP
@@ -199,7 +209,7 @@ podSecurityContext:
 securityContext:
   capabilities:
     drop:
-    - ALL
+      - ALL
   # readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
@@ -216,7 +226,7 @@ readinessProbe:
   successThreshold: 3
   timeoutSeconds: 5
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/7.13/cluster-health.html#request-params wait_for_status
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.16/cluster-health.html#request-params wait_for_status
 clusterHealthCheckParams: "wait_for_status=green&timeout=1s"
 
 ## Use an alternate scheduler.
@@ -229,13 +239,15 @@ nodeSelector:
   kubernetes.io/hostname: observability-vm-1
 tolerations: []
 
-# Enabling this will publically expose your Elasticsearch instance.
+# Enabling this will publicly expose your Elasticsearch instance.
 # Only enable this if you have security enabled on your cluster
 ingress:
   enabled: false
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  className: "nginx"
+  pathtype: ImplementationSpecific
   hosts:
     - host: chart-example.local
       paths:
@@ -249,7 +261,8 @@ nameOverride: ""
 fullnameOverride: ""
 healthNameOverride: ""
 
-lifecycle: {}
+lifecycle:
+  {}
   # preStop:
   #   exec:
   #     command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
@@ -296,7 +309,6 @@ networkPolicy:
     #     role: frontend
     #   matchExpressions:
     #     - {key: role, operator: In, values: [frontend]}
-
     ## Additional NetworkPolicy Ingress "from" rules to set. Note that all rules are OR-ed.
     ##
     # additionalRules:
@@ -311,7 +323,7 @@ networkPolicy:
     #             - frontend
 
   transport:
-    ## Note that all Elasticsearch Pods can talks to themselves using transport port even if enabled.
+    ## Note that all Elasticsearch Pods can talk to themselves using transport port even if enabled.
     enabled: false
     # explicitNamespacesSelector:
     #   matchLabels:
@@ -328,6 +340,9 @@ networkPolicy:
     #           operator: In
     #           values:
     #             - frontend
+
+tests:
+  enabled: false
 
 # Deprecated
 # please use the above podSecurityContext.fsGroup instead
