@@ -7,7 +7,7 @@ fullnameOverride: ""
 replicas: 1
 tempo:
   repository: grafana/tempo
-  tag: 1.1.0
+  tag: 1.2.1
   pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
@@ -27,10 +27,17 @@ tempo:
 
   memBallastSizeMbs: 1024
   authEnabled: false
+  # -- If true, enables Tempo's native search
+  searchEnabled: false
   ingester: {}
   retention: 24h
+  overrides: {}
+
+  # Tempo server configuration
+  # Refers to https://grafana.com/docs/tempo/latest/configuration/#server
   server:
-    httpListenPort: 3100
+    # -- HTTP server listen port
+    http_listen_port: 3100
   # tempo storage backend
   # refer https://github.com/grafana/tempo/tree/master/docs/tempo/website/configuration
   ## Use s3 for example
@@ -53,11 +60,6 @@ tempo:
   # the receives all come from the OpenTelemetry collector.  more configuration information can
   # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/master/receiver
   receivers:
-    zipkin:
-    otlp:
-      protocols:
-        http:
-        grpc:
     jaeger:
       protocols:
         grpc:
@@ -69,9 +71,15 @@ tempo:
         thrift_http:
           endpoint: 0.0.0.0:14268
     opencensus:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+        http:
+          endpoint: "0.0.0.0:4318"
+
   ## Additional container arguments
-  extraArgs:
-    "distributor.log-received-traces": true
+  extraArgs: {}
   # -- Environment variables to add
   extraEnv: []
   # -- Volume mounts to add
@@ -118,6 +126,13 @@ service:
   annotations: {}
   labels: {}
 
+serviceMonitor:
+  enabled: false
+  interval: ""
+  additionalLabels: {}
+  annotations: {}
+  # scrapeTimeout: 10s
+
 persistence:
   enabled: false
   # storageClassName: local-path
@@ -127,6 +142,9 @@ persistence:
 
 ## Pod Annotations
 podAnnotations: {}
+
+## Pod (extra) Labels
+podLabels: {}
 
 # -- Volumes to add
 extraVolumes: []
