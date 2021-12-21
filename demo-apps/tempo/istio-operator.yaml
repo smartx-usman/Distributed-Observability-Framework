@@ -15,4 +15,4 @@ spec:
     sampling: 100
     max_path_tag_length: 99999
     zipkin:
-     address: otel-collector.tracing.svc:9411
+     address: otel-collector.monitoring.svc:9411
