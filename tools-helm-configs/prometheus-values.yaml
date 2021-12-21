@@ -432,7 +432,7 @@ configmapReload:
 kubeStateMetrics:
   ## If false, kube-state-metrics sub-chart will not be installed
   ##
-  enabled: true
+  enabled: false
 
 ## kube-state-metrics sub-chart configurable values
 ## Please see https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
@@ -1348,7 +1348,7 @@ serverFiles:
       - job_name: 'telegraf'
         scrape_interval: 5s
         static_configs:
-          - targets: [ '172.17.0.8:9126' ]
+          - targets: [ '10.244.3.107:9126', '10.244.1.150:9126', '10.244.2.124:9126']
 
       # A scrape configuration for running Prometheus on a Kubernetes cluster.
       # This uses separate scrape configs for cluster components (i.e. API server, node)
