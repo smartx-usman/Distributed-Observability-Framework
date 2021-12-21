@@ -11,7 +11,7 @@ sudo groupmod -g 1001 docker
 kubectl apply -f namespaces/create-namespaces.yaml
 
 #Create persistent volumes
-kubectl apply -f volumes/create-persistent-volume.yaml
+kubectl apply -f persistent-volumes/create-persistent-volume.yaml
 
 #Taint master node
 kubectl taint nodes muhammad-vm-1 key1=value1:NoSchedule
@@ -20,7 +20,7 @@ kubectl taint nodes muhammad-vm-1 key1=value1:NoSchedule
 sudo mkdir /opt/kafka #create dir on the vm where kafka will be deployed
 #curl https://raw.githubusercontent.com/bitnami/charts/master/bitnami/kafka/values.yaml > kafka-values.yaml
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm upgrade --install bitnami -n monitoring -f kafka-values.yaml bitnami/kafkaf
+helm upgrade --install bitnami -n monitoring -f kafka-values.yaml bitnami/kafka
 
 #Elasticsearch
 curl https://raw.githubusercontent.com/elastic/helm-charts/7.13/elasticsearch/values.yaml > elasticsearch-values.yaml
@@ -69,7 +69,7 @@ helm upgrade --install promtail -n=measurement -f promtail-values.yaml grafana/p
 
 # Tempo for traces
 curl https://raw.githubusercontent.com/grafana/helm-charts/main/charts/tempo/values.yaml > tempo-values.yaml
-helm upgrade --install tempo -n=tracing -f tempo-values.yaml grafana/tempo
+helm upgrade --install tempo -n=monitoring -f tempo-values.yaml grafana/tempo
 #Grafana URL: http://tempo.traces.svc.cluster.local:3100
 
 # Open Telemetry Collector
@@ -78,4 +78,4 @@ kubectl apply -n monitoring -f otel-configmap.yaml
 
 # Telegraf Agents
 kubectl apply -f tools/telegraf/telegraf-serviceaccount.yaml
-kubectl apply -n measurement -f tools/telegraf/telegraf-deployment.yaml
+kubectl apply -n measurement -f tools/telegraf/telegraf-ds.yaml
