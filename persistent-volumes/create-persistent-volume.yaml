@@ -55,7 +55,7 @@ spec:
   local:
     path: /opt/prometheus
   claimRef:
-    namespace: store
+    namespace: monitoring
     name: prometheus-server
   nodeAffinity:
     required:
@@ -80,7 +80,7 @@ spec:
   local:
     path: /opt/loki
   claimRef:
-    namespace: store
+    namespace: monitoring
     name: storage-loki-0
   nodeAffinity:
     required:
@@ -105,7 +105,7 @@ spec:
   local:
     path: /opt/grafana
   claimRef:
-    namespace: visualization
+    namespace: monitoring
     name: grafana
   nodeAffinity:
     required:
