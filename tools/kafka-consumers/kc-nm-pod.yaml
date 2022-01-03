@@ -12,6 +12,6 @@ spec:
   - name: kc-nm-container
     image: usman476/kafka-consumer-metrics:latest
     imagePullPolicy: "IfNotPresent"
-  restartPolicy: OnFailure
+  restartPolicy: Always
   nodeSelector:
     kubernetes.io/hostname: observability-vm-1
