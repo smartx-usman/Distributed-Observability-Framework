@@ -15,11 +15,11 @@ serviceAccounts:
     name:
     annotations: {}
   nodeExporter:
-    create: true
+    create: false
     name:
     annotations: {}
   pushgateway:
-    create: true
+    create: false
     name:
     annotations: {}
   server:
@@ -1346,9 +1346,9 @@ serverFiles:
             - localhost:9090
 
       - job_name: 'telegraf'
-        scrape_interval: 5s
+        scrape_interval: 10s
         static_configs:
-          - targets: [ '10.244.3.107:9126', '10.244.1.150:9126', '10.244.2.124:9126']
+          - targets: [ '10.244.1.159:9126', '10.244.2.126:9126', '10.244.3.175:9126']
 
       # A scrape configuration for running Prometheus on a Kubernetes cluster.
       # This uses separate scrape configs for cluster components (i.e. API server, node)
