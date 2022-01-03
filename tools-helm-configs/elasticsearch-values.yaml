@@ -24,7 +24,10 @@ clusterDeprecationIndexing: "false"
 
 # Allows you to add any config files in /usr/share/elasticsearch/config/
 # such as elasticsearch.yml and log4j2.properties
-esConfig: {}
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+#esConfig: {}
 #  elasticsearch.yml: |
 #    key:
 #      nestedkey: value
