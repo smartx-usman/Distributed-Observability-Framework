@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mqtt-producer-pod
+  namespace: uc0
+  labels:
+    environment: production
+    app: mqtt-producer-pod
+spec:
+  containers:
+  - name: mqtt-producer-container
+    image: usman476/mqtt-producer:latest
+    imagePullPolicy: "IfNotPresent"
+  restartPolicy: Always
+  nodeSelector:
+    kubernetes.io/hostname: worker-vm-1
