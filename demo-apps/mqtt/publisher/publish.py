@@ -1,13 +1,13 @@
 # python 3.6
-
+import os
 import time
+
 from random import randint
 from random import seed
-#from random import random
 from threading import Thread
-
 from paho.mqtt import client as mqtt_client
 
+# Change broker IP
 broker = '10.244.2.119'
 port = 1883
 topic = "python/mqtt"
@@ -38,27 +38,39 @@ def publish(client_id, delay):
         time.sleep(delay)
         start_time = time.perf_counter()
         value = randint(1, 10)
+
         if (value % 9) == 0:
             value = 99
+
         time_ms = round(time.time() * 1000)
         msg = f"measurement_timestamp: {time_ms} client_id: {client_id} msg_count: {msg_count} value: {value}"
         result = client.publish(topic, msg)
         status = result[0]
+
+        print(f'Status: {status}')
+
         if status == 0:
             print(f"Send `{msg}` to topic `{topic}`")
         else:
             print(f"Failed to send message to topic {topic}")
+
         msg_count += 1
         end_time = time.perf_counter()
 
-        print(f'It took {end_time - start_time: 0.3f} second(s) to complete.')
+        print(f'It took {end_time - start_time: 0.4f} second(s) to complete.')
+
 
 def run():
     try:
         # create and start number of threads
         threads = []
-        for n in range(1, 3):
-            t = Thread(target=publish, args=(f"sensor-{n}", 1,))
+        sensor_count = int(os.environ['SENSORS'])
+        delay = int(os.environ['MESSAGE_DELAY'])
+        print(f'Number of sensor to start {sensor_count} with delay {delay}.')
+
+
+        for n in range(0, sensor_count):
+            t = Thread(target=publish, args=(f"sensor-{n}", delay, ))
             threads.append(t)
             t.start()
 
@@ -68,6 +80,7 @@ def run():
 
     except:
         print("Error: unable to start thread")
+
 
 if __name__ == '__main__':
     run()
