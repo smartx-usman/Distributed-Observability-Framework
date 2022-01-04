@@ -7,10 +7,9 @@ from random import seed
 from threading import Thread
 from paho.mqtt import client as mqtt_client
 
-# Change broker IP
-broker = '10.244.2.119'
-port = 1883
-topic = "python/mqtt"
+mqtt_broker = os.environ['MQTT_BROKER']
+mqtt_port = 1883
+topic = "mqtt/temperature"
 # username = 'emqx'
 # password = 'public'
 
@@ -24,7 +23,7 @@ def connect_mqtt(clientID):
     client = mqtt_client.Client(clientID)
     # client.username_pw_set(username, password)
     client.on_connect = on_connect
-    client.connect(broker, port)
+    client.connect(mqtt_broker, mqtt_port)
     return client
 
 
@@ -47,8 +46,6 @@ def publish(client_id, delay):
         result = client.publish(topic, msg)
         status = result[0]
 
-        print(f'Status: {status}')
-
         if status == 0:
             print(f"Send `{msg}` to topic `{topic}`")
         else:
@@ -62,12 +59,10 @@ def publish(client_id, delay):
 
 def run():
     try:
-        # create and start number of threads
         threads = []
         sensor_count = int(os.environ['SENSORS'])
-        delay = int(os.environ['MESSAGE_DELAY'])
-        print(f'Number of sensor to start {sensor_count} with delay {delay}.')
-
+        delay = float(os.environ['MESSAGE_DELAY'])
+        print(f'Number of sensors to start {sensor_count} with delay {delay}.')
 
         for n in range(0, sensor_count):
             t = Thread(target=publish, args=(f"sensor-{n}", delay, ))
@@ -77,7 +72,6 @@ def run():
         # wait for the threads to complete
         for t in threads:
             t.join()
-
     except:
         print("Error: unable to start thread")
 

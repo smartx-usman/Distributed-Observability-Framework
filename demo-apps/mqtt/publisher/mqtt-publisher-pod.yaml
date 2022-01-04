@@ -12,10 +12,12 @@ spec:
   - name: m-p-container
     image: usman476/mqtt-publisher:latest
     env:
+    - name: MQTT_BROKER
+      value: "10.244.2.119"
     - name: SENSORS
       value: "2"
     - name: MESSAGE_DELAY
-      value: "1"
+      value: "0.5"
     #args: ["$(SENSORS)", "$(MESSAGE_DELAY)"]
     imagePullPolicy: "IfNotPresent"
   restartPolicy: Always
