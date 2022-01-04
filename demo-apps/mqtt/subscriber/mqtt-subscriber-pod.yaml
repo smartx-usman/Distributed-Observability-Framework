@@ -11,6 +11,11 @@ spec:
   containers:
   - name: mqtt-subscriber-container
     image: usman476/mqtt-subscriber:latest
+    env:
+    - name: MQTT_BROKER
+      value: "10.244.2.119"
+    - name: KAFKA_BROKER
+      value: "bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
     imagePullPolicy: "IfNotPresent"
   restartPolicy: Always
   nodeSelector:

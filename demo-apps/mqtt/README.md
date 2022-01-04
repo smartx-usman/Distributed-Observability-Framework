@@ -8,7 +8,7 @@ This is a use case example to create load in the Kubernetes cluster.
  --------       ------       -------       ---------- 
                  |    ^                          |
  ----------      |    |                          |
-| Actuator | <---------    -----------------------
+| Actuator | <---     ----------------------------
  ----------
 ```
 
@@ -38,7 +38,7 @@ kubectl apply -n uc0 -f mqtt-publisher-pod.yaml
 
 Deploy MQTT Subscriber and Kafka Producer:
 ```shell
-kubectl apply -f -n uc0 mqtt-subscriber-pod.yaml
+kubectl apply -n uc0 -f mqtt-subscriber-pod.yaml
 ```
 
 ## Reading resources
