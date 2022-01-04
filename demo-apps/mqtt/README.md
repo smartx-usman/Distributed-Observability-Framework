@@ -33,7 +33,7 @@ kubectl apply -f -n uc0 mqtt-stresser-pod.yaml
 
 Deploy MQTT Producer:
 ```shell
-kubectl apply -f -n uc0 mqtt-producer-pod.yaml
+kubectl apply -n uc0 -f mqtt-publisher-pod.yaml
 ```
 
 Deploy MQTT Subscriber and Kafka Producer:
