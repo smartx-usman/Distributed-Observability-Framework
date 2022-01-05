@@ -13,12 +13,12 @@ This is a use case example to create load in the Kubernetes cluster.
 ```
 
 ## Installation
-Create a namespace:
+1. Create a namespace:
 ```shell
 kubectl create namespace uc0
 ```
 
-Add MQTT helm repo and deploy it:
+2. Add MQTT helm repo and deploy it:
 ```shell
 helm repo add t3n https://storage.googleapis.com/t3n-helm-charts
 helm -n uc0 upgrade --install mqtt -f mqtt-values.yaml t3n/mosquitto
@@ -31,22 +31,22 @@ kubectl apply -f -n uc0 mqtt-stresser-pod.yaml
 ```
 -->
 
-Deploy MQTT Producer:
+3. Deploy MQTT Producer:
 ```shell
 kubectl apply -n uc0 -f mqtt-publisher-pod.yaml
 ```
 
-Deploy MQTT Subscriber and Kafka Producer:
+4. Deploy MQTT Subscriber and Kafka Producer:
 ```shell
 kubectl apply -n uc0 -f mqtt-subscriber-pod.yaml
 ```
 
-Deploy Kafka Consumer and Faust streaming analysis application:
+5. Deploy Kafka Consumer and Faust streaming analysis application:
 ```shell
 kubectl apply -n uc0 -f temp-analyzer-pod.yaml
 ```
 
-## Reading resources
+### Reading resources about MQTT and MQTT Stresser (not used here)
 
 [MQTT-Stresser](https://github.com/flaviostutz/mqtt-stresser)
 
