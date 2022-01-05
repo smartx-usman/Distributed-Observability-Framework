@@ -41,6 +41,11 @@ Deploy MQTT Subscriber and Kafka Producer:
 kubectl apply -n uc0 -f mqtt-subscriber-pod.yaml
 ```
 
+Deploy Kafka Consumer and Faust streaming analysis application:
+```shell
+kubectl apply -n uc0 -f temp-analyzer-pod.yaml
+```
+
 ## Reading resources
 
 [MQTT-Stresser](https://github.com/flaviostutz/mqtt-stresser)
