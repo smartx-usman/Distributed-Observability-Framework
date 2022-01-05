@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: temp-analyzer-pod
+  namespace: uc0
+  labels:
+    environment: production
+    app: temp-analyzer-pod
+spec:
+  containers:
+  - name: t-a-container
+    image: usman476/fust-temp-analyzer:latest
+    env:
+    - name: MQTT_BROKER
+      value: "10.244.2.119"
+    - name: KAFKA_BROKER
+      value: "bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
+    #args: ["$(SENSORS)", "$(MESSAGE_DELAY)"]
+    imagePullPolicy: "IfNotPresent"
+  restartPolicy: Always
+  nodeSelector:
+    kubernetes.io/hostname: worker-vm-2
