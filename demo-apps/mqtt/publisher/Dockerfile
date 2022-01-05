@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:alpine3.15
 
 ENV SENSORS="1"
 ENV MESSAGE_DELAY="1"
