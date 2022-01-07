@@ -31,7 +31,7 @@ kubectl apply -f -n uc0 mqtt-stresser-pod.yaml
 ```
 -->
 
-3. Deploy MQTT Producer:
+3. Deploy simulated value generator and MQTT Publisher:
 ```shell
 kubectl apply -n uc0 -f mqtt-publisher-pod.yaml
 ```
