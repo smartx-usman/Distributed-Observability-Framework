@@ -13,7 +13,7 @@ spec:
     image: usman476/mqtt-publisher:latest
     env:
     - name: MQTT_BROKER
-      value: "10.244.2.119"
+      value: "mqtt-mosquitto.uc0.svc.cluster.local"
     - name: MQTT_BROKER_PORT
       value: "1883"
     - name: SENSORS

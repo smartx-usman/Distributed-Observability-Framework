@@ -2,7 +2,7 @@ FROM python:alpine3.15
 
 ENV SENSORS="1"
 ENV MESSAGE_DELAY="1"
-ENV MQTT_BROKER="10.244.2.119"
+ENV MQTT_BROKER="mqtt-mosquitto.uc0.svc.cluster.local"
 ENV MQTT_BROKER_PORT="1883"
 ENV MQTT_TOPIC="mqtt/temperature"
 ENV START_VALUE="1"

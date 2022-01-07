@@ -8,7 +8,6 @@ from random import seed
 from threading import Thread
 from paho.mqtt import client as mqtt_client
 
-logging.basicConfig(level=logging.INFO)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 mqtt_broker = os.environ['MQTT_BROKER']
