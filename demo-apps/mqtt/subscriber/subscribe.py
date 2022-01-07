@@ -1,8 +1,8 @@
 # python3.6
-import os
-import random
 import json
 import logging
+import os
+import random
 
 from kafka import KafkaProducer
 from paho.mqtt import client as mqtt_client
@@ -19,6 +19,7 @@ kafka_key = "server-room"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 
 
+# Connect to MQTT broker
 def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -34,14 +35,18 @@ def connect_mqtt() -> mqtt_client:
         logging.critical('Exception while connecting MQTT.', exc_info=True)
     return client
 
+
+# Connect to Kafka broker
 def connect_kafka_producer(kafka_broker):
     _producer = None
     try:
-      _producer = KafkaProducer(bootstrap_servers=kafka_broker)
+        _producer = KafkaProducer(bootstrap_servers=kafka_broker)
     except Exception as ex:
         logging.critical('Exception while connecting Kafka.', exc_info=True)
     return _producer
 
+
+# Publish message to Kafka topic
 def kafka_publish_message(producer_instance, message):
     try:
         key_bytes = bytes(kafka_key, encoding='utf-8')
@@ -61,6 +66,7 @@ def kafka_publish_message(producer_instance, message):
         logging.error('Exception in publishing message.', exc_info=True)
 
 
+# Subscribe messages from MQTT topic
 def mqtt_subscribe_message(client: mqtt_client, producer):
     def on_message(client, userdata, msg):
         logging.debug(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")

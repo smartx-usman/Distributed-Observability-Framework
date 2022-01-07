@@ -1,11 +1,11 @@
 # python 3.6
+import logging
 import os
 import time
-import logging
-
 from random import randint
 from random import seed
 from threading import Thread
+
 from paho.mqtt import client as mqtt_client
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -16,15 +16,18 @@ value_type = os.environ['VALUE_TYPE']
 invalid_value_occurrence = int(os.environ['INVALID_VALUE_OCCURRENCE'])
 mqtt_port = int(os.environ['MQTT_BROKER_PORT'])
 
-#topic = "mqtt/temperature"
+# topic = "mqtt/temperature"
 # username = 'emqx'
 # password = 'public'
 
+# Cast values from string to integer
 if value_type == 'integer':
     start_value = int(os.environ['START_VALUE'])
     end_value = int(os.environ['END_VALUE'])
     invalid_value = int(os.environ['INVALID_VALUE'])
 
+
+# Connect to MQTT broker
 def connect_mqtt(clientID):
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -38,6 +41,8 @@ def connect_mqtt(clientID):
     client.connect(mqtt_broker, mqtt_port)
     return client
 
+
+# Generate integer values based on given range of values
 def generate_integer_values(msg_count):
     generated_value = randint(start_value, end_value)
 
@@ -46,7 +51,9 @@ def generate_integer_values(msg_count):
 
     return generated_value
 
-def publish(client_id, delay):
+
+# Publish message to MQTT topic
+def mqtt_publish_message(client_id, delay):
     msg_count = 1
     seed(1)
     client = connect_mqtt(client_id)
@@ -59,7 +66,8 @@ def publish(client_id, delay):
         if value_type == 'integer':
             value = generate_integer_values(msg_count)
         else:
-            logging.critical(f"Failed to create value of type {value_type}. No function is defined for {value_type} value type.")
+            logging.critical(
+                f"Failed to create value of type {value_type}. No function is defined for {value_type} value type.")
 
         time_ms = round(time.time() * 1000)
         msg = f"measurement_timestamp: {time_ms} client_id: {client_id} msg_count: {msg_count} value: {value}"
@@ -89,7 +97,7 @@ def run():
         logging.info(f'Number of sensors to start {sensor_count} with delay {delay}.')
 
         for n in range(0, sensor_count):
-            t = Thread(target=publish, args=(f"sensor-{n}", delay, ))
+            t = Thread(target=mqtt_publish_message, args=(f"sensor-{n}", delay,))
             threads.append(t)
             t.start()
 
