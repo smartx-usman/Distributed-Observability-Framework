@@ -1,24 +1,37 @@
 # python 3.6
 import os
 import time
+import logging
 
 from random import randint
 from random import seed
 from threading import Thread
 from paho.mqtt import client as mqtt_client
 
+logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+
 mqtt_broker = os.environ['MQTT_BROKER']
-mqtt_port = 1883
-topic = "mqtt/temperature"
+mqtt_topic = os.environ['MQTT_TOPIC']
+value_type = os.environ['VALUE_TYPE']
+invalid_value_occurrence = int(os.environ['INVALID_VALUE_OCCURRENCE'])
+mqtt_port = int(os.environ['MQTT_BROKER_PORT'])
+
+#topic = "mqtt/temperature"
 # username = 'emqx'
 # password = 'public'
+
+if value_type == 'integer':
+    start_value = int(os.environ['START_VALUE'])
+    end_value = int(os.environ['END_VALUE'])
+    invalid_value = int(os.environ['INVALID_VALUE'])
 
 def connect_mqtt(clientID):
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
-            print("Connected to MQTT Broker!")
+            logging.info("Connected to MQTT Broker!")
         else:
-            print("Failed to connect, return code %d\n", rc)
+            logging.critical("Failed to connect, return code %d\n", rc)
 
     client = mqtt_client.Client(clientID)
     # client.username_pw_set(username, password)
@@ -26,6 +39,13 @@ def connect_mqtt(clientID):
     client.connect(mqtt_broker, mqtt_port)
     return client
 
+def generate_integer_values(msg_count):
+    generated_value = randint(start_value, end_value)
+
+    if msg_count == invalid_value_occurrence:
+        generated_value = invalid_value
+
+    return generated_value
 
 def publish(client_id, delay):
     msg_count = 1
@@ -36,25 +56,30 @@ def publish(client_id, delay):
     while True:
         time.sleep(delay)
         start_time = time.perf_counter()
-        value = randint(1, 10)
 
-        if (value % 9) == 0:
-            value = 99
+        if value_type == 'integer':
+            value = generate_integer_values(msg_count)
+        else:
+            logging.critical(f"Failed to create value of type {value_type}. No function is defined for {value_type} value type.")
 
         time_ms = round(time.time() * 1000)
         msg = f"measurement_timestamp: {time_ms} client_id: {client_id} msg_count: {msg_count} value: {value}"
-        result = client.publish(topic, msg)
+        result = client.publish(mqtt_topic, msg)
         status = result[0]
 
         if status == 0:
-            print(f"Send `{msg}` to topic `{topic}`")
+            logging.info(f"Send `{msg}` to topic `{mqtt_topic}`")
         else:
-            print(f"Failed to send message to topic {topic}")
+            logging.error(f"Failed to send message to topic {mqtt_topic}")
 
-        msg_count += 1
+        if value == invalid_value:
+            msg_count = 1
+        else:
+            msg_count += 1
+
         end_time = time.perf_counter()
 
-        print(f'It took {end_time - start_time: 0.4f} second(s) to complete.')
+        logging.info(f'It took {end_time - start_time: 0.4f} second(s) to complete.')
 
 
 def run():
@@ -62,7 +87,7 @@ def run():
         threads = []
         sensor_count = int(os.environ['SENSORS'])
         delay = float(os.environ['MESSAGE_DELAY'])
-        print(f'Number of sensors to start {sensor_count} with delay {delay}.')
+        logging.info(f'Number of sensors to start {sensor_count} with delay {delay}.')
 
         for n in range(0, sensor_count):
             t = Thread(target=publish, args=(f"sensor-{n}", delay, ))
@@ -72,8 +97,8 @@ def run():
         # wait for the threads to complete
         for t in threads:
             t.join()
-    except:
-        print("Error: unable to start thread")
+    except Exception as e:
+        logging.error("Unable to start thread", exc_info=True)
 
 
 if __name__ == '__main__':

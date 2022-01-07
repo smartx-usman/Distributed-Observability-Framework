@@ -14,10 +14,24 @@ spec:
     env:
     - name: MQTT_BROKER
       value: "10.244.2.119"
+    - name: MQTT_BROKER_PORT
+      value: "1883"
     - name: SENSORS
       value: "2"
     - name: MESSAGE_DELAY
       value: "0.5"
+    - name: MQTT_TOPIC
+      value: "mqtt/temperature"
+    - name: VALUE_TYPE
+      value: "integer"
+    - name: START_VALUE
+      value: "1"
+    - name: END_VALUE
+      value: "10"
+    - name: INVALID_VALUE_OCCURRENCE
+      value: "10"
+    - name: INVALID_VALUE
+      value: "99"
     #args: ["$(SENSORS)", "$(MESSAGE_DELAY)"]
     imagePullPolicy: "IfNotPresent"
   restartPolicy: Always
