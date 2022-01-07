@@ -13,11 +13,26 @@ spec:
     image: usman476/fust-temp-analyzer:latest
     env:
     - name: MQTT_BROKER
-      value: "10.244.2.119"
+      value: "mqtt-mosquitto.uc0.svc.cluster.local"
+    - name: MQTT_BROKER_PORT
+      value: "1883"
+    - name: MQTT_ACTUATOR_TOPIC
+      value: "mqtt/temperature-actions"
     - name: KAFKA_BROKER
       value: "bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
-    #args: ["$(SENSORS)", "$(MESSAGE_DELAY)"]
+    - name: KAFKA_TOPIC
+      value: "temperature"
     imagePullPolicy: "IfNotPresent"
+    volumeMounts:
+    - mountPath: /analyzer
+      name: temperature-analyzer-volume
   restartPolicy: Always
   nodeSelector:
     kubernetes.io/hostname: worker-vm-2
+  volumes:
+  - name: temperature-analyzer-volume
+    hostPath:
+      # directory location on host
+      path: /opt/data
+      # this field is optional
+      type: Directory
