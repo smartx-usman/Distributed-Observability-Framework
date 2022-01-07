@@ -1,7 +1,8 @@
 FROM python:alpine3.15
 
-ENV MQTT_BROKER="10.244.2.119"
+ENV MQTT_BROKER="mqtt-mosquitto.uc0.svc.cluster.local"
 ENV KAFKA_BROKER="bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
+ENV KAFKA_TOPIC="temperature"
 
 ARG Pathdir="/mqtt"
 

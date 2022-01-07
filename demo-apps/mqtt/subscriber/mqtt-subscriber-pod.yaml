@@ -13,9 +13,15 @@ spec:
     image: usman476/mqtt-subscriber:latest
     env:
     - name: MQTT_BROKER
-      value: "10.244.2.119"
+      value: "mqtt-mosquitto.uc0.svc.cluster.local"
+    - name: MQTT_BROKER_PORT
+      value: "1883"
+    - name: MQTT_TOPIC
+      value: "mqtt/temperature"
     - name: KAFKA_BROKER
       value: "bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
+    - name: KAFKA_TOPIC
+      value: "temperature"
     imagePullPolicy: "IfNotPresent"
   restartPolicy: Always
   nodeSelector:
