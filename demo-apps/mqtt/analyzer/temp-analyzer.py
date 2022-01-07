@@ -76,7 +76,7 @@ topic = app.topic(kafka_topic, value_type=Temperature)
 async def check(temperatures):
     async for temperature in temperatures:
         start_time = time.perf_counter()
-        logging.info(f'{temperature.value} reading at ts {temperature.reading_ts} taken from {temperature.sensor}.')
+        logging.info(f'Reading {temperature.value} at ts {temperature.reading_ts} from {temperature.sensor}')
 
         if int(temperature.value) == 99:
             logging.info('Anomalous value found. Discarded and recorded in file.')
