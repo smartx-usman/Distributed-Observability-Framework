@@ -33,17 +33,22 @@ kubectl apply -f -n uc0 mqtt-stresser-pod.yaml
 
 3. Deploy simulated value generator and MQTT Publisher:
 ```shell
-kubectl apply -n uc0 -f mqtt-publisher-pod.yaml
+kubectl apply -n uc0 -f publisher/mqtt-publisher-pod.yaml
 ```
 
 4. Deploy MQTT Subscriber and Kafka Producer:
 ```shell
-kubectl apply -n uc0 -f mqtt-subscriber-pod.yaml
+kubectl apply -n uc0 -f subscriber/mqtt-subscriber-pod.yaml
 ```
 
 5. Deploy Kafka Consumer and Faust streaming analysis application:
 ```shell
-kubectl apply -n uc0 -f temp-analyzer-pod.yaml
+kubectl apply -n uc0 -f analyzer/temp-analyzer-pod.yaml
+```
+
+6. Deploy actuator to read actions from MQTT:
+```shell
+kubectl apply -n uc0 -f actuator/temp-actuator-pod.yaml
 ```
 
 ### Reading resources about MQTT and MQTT Stresser (not used here)

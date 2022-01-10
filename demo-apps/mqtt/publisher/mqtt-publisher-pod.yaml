@@ -9,8 +9,8 @@ metadata:
     app: mqtt-publisher-pod
 spec:
   containers:
-  - name: m-p-container
-    image: usman476/mqtt-publisher:latest
+  - name: mqtt-publisher-container
+    image: usman476/mqtt-kafka-faust:latest
     env:
     - name: MQTT_BROKER
       value: "mqtt-mosquitto.uc0.svc.cluster.local"
@@ -21,7 +21,7 @@ spec:
     - name: MESSAGE_DELAY
       value: "0.5"
     - name: MQTT_TOPIC
-      value: "mqtt/temperature"
+      value: "mqtt/temperature-readings"
     - name: VALUE_TYPE
       value: "integer"
     - name: START_VALUE
@@ -32,7 +32,8 @@ spec:
       value: "10"
     - name: INVALID_VALUE
       value: "99"
-    #args: ["$(SENSORS)", "$(MESSAGE_DELAY)"]
+    command: ["python3"]
+    args: ["publisher.py"]
     imagePullPolicy: "IfNotPresent"
   restartPolicy: Always
   nodeSelector:

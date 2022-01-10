@@ -10,18 +10,20 @@ metadata:
 spec:
   containers:
   - name: mqtt-subscriber-container
-    image: usman476/mqtt-subscriber:latest
+    image: usman476/mqtt-kafka-faust:latest
     env:
     - name: MQTT_BROKER
       value: "mqtt-mosquitto.uc0.svc.cluster.local"
     - name: MQTT_BROKER_PORT
       value: "1883"
     - name: MQTT_TOPIC
-      value: "mqtt/temperature"
+      value: "mqtt/temperature-readings"
     - name: KAFKA_BROKER
       value: "bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
     - name: KAFKA_TOPIC
-      value: "temperature"
+      value: "temperature-readings"
+    command: ["python3"]
+    args: ["subscriber.py"]
     imagePullPolicy: "IfNotPresent"
   restartPolicy: Always
   nodeSelector:

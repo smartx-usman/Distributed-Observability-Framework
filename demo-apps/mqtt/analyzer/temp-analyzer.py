@@ -56,7 +56,7 @@ client = connect_to_mqtt()
 # Parse message for MQTT
 def parse_message_for_actuator(reading_ts, actuator, action):
     logging.info(f'{action} heating system.')
-    message = f"reading_ts: {reading_ts} actuator_id: {actuator} action: {action}"
+    message = f"reading_ts:{reading_ts} actuator_id:{actuator} action:{action}"
     mqtt_publish_message(client, message)
 
 
