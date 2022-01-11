@@ -41,7 +41,7 @@ def connect_to_mqtt():
 # Publish message to MQTT topic
 def mqtt_publish_message(mqtt_publisher, message):
     time_ms = round(time.time() * 1000)
-    message = f'processed_ts: {time_ms} {message}'
+    message = f'processed_ts:{time_ms} {message}'
     result = mqtt_publisher.publish(mqtt_topic, message)
     status = result[0]
 
@@ -52,6 +52,7 @@ def mqtt_publish_message(mqtt_publisher, message):
 
 
 client = connect_to_mqtt()
+
 
 # Parse message for MQTT
 def parse_message_for_actuator(reading_ts, actuator, action):

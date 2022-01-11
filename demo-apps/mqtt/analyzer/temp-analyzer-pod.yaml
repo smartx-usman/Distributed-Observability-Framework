@@ -17,7 +17,7 @@ spec:
     - name: MQTT_BROKER_PORT
       value: "1883"
     - name: MQTT_ACTUATOR_TOPIC
-      value: "mqtt/temperature-actions"
+      value: "mqtt/temperature/actions"
     - name: KAFKA_BROKER
       value: "bitnami-kafka-0.bitnami-kafka-headless.uc0.svc.cluster.local:9092"
     - name: KAFKA_TOPIC

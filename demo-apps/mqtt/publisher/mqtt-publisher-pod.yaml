@@ -21,7 +21,7 @@ spec:
     - name: MESSAGE_DELAY
       value: "0.5"
     - name: MQTT_TOPIC
-      value: "mqtt/temperature-readings"
+      value: "mqtt/temperature/readings"
     - name: VALUE_TYPE
       value: "integer"
     - name: START_VALUE
