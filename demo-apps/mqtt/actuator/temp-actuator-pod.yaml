@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: temp-actuator-pod
+  namespace: uc0
+  labels:
+    environment: production
+    app: temp-actuator-pod
+spec:
+  containers:
+  - name: temp-actuator-container
+    image: usman476/mqtt-kafka-faust:latest
+    env:
+    - name: MQTT_BROKER
+      value: "mqtt-mosquitto.uc0.svc.cluster.local"
+    - name: MQTT_BROKER_PORT
+      value: "1883"
+    - name: MQTT_ACTUATOR_TOPIC
+      value: "mqtt/temperature/actions"
+    imagePullPolicy: "IfNotPresent"
+    command: ["python3"]
+    args: ["temp-actuator.py"]
+  restartPolicy: Always
+  nodeSelector:
+    kubernetes.io/hostname: worker-vm-1
