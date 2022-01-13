@@ -15,8 +15,14 @@ This is a use case example to create load in the Kubernetes cluster. A single Do
 |  ----------  |         |  -----------       ----------  |
  --------------           -------------------------------- 
 ```
+Here is the description of each step:
+1. Generate sensor data and publish it to MQTT topic.
+2. Subscribe for data from MQTT topic and send it to Kafka topic.
+3. Consume data from Kafka topic and perform realtime-streaming data analysis.
+4. Publish the generated action from analysis step to MQTT topic.
+5. Handle the generated action.
 
-## Installation
+## Installation Steps
 1. Create a namespace:
 ```shell
 kubectl create namespace uc0
