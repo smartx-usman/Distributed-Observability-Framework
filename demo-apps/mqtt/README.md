@@ -1,15 +1,19 @@
 # Use Case Example
 This is a use case example to create load in the Kubernetes cluster. A single Docker image is created for all these tools. However, multiple pods are created using this Docker image to perform different functionalites.
 
-## Data Flow
+## Data Generation and Processing Pipeline
 ```shell
- --------       ------       -------       ---------- 
-| Sensor | --> | MQTT | --> | Kafka | --> | Analysis | 
- --------       ------       -------       ---------- 
-                 |    ^                          |
- ----------      |    |                          |
-| Actuator | <---     ----------------------------
- ----------
+ --------------           -------------------------------- 
+| K8S Worker-1 |         |          K8S Worker-2          |          
+ --------------          |--------------------------------|          
+|   --------   |    1    |  -----------    2     -------  |       
+|  | Sensor |  | ------> | | (topic-s) |  --->  | Kafka | |  
+|   --------   |         | |           |         -------  |       
+|              |         | |    MQTT   |         3  |     |
+|  ----------  |    5    | |           |   4  ----------  |
+| | Actuator | | <------ | | (topic-a) | <---| Analysis | | 
+|  ----------  |         |  -----------       ----------  |
+ --------------           -------------------------------- 
 ```
 
 ## Installation
