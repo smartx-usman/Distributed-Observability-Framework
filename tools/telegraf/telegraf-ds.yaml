@@ -43,6 +43,8 @@ data:
    [[inputs.diskio]]
    [[inputs.kernel]]
    [[inputs.mem]]
+   [[inputs.dmcache]]
+     per_device = true
    [[inputs.net]]
      interfaces= ["eth*", "ens*"]
      ignore_protocol_stats= true
@@ -57,7 +59,7 @@ data:
      total_include = ["cpu", "blkio", "network"]
    [[inputs.kubernetes]]
      url = "https://$HOSTIP:10250"
-     bearer_token_string = ""
+     bearer_token_string = "$TELEGRAF_TOKEN"
      insecure_skip_verify = true
 
 ---
@@ -80,7 +82,7 @@ spec:
     spec:
       containers:
       - name: telegraf
-        image: telegraf:1.20.4
+        image: telegraf:latest
         #args:
         #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
         resources:
@@ -105,11 +107,11 @@ spec:
           value: "/rootfs/proc"
         - name: "HOST_SYS"
           value: "/rootfs/sys"
-#        - name: ENV
-#          valueFrom:
-#            secretKeyRef:
-#              name: default
-#              key: default-token-tf6nh
+        - name: "TELEGRAF_TOKEN"
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-measurement-secret
+              key: token
         volumeMounts:
         - name: sys
           mountPath: /rootfs/sys
