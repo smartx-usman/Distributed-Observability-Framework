@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: create the 'aida' user
+      user: name=aida append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: allow 'aida' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'aida ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: set up authorized keys for the aida user
+      authorized_key: user=aida key="{{item}}"
+      with_file:
+        - ~/.ssh/id_rsa.pub
