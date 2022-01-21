@@ -189,8 +189,8 @@ service:
   enabled: true
   labels: {}
   labelsHeadless: {}
-  type: ClusterIP
-  nodePort: ""
+  type: NodePort
+  nodePort: "30010"
   annotations: {}
   httpPortName: http
   transportPortName: transport
