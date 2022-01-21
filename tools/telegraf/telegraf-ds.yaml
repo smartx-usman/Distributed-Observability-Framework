@@ -39,8 +39,9 @@ data:
      collect_cpu_time = false
      report_active = false
    [[inputs.disk]]
-     ignore_fs = ["tmpfs", "devtmpfs", "devfs"]
+     ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
    [[inputs.diskio]]
+     devices = ["sda", "sdb", "sdc"]
    [[inputs.kernel]]
    [[inputs.mem]]
    [[inputs.dmcache]]
