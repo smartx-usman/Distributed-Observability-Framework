@@ -1,0 +1,32 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: es-querier-job
+  namespace: monitoring
+  labels:
+    app: es-querier-job
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: es-querier-container
+        image: usman476/es-data-querier:latest
+        command: ["python3"]
+        args: ["es-data-querier.py", "-e", "x.x.x.x", "-p", "30010", "-r", "10000", "-i", "telegraf_kubernetes_pod_container_index", "-st", "1643187600000", "-et", "1643198399000"]
+        imagePullPolicy: "IfNotPresent"
+        volumeMounts:
+        - mountPath: /data
+          name: querier-volume
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: observability-vm-1
+      volumes:
+      - name: querier-volume
+        hostPath:
+          # directory location on host
+          path: /opt/data
+          # this field is optional
+          type: Directory
