@@ -16,3 +16,7 @@ sudo apt-get -y install helm
 ```
 
 ### Deploy monitoring/observability functions
+```shell
+sudo mkdir /opt/elasticsearch
+sudo chown -R user:user /opt/elasticsearch  #Replace user with real username
+```
