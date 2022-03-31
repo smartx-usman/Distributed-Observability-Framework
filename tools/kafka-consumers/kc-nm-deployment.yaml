@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kc-nm-deployment
+  namespace: monitoring
+  labels:
+    app: kafka-consumer-monitoring
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kafka-consumer-monitoring
+  template:
+    metadata:
+      labels:
+        app: kafka-consumer-monitoring
+    spec:
+      containers:
+      - name: kc-nm-container
+        image: usman476/kafka-consumer-metrics:latest
+        imagePullPolicy: "IfNotPresent"
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: observability-vm-1
