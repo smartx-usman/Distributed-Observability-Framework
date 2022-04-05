@@ -27,12 +27,14 @@ clusterDeprecationIndexing: "false"
 esConfig:
   elasticsearch.yml: |
     xpack.security.enabled: false
-#esConfig: {}
-#  elasticsearch.yml: |
 #    key:
 #      nestedkey: value
 #  log4j2.properties: |
 #    key = value
+
+esJvmOptions: {}
+#  processors.options: |
+#    -XX:ActiveProcessorCount=3
 
 # Extra environment variables to append to this nodeGroup
 # This will be appended to the current 'env:' key. You can use any of the kubernetes env
@@ -64,7 +66,7 @@ hostAliases: []
 #  - "bar.local"
 
 image: "docker.elastic.co/elasticsearch/elasticsearch"
-imageTag: "7.16.2"
+imageTag: "7.17.1"
 imagePullPolicy: "IfNotPresent"
 
 podAnnotations:
@@ -78,8 +80,8 @@ esJavaOpts: "" # example: "-Xmx1g -Xms1g"
 
 resources:
   requests:
-    cpu: "1000m"
-    memory: "2Gi"
+    cpu: "500m"
+    memory: "1Gi"
   limits:
     cpu: "1000m"
     memory: "2Gi"
@@ -190,6 +192,9 @@ service:
   labels: {}
   labelsHeadless: {}
   type: NodePort
+  # Consider that all endpoints are considered "ready" even if the Pods themselves are not
+  # https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceSpec
+  publishNotReadyAddresses: false
   nodePort: "30010"
   annotations: {}
   httpPortName: http
@@ -229,8 +234,8 @@ readinessProbe:
   successThreshold: 3
   timeoutSeconds: 5
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/7.16/cluster-health.html#request-params wait_for_status
-clusterHealthCheckParams: "wait_for_status=green&timeout=1s"
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.17/cluster-health.html#request-params wait_for_status
+clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
 
 ## Use an alternate scheduler.
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
