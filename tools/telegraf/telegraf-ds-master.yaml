@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf
+  namespace: measurement
+  labels:
+    k8s-app: telegraf
+data:
+ telegraf.conf: |+
+   [agent]
+     interval= "10s"
+     round_interval= true
+     metric_batch_size= 1000
+     metric_buffer_limit= 10000
+     collection_jitter= "0s"
+     flush_interval= "10s"
+     flush_jitter= "0s"
+     precision= ""
+     debug= false
+     quiet= false
+     logfile= ""
+     hostname= "$HOSTNAME"
+     omit_hostname= false
+
+   [[outputs.kafka]]
+     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.monitoring.svc.cluster.local:9092"]
+     topic = "telegraf"
+     [outputs.kafka.topic_suffix]
+       method = "measurement"
+       separator = "_"
+
+   [[outputs.prometheus_client]]
+         ## Address to listen on.
+         listen = ":9126"
+
+   [[inputs.cpu]]
+     percpu = true
+     totalcpu = true
+     collect_cpu_time = false
+     report_active = false
+   [[inputs.disk]]
+     ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
+   [[inputs.diskio]]
+     devices = ["sda", "sdb", "sdc"]
+   [[inputs.mem]]
+   [[inputs.net]]
+     interfaces= ["eth*", "ens*"]
+     ignore_protocol_stats= true
+   [[inputs.swap]]
+   [[inputs.system]]
+   [[inputs.docker]]
+     endpoint = "unix:///var/run/docker.sock"
+     perdevice = true
+     total = true
+     perdevice_include = ["cpu", "blkio", "network"]
+     total_include = ["cpu", "blkio", "network"]
+   [[inputs.kube_inventory]]
+     url = "https://$HOSTIP:6443"
+     bearer_token_string = "$TELEGRAF_TOKEN"
+     resource_include = [ "deployments", "daemonsets", "services", "statefulsets", "ingress" ]
+     namespace = ""
+     insecure_skip_verify = true
+
+---
+# Section: Daemonset
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: telegraf-master
+  namespace: measurement
+  labels:
+    k8s-app: telegraf
+spec:
+  selector:
+    matchLabels:
+      name: telegraf
+  template:
+    metadata:
+      labels:
+        name: telegraf
+    spec:
+      tolerations:
+      - operator: "Exists"
+      nodeSelector:
+        kubernetes.io/hostname: muhammad-vm-1
+      containers:
+      - name: telegraf
+        image: telegraf:latest
+        #args:
+        #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
+        resources:
+          limits:
+            memory: 300Mi
+          requests:
+            cpu: 300m
+            memory: 300Mi
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+        env:
+        - name: HOSTIP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: "HOST_PROC"
+          value: "/rootfs/proc"
+        - name: "HOST_SYS"
+          value: "/rootfs/sys"
+        - name: "TELEGRAF_TOKEN"
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-measurement-secret
+              key: token
+        volumeMounts:
+        - name: sys
+          mountPath: /rootfs/sys
+          readOnly: true
+        - name: proc
+          mountPath: /rootfs/proc
+          readOnly: true
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+        - name: utmp
+          mountPath: /var/run/utmp
+          readOnly: true
+        - name: config
+          mountPath: /etc/telegraf
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: utmp
+        hostPath:
+          path: /var/run/utmp
+      - name: config
+        configMap:
+          name: telegraf
