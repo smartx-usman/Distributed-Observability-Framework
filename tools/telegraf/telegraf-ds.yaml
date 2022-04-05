@@ -42,14 +42,10 @@ data:
      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
    [[inputs.diskio]]
      devices = ["sda", "sdb", "sdc"]
-   [[inputs.kernel]]
    [[inputs.mem]]
-   [[inputs.dmcache]]
-     per_device = true
    [[inputs.net]]
      interfaces= ["eth*", "ens*"]
      ignore_protocol_stats= true
-   [[inputs.processes]]
    [[inputs.swap]]
    [[inputs.system]]
    [[inputs.docker]]
@@ -68,7 +64,7 @@ data:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: telegraf
+  name: telegraf-workers
   namespace: measurement
   labels:
     k8s-app: telegraf
