@@ -7,7 +7,7 @@ metadata:
   labels:
     app: kafka-consumer-monitoring
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: kafka-consumer-monitoring
@@ -20,6 +20,13 @@ spec:
       - name: kc-nm-container
         image: usman476/kafka-consumer-metrics:latest
         imagePullPolicy: "IfNotPresent"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
       restartPolicy: Always
       nodeSelector:
         kubernetes.io/hostname: observability-vm-1
