@@ -4,12 +4,15 @@ metadata:
   name: zookeeper-pv-1
 spec:
   capacity:
-    storage: 10Gi
+    storage: 5Gi
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
     path: /opt/kafka
+  claimRef:
+    namespace: monitoring
+    name: data-bitnami-zookeeper-0
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -32,6 +35,9 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   local:
     path: /opt/kafka
+  claimRef:
+    namespace: monitoring
+    name: data-bitnami-kafka-0
   nodeAffinity:
     required:
       nodeSelectorTerms:
