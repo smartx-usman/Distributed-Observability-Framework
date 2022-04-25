@@ -1,5 +1,5 @@
-# IIoT-Edge-Observability
-Set of monitoring and observability tools developed for AIDA project.
+# AIDA-Distributed-Observability-Framework
+A set of monitoring and observability tools that are being developed for AIDA project.
 
 ### Setup a Kubernetes cluster
 ```shell
