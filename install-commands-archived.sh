@@ -15,7 +15,7 @@ helm upgrade --install confluent -n delivery -f confluent-values.yaml confluenti
 #curl 10.103.247.74:8083/connectors | jq
 
 #Kibana
-helm install kibana --version 7.13.4 -n monitoring -f kibana-values.yaml elastic/kibana
+helm install kibana --version 7.17.1 -n monitoring -f kibana-values.yaml elastic/kibana
 #helm install kibana -n elasticsearch -f kibana-values.yaml elastic/kibana
 #kubectl -n elasticsearch port-forward svc/kibana-kibana 5601:5601
 
