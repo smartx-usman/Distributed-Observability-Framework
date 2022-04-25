@@ -46,6 +46,19 @@ def get_elasticsearch_data():
           + arguments.start_timestamp[0] + ', "lte" : ' \
           + arguments.end_timestamp[0] + ', "boost" : 2.0}}}}'
 
+    telegraf_container_data = '{"query": { \
+        "bool": { \
+          "must": [ \
+            { "match": { "host": "worker-vm-1" }} \
+          ] , \
+          "filter": [  \
+            { "range": { "@timestamp" : {"gte" : ' + arguments.start_timestamp[0] + ', "lte" : ' + \
+                         arguments.end_timestamp[
+                             0] + ', "boost" : 2.0}}} \
+          ] \
+        } \
+        }}'
+
     telegraf_disk_data = '{"query": { \
     "bool": { \
       "must_not": [ \
@@ -59,7 +72,7 @@ def get_elasticsearch_data():
     }}'
 
     try:
-        json_data = requests.get(url, headers=headers, data=data)
+        json_data = requests.get(url, headers=headers, data=telegraf_container_data)
         logging.info(f'Querying Status {json_data.status_code}')
 
     except Exception as exception:
@@ -83,5 +96,6 @@ logging.info(f'Process completed.')
 # How to run this program
 # python3 es-data-querier.py -e 172.16.23.1 -p 30010 -r 5 -i telegraf_disk_index -st 1643187600000 -et 1643273999000 -o out.csv
 
-
-
+#-p 30010 -r 10000 -i telegraf_docker_index -st 1646297400000 -et 1646301000000
+#curl -g 'http://10.96.7.218/api/v1/query_range?query=docker_n_containers_running{host="worker-vm-1"}&start=2022-03-09T09:45:00.000Z&end=2022-03-09T17:00:00.000Z&step=10s'
+#curl -g 'http://10.96.7.218/api/v1/query_range?query=disk_used_percent{host="worker-vm-1",device="sda2"}&start=2022-03-09T09:45:00.000Z&end=2022-03-09T17:00:00.000Z&step=10s'
