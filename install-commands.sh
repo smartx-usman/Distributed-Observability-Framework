@@ -79,6 +79,7 @@ kubectl apply -n monitoring -f otel-configmap.yaml
 # Telegraf Agents
 kubectl apply -f tools/telegraf/telegraf-serviceaccount.yaml
 kubectl apply -n measurement -f tools/telegraf/telegraf-ds.yaml
+kubectl apply -n measurement -f tools/telegraf/telegraf-ds-master.yaml
 
 # Kiali for visualizing service mesh
 helm repo add kiali https://kiali.org/helm-charts
