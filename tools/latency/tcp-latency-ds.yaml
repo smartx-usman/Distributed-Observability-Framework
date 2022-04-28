@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tcp-latency-svc
+  namespace: measurement
+  labels:
+    app: tcp-latency-svc
+spec:
+  ports:
+  - port: 30099
+    name: web
+  clusterIP: None
+  selector:
+    app: tcp-latency
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: tcp-latency
+  name: tcp-latency
+  namespace: measurement
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tcp-latency
+  serviceName: tcp-latency-svc
+  template:
+    metadata:
+      labels:
+        app: tcp-latency
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - tcp-latency
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: tcp-latency
+        image: usman476/tcp-latency:latest
+        command: [ "python3" ]
+        args: [ "tcp-latency.py" ]
+        imagePullPolicy: "IfNotPresent"
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+        env:
+        - name: HOSTIP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+
+
+
+
+#---
+#apiVersion: apps/v1
+#kind: DaemonSet
+#metadata:
+#  name: tcp-latency
+#  namespace: measurement
+#  labels:
+#    k8s-app: tcp-latency
+#spec:
+#  selector:
+#    matchLabels:
+#      name: tcp-latency
+#  template:
+#    metadata:
+#      labels:
+#        name: tcp-latency
+#    spec:
+#      containers:
+#      - name: tcp-latency
+#        image: usman476/tcp-latency:latest
+#        command: [ "python3" ]
+#        args: [ "tcp-latency.py" ]
+#        imagePullPolicy: "IfNotPresent"
+#        resources:
+#          limits:
+#            memory: 100Mi
+#          requests:
+#            cpu: 100m
+#            memory: 100Mi
+#        securityContext:
+#          runAsUser: 1001
+#          runAsGroup: 1001
+#      terminationGracePeriodSeconds: 10
