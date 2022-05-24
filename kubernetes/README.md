@@ -1,4 +1,4 @@
-# Create a Kubernetes Cluster Using Kubeadm on Ubuntu 20.04
+# Create a Kubernetes Cluster Using Kubeadm on Ubuntu 22.04
 In this guide, we will set up a Kubernetes cluster from scratch using Ansible and Kubeadm, and then deploy a containerized Nginx application to it.
 
 ## Introduction
@@ -12,45 +12,45 @@ Our cluster will include the following physical/Virtual resources:
     The control plane node (a node in Kubernetes refers to a server) is responsible for managing the state of the cluster. 
 
 
-- **Two worker nodes**
+- **Two or more worker nodes**
 
     Worker nodes are the servers where our workloads (i.e., containerized applications and services) will run. A worker will continue to run your workload once they’re assigned to it, even if the control plane goes down once scheduling is complete. We can increase the cluster’s capacity by adding workers.
 
 ## Prerequisites
 - An SSH key pair on our local Linux/macOS/BSD machine. 
-- Three servers running Ubuntu 20.04 with at least 2GB RAM and 2 vCPUs each. We should be able to SSH into each server as the root user with your SSH key pair.
+- Three servers running Ubuntu 22.04 with at least 2GB RAM and 2 vCPUs each. We should be able to SSH into each server as the root user with your SSH key pair.
 - Ansible should be installed on our local machine. 
 
 ## Installation Steps
-**Step 1** — Set up the Ansible Inventory File
+**Step 1** — Update the Ansible Inventory File
 
-**Step 2** — Creating a on-Root User on All Remote Servers
+**Step 2** — Create a non-Root User on All Remote Servers (in our case, we already have a non-root user, so skipping this step).
 ```bash
 ansible-playbook -i hosts create_user.yaml
 ```
 
-**Step 3** — Installing Kubernetes’ Dependencies
+**Step 3** — Install Kubernete's Dependencies on All Nodes in the Cluster (Containerd is target Runtime for this deployment).
 ```bash
-ansible-playbook -i hosts install_dependencies.yaml
+ansible-playbook -i hosts containerd/install_dependencies_all_nodes.yaml
 ```
 
-**Step 4** — Setting Up the Control Plane Node
+**Step 4** — Set Up the Master (Control Plane) Node
 ```bash
-ansible-playbook -i hosts setup_control-plane.yaml
+ansible-playbook -i hosts containerd/provision_master_node.yaml
 ```
 
-**Step 5** — Setting Up the Worker Nodes
+**Step 5** — Set Up the Worker Nodes
 ```bash
-ansible-playbook -i hosts setup_worker_nodes.yaml
+ansible-playbook -i hosts provision_worker_nodes.yaml
 ```
 
-**Step 6** — Verifying the Cluster
+**Step 6** — Verify the Cluster
 ```bash
 ssh aida@control_plane_ip
 ```
 Then execute the following command to get the status of the cluster:
 ```bash
-kubectl get nodes 
+kubectl get nodes -o wide
 ```
 
 **Step 7** — Running an Application on the Cluster
