@@ -2,8 +2,9 @@
 - hosts: all
   become: yes
   tasks:
-    #- name: Set NTP true
-    #  command: timedatectl set-ntp true
+    - name: Upgrade the OS (apt-get dist-upgrade)
+      apt:
+        upgrade: dist
 
     - name: Install the latest version of packages
       ansible.builtin.package:
@@ -76,29 +77,6 @@
         name: br_netfilter
         state: present
 
-    #- name: Set sysctl
-    #ansible.posix.sysctl:
-    #name: net.bridge.bridge-nf-call-ip6tables
-    #value: '1'
-    #state: present
-    #sysctl_set: yes
-    #- name: Set sysctl
-    #ansible.posix.sysctl:
-    #name: net.bridge.bridge-nf-call-iptables = 1
-    #value: '1'
-    #state: present
-    #sysctl_set: yes
-    #sysctl_file: /etc/sysctl.conf
-
-    #   - name: Set sysctl
-    #     ansible.posix.sysctl:
-    #       name: net.ipv4.ip_forward
-    #       value: '1'
-    #       sysctl_set: yes
-    #       #     state: present
-    #       sysctl_file: /etc/sysctl.conf
-    #       reload: yes
-
     - name: Sysctl config for kubernetes.conf. Create file if not exists
       blockinfile:
         path: /etc/sysctl.d/kubernetes.conf
@@ -143,11 +121,6 @@
 
     - name: containerd default configuration
       ansible.builtin.shell: containerd config default >> /etc/containerd/config.toml
-      #register: containerd_conf
-      #ignore_errors: True
-
-    #- name: Copy containerd default configuration
-    #  local_action: copy content={{ containerd_conf }} dest=/etc/containerd/config.toml
 
     - name: Configure the systemd cgroup driver
       lineinfile:
@@ -155,6 +128,86 @@
         regexp: '^SystemdCgroup = true$'
         insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
         line: '            SystemdCgroup = true'
+
+    - name: Create crictl config file.
+      blockinfile:
+        path: /etc/crictl.yaml
+        block: |
+          runtime-endpoint: unix:///run/containerd/containerd.sock
+          image-endpoint: unix:///run/containerd/containerd.sock
+          timeout: 2
+          debug: false
+        create: true
+
+    - name: Restart containerd service
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: containerd
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+- hosts: worker1
+  become: yes
+  tasks:
+    - name: Install Kata-container from snap
+      command: snap install kata-containers --stable --classic
+
+    - name: Create kata-containers config directory
+      file:
+        path: /etc/kata-containers
+        state: directory
+
+    - name: Install Kata-container from snap
+      shell: | 
+        cp /snap/kata-containers/current/usr/share/defaults/kata-containers/configuration.toml /etc/kata-containers/
+        ln -sf /snap/kata-containers/current/usr/bin/containerd-shim-kata-v2 /usr/local/bin/containerd-shim-kata-v2
+
+    - name: Persistent loading of modules.
+      blockinfile:
+        path: /etc/modules-load.d/kata-container.conf
+        block: |
+          vhost-vsock
+          vhost-net
+        create: true
+
+    - name: Add the vhost-net module
+      community.general.modprobe:
+        name: vhost-net
+        state: present
+
+    - name: Add the vhost-vsock module
+      community.general.modprobe:
+        name: vhost-vsock
+        state: present
+
+    - name: Configure the systemd cgroup driver
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^runtime_type = "io.containerd.kata.v2"$'
+        insertafter: '^\s*SystemdCgroup = true\s*$'
+        line: '{{ item }}'
+      with_items:
+        - '            ConfigPath = "/etc/kata-containers/configuration.toml"'
+        - '          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.kata.options]'
+        - '          SandboxCgroupOnly=false'
+        - '          privileged_without_host_devices = true'
+        - '          runtime_type = "io.containerd.kata.v2"'
+        - '        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.kata]'
+
+    - name: Create cgroup mount directory
+      file:
+        path: /sys/fs/cgroup/systemd
+        state: directory
+
+    - name: Enable cgroup mount to avoid cgroup mounting error
+      command: mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd
 
     - name: Restart containerd service
       ansible.builtin.systemd:
