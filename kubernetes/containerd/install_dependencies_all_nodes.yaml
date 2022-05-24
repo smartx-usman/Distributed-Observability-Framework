@@ -1,0 +1,175 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    #- name: Set NTP true
+    #  command: timedatectl set-ntp true
+
+    - name: Install the latest version of packages
+      ansible.builtin.package:
+        name:
+          - curl
+          - gnupg2
+          - software-properties-common
+          - apt-transport-https
+          - ca-certificates
+          - systemd-timesyncd
+          - linuxptp
+        state: latest
+
+    - name: Setup timezone
+      command: timedatectl set-timezone Europe/Stockholm
+
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: "{{ item }}"
+        fstype: swap
+        state: absent
+      #  src: none
+      with_items:
+        - swap
+        - none
+
+    - name: Disable swap
+      command: swapoff -a
+      #when: ansible_swaptotal_mb > 0
+
+    - name: Add Kubernetes apt-key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes' apt repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes'
+
+    - name: Add Docker apt-key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker's APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        state: present
+        filename: 'docker'
+
+    - name: Install kubeadm, kubelet and containerd.io
+      ansible.builtin.package:
+        name:
+          - kubelet
+          - kubeadm
+          - containerd.io
+
+    - name: Hold tools
+      command: apt-mark hold kubelet kubeadm
+
+    - name: Add the overlay module
+      community.general.modprobe:
+        name: overlay
+        state: present
+
+    - name: Add the br_netfilter module
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
+
+    #- name: Set sysctl
+    #ansible.posix.sysctl:
+    #name: net.bridge.bridge-nf-call-ip6tables
+    #value: '1'
+    #state: present
+    #sysctl_set: yes
+    #- name: Set sysctl
+    #ansible.posix.sysctl:
+    #name: net.bridge.bridge-nf-call-iptables = 1
+    #value: '1'
+    #state: present
+    #sysctl_set: yes
+    #sysctl_file: /etc/sysctl.conf
+
+    #   - name: Set sysctl
+    #     ansible.posix.sysctl:
+    #       name: net.ipv4.ip_forward
+    #       value: '1'
+    #       sysctl_set: yes
+    #       #     state: present
+    #       sysctl_file: /etc/sysctl.conf
+    #       reload: yes
+
+    - name: Sysctl config for kubernetes.conf. Create file if not exists
+      blockinfile:
+        path: /etc/sysctl.d/kubernetes.conf
+        block: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+        create: true
+
+    - name: Reload sysctl
+      shell: sysctl --system
+
+    - name: Sysctl config for 99-kubernetes-cri.conf. Create file if not exists
+      blockinfile:
+        path: /etc/sysctl.d/99-kubernetes-cri.conf
+        block: |
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+        create: true
+
+    - name: Reload sysctl
+      shell: sysctl --system
+
+    - name: Persistent loading of modules. Create file if not exists
+      blockinfile:
+        path: /etc/modules-load.d/containerd.conf
+        block: |
+          overlay
+          br_netfilter
+        create: true
+
+    - name: Creates containerd config directory
+      file:
+        path: /etc/containerd
+        state: directory
+
+    - name: Remove file (delete file)
+      ansible.builtin.file:
+        path: /etc/containerd/config.toml
+        state: absent
+
+    - name: containerd default configuration
+      ansible.builtin.shell: containerd config default >> /etc/containerd/config.toml
+      #register: containerd_conf
+      #ignore_errors: True
+
+    #- name: Copy containerd default configuration
+    #  local_action: copy content={{ containerd_conf }} dest=/etc/containerd/config.toml
+
+    - name: Configure the systemd cgroup driver
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^SystemdCgroup = true$'
+        insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
+        line: '            SystemdCgroup = true'
+
+    - name: Restart containerd service
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: containerd
+
+- hosts: master
+  become: yes
+  tasks:
+    - name: install kubectl
+      apt:
+        name: kubectl
+        state: present
+        force: yes
+
+    - name: Hold tools
+      command: apt-mark hold kubectl
