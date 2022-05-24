@@ -1,9 +1,10 @@
-[control_plane]
-control1 ansible_host=control_plane_ip ansible_user=root
+[master]
+master1 ansible_host=master_node_ip ansible_user=aida
 
 [workers]
-worker1 ansible_host=worker_1_ip ansible_user=root
-worker2 ansible_host=worker_2_ip ansible_user=root
+worker1 ansible_host=worker_1_ip ansible_user=aida
+worker2 ansible_host=worker_2_ip ansible_user=aida
+worker3 ansible_host=worker_3_ip ansible_user=aida
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
