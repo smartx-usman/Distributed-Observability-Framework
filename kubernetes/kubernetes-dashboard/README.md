@@ -14,7 +14,7 @@ sudo chmod 777 -R /certs
 ### Add Certificates to the Worker Nodes
 Make sure to upload these certificates to the worker nodes (otherwise pods will not be created due to volume error). E.g.
 ```shell
-sudo mkdir /certs    
+sudo mkdir /certs #(need to be execute on each worker node)   
 scp -r /certs/* user@x.x.x.x:/certs
 ```
 
