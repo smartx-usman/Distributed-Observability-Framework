@@ -189,7 +189,7 @@ spec:
     spec:
       containers:
         - name: kubernetes-dashboard
-          image: kubernetesui/dashboard:v2.3.1
+          image: kubernetesui/dashboard:v2.5.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8443
@@ -198,7 +198,7 @@ spec:
             - --auto-generate-certificates=false
             - --namespace=kubernetes-dashboard
             - --tls-cert-file=dashboard.crt
-            - --tls-key-file=dashboard.key  
+            - --tls-key-file=dashboard.key
             # Uncomment the following line to manually specify Kubernetes API server Host
             # If not specified, Dashboard will attempt to auto discover the API server and connect
             # to it. Uncomment only if the default does not work.
@@ -280,7 +280,7 @@ spec:
     spec:
       containers:
         - name: dashboard-metrics-scraper
-          image: kubernetesui/metrics-scraper:v1.0.6
+          image: kubernetesui/metrics-scraper:v1.0.7
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000

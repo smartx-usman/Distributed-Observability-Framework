@@ -11,6 +11,13 @@ openssl x509 -req -sha256 -days 3650 -in /certs/dashboard.csr -signkey /certs/da
 sudo chmod 777 -R /certs
 ```
 
+### Add Certificates to the Worker Nodes
+Make sure to upload these certificates to the worker nodes (otherwise pods will not be created due to volume error). E.g.
+```shell
+sudo mkdir /certs    
+scp -r /certs/* user@x.x.x.x:/certs
+```
+
 ### Deploy Kubernetes Dashboard 
 ```shell
 kubectl apply -f kubernetes-dashboard/kubernetes-dashboard.yml
