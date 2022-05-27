@@ -1,0 +1,12 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: kata-ubuntu
+spec:
+  containers:
+    - name: kata-ubuntu
+      image: ubuntu:latest
+      command: ["/bin/bash", "-ec", "while :; do echo '.'; sleep 5 ; done"]
+  restartPolicy: Never
+  nodeName: worker1
+  runtimeClassName: kata-containers
