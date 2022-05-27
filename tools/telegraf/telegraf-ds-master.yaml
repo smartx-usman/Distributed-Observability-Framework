@@ -23,7 +23,7 @@ data:
      omit_hostname= false
 
    [[outputs.kafka]]
-     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.monitoring.svc.cluster.local:9092"]
+     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.observability.svc.cluster.local:9092"]
      topic = "telegraf"
      [outputs.kafka.topic_suffix]
        method = "measurement"
@@ -82,7 +82,7 @@ spec:
       tolerations:
       - operator: "Exists"
       nodeSelector:
-        kubernetes.io/hostname: muhammad-vm-1
+        kubernetes.io/hostname: master
       containers:
       - name: telegraf
         image: telegraf:latest
