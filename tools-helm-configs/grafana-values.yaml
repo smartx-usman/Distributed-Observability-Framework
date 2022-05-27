@@ -230,7 +230,7 @@ resources: {}
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 #
 nodeSelector:
-  kubernetes.io/hostname: observability-vm-1
+  kubernetes.io/hostname: observability1
 
 ## Tolerations for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
