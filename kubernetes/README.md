@@ -53,8 +53,13 @@ Then execute the following command to get the status of the cluster:
 kubectl get nodes -o wide
 ```
 
-**Step 7** — Running an Application on the Cluster
+**Step 7a** — Running an application on the cluster with runC
 ```bash
 kubectl create deployment nginx --image=nginx
 ```
 
+**Step 7b** — Running an application on the cluster with Kata
+```bash
+kubectl apply -f containerd/kata-runtime-class.yaml
+kubectl apply -f containerd/example-kata-pod.yaml
+```
