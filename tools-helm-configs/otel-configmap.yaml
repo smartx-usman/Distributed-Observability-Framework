@@ -12,7 +12,7 @@ data:
        endpoint: 0.0.0.0:9411
    exporters:
      otlp:
-       endpoint: tempo.monitoring.svc.cluster.local:55680
+       endpoint: tempo.observability.svc.cluster.local:55680
        insecure: true
    service:
      pipelines:
