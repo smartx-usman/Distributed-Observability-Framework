@@ -3,18 +3,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kc-nm-deployment
-  namespace: monitoring
+  namespace: observability
   labels:
-    app: kafka-consumer-monitoring
+    app: kafka-consumer-observability
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka-consumer-monitoring
+      app: kafka-consumer-observability
   template:
     metadata:
       labels:
-        app: kafka-consumer-monitoring
+        app: kafka-consumer-observability
     spec:
       containers:
       - name: kc-nm-container
@@ -29,4 +29,4 @@ spec:
             cpu: "500m"
       restartPolicy: Always
       nodeSelector:
-        kubernetes.io/hostname: observability-vm-1
+        kubernetes.io/hostname: observability1
