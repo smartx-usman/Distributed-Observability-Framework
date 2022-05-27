@@ -164,7 +164,7 @@
         path: /etc/kata-containers
         state: directory
 
-    - name: Install Kata-container from snap
+    - name: Copy Kata-container config file and create symlink
       shell: | 
         cp /snap/kata-containers/current/usr/share/defaults/kata-containers/configuration.toml /etc/kata-containers/
         ln -sf /snap/kata-containers/current/usr/bin/containerd-shim-kata-v2 /usr/local/bin/containerd-shim-kata-v2

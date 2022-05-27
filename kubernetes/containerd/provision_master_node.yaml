@@ -2,7 +2,7 @@
 - hosts: master
   become: yes
   tasks:
-    - name: Initialize the cluster
+    - name: Fetch the required images for initating the cluster
       shell: kubeadm config images pull --cri-socket unix:///run/containerd/containerd.sock
 
     - name: Initialize the cluster
