@@ -70,6 +70,11 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm upgrade --install -n observability prometheus -f tools-helm-configs/prometheus-values.yaml prometheus-community/prometheus
 ```
 
+### Install Promtail via Helm
+```shell
+helm upgrade --install promtail -n=measurement -f tools-helm-configs/promtail-values.yaml grafana/promtail
+```
+
 ### Install Telegraf via Kubectl
 ```shell
 kubectl apply -f tools/telegraf/telegraf-serviceaccount.yaml
