@@ -177,7 +177,7 @@ alertmanager:
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector:
-    kubernetes.io/hostname: observability-vm-1
+    kubernetes.io/hostname: observability1
 
   ## Pod affinity
   ##
@@ -394,6 +394,8 @@ configmapReload:
       tag: v0.5.0
       pullPolicy: IfNotPresent
 
+    # containerPort: 9533
+
     ## Additional configmap-reload container arguments
     ##
     extraArgs: {}
@@ -431,6 +433,8 @@ configmapReload:
       repository: jimmidyson/configmap-reload
       tag: v0.5.0
       pullPolicy: IfNotPresent
+
+    # containerPort: 9533
 
     ## Additional configmap-reload container arguments
     ##
@@ -579,7 +583,9 @@ nodeExporter:
     # requests:
     #   cpu: 100m
     #   memory: 30Mi
-
+  container:
+    securityContext:
+      allowPrivilegeEscalation: false
   # Custom DNS configuration to be added to node-exporter pods
   dnsConfig: {}
     # nameservers:
@@ -665,7 +671,7 @@ server:
   ##
   image:
     repository: quay.io/prometheus/prometheus
-    tag: v2.31.1
+    tag: v2.34.0
     pullPolicy: IfNotPresent
 
   ## prometheus server priorityClassName
@@ -865,8 +871,7 @@ server:
   ## Node labels for Prometheus server pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  nodeSelector:
-    kubernetes.io/hostname: observability-vm-1
+  nodeSelector: {}
 
   ## Pod affinity
   ##
@@ -1079,6 +1084,10 @@ server:
     fsGroup: 65534
 
   service:
+    ## If false, no Service will be created for the Prometheus server
+    ##
+    enabled: true
+
     annotations: {}
     labels: {}
     clusterIP: ""
@@ -1204,7 +1213,7 @@ pushgateway:
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector:
-    kubernetes.io/hostname: observability-vm-1
+    kubernetes.io/hostname: observability1
 
   ## Annotations to be added to pushgateway pods
   ##
@@ -1429,36 +1438,11 @@ serverFiles:
       - /etc/config/alerts
 
     scrape_configs:
-      - job_name: prometheus
-        static_configs:
-          - targets:
-            - localhost:9090
-
-      - job_name: 'pushgateway'
-        honor_labels: true
-        scrapte_interval: 10s
-        static_configs:
-          - targets: [ 'localhost:9091' ]
-
       - job_name: 'telegraf'
-        scrape_interval: 10s
+        scrape_interval: 1s
         static_configs:
-          - targets: [ '10.244.0.18:9126', '10.244.1.238:9126', '10.244.2.77:9126', '10.244.3.115:9126']
+          - targets: [ '10.244.1.8:9126', '10.244.3.3:9126', '10.244.2.5:9126', '10.244.0.6:9126' ]
 
-      # A scrape configuration for running Prometheus on a Kubernetes cluster.
-      # This uses separate scrape configs for cluster components (i.e. API server, node)
-      # and services to allow each to use different authentication configs.
-      #
-      # Kubernetes labels will be added as Prometheus labels on metrics via the
-      # `labelmap` relabeling action.
-
-      # Scrape config for API servers.
-      #
-      # Kubernetes exposes API servers as endpoints to the default/kubernetes
-      # service so this uses `endpoints` role and uses relabelling to only keep
-      # the endpoints associated with the default/kubernetes service using the
-      # default named port `https`. This works for single API server deployments as
-      # well as HA API server deployments.
 
 # adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
