@@ -156,6 +156,15 @@
 - hosts: worker1
   become: yes
   tasks:
+    - name: Set sysctl
+      ansible.posix.sysctl:
+        name: kernel.sched_rt_runtime_us
+        value: '-1'
+        sysctl_set: yes
+        #     state: present
+        sysctl_file: /etc/sysctl.conf
+        reload: yes
+
     - name: Install Kata-container from snap
       command: snap install kata-containers --stable --classic
 
@@ -165,7 +174,7 @@
         state: directory
 
     - name: Copy Kata-container config file and create symlink
-      shell: | 
+      shell: |
         cp /snap/kata-containers/current/usr/share/defaults/kata-containers/configuration.toml /etc/kata-containers/
         ln -sf /snap/kata-containers/current/usr/bin/containerd-shim-kata-v2 /usr/local/bin/containerd-shim-kata-v2
 
