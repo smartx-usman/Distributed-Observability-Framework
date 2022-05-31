@@ -8,12 +8,12 @@ metadata:
 data:
  telegraf.conf: |+
    [agent]
-     interval= "10s"
+     interval= "1s"
      round_interval= true
      metric_batch_size= 1000
      metric_buffer_limit= 10000
      collection_jitter= "0s"
-     flush_interval= "10s"
+     flush_interval= "1s"
      flush_jitter= "0s"
      precision= ""
      debug= false
@@ -46,14 +46,7 @@ data:
    [[inputs.net]]
      interfaces= ["eth*", "ens*"]
      ignore_protocol_stats= true
-   [[inputs.swap]]
    [[inputs.system]]
-   [[inputs.docker]]
-     endpoint = "unix:///var/run/docker.sock"
-     perdevice = true
-     total = true
-     perdevice_include = ["cpu", "blkio", "network"]
-     total_include = ["cpu", "blkio", "network"]
    [[inputs.kube_inventory]]
      url = "https://$HOSTIP:6443"
      bearer_token_string = "$TELEGRAF_TOKEN"
@@ -90,13 +83,10 @@ spec:
         #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
         resources:
           limits:
-            memory: 300Mi
+            memory: 200Mi
           requests:
-            cpu: 300m
-            memory: 300Mi
-        securityContext:
-          runAsUser: 1001
-          runAsGroup: 1001
+            cpu: 200m
+            memory: 100Mi
         env:
         - name: HOSTIP
           valueFrom:
