@@ -15,8 +15,9 @@
 - hosts: workers
   become: yes
   tasks:
+    - name: Show join command
+      debug:
+        msg: "{{ hostvars['master1'].join_command }}"
+
     - name: Join cluster
-      shell: "{{ hostvars['master1'].join_command }} >> node_joined.txt"
-      args:
-        chdir: $HOME
-        creates: node_joined.txt
+      shell: "{{ hostvars['master1'].join_command }}"
