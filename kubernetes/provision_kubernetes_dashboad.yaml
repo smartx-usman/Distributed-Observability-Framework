@@ -44,7 +44,7 @@
     - name: Create certificate file
       shell: openssl x509 -req -sha256 -days 3650 -in /certs/dashboard.csr -signkey /certs/dashboard.key -out /certs/dashboard.crt -extensions req_ext -extfile san.cnf
 
-    - name: Creates certs config directory
+    - name: Changes certs config directory permissions
       file:
         path: /certs
         state: directory

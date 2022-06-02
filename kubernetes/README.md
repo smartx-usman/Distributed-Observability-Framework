@@ -29,7 +29,7 @@ Our cluster will include the following physical/Virtual resources:
 ansible-playbook -i hosts create_user.yaml
 ```
 
-**Step 3** — Install Kubernete's Dependencies on All Nodes in the Cluster (Containerd is target Runtime for this deployment).
+**Step 3** — Install Kubernetes Dependencies on All Nodes in the Cluster (Containerd is target Runtime for this deployment).
 ```bash
 ansible-playbook -i hosts containerd/install_dependencies_all_nodes.yaml
 ```

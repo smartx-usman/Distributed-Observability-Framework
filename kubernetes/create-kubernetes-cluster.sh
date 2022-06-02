@@ -55,20 +55,3 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 
 ##Just on worker node
 #kubeadm join
-
-#Archive
-#Setting up Kubernetes Cluster (Do it on every node)
-sudo snap install docker
-sudo groupadd docker
-sudo usermod -aG docker $USER
-newgrp docker
-sudo snap disable docker
-sudo snap enable docker
-sudo snap install microk8s --classic --channel=1.18/stable
-sudo snap refresh microk8s --classic --channel=1.19/stable
-sudo snap refresh microk8s --classic --channel=1.20/stable
-sudo usermod -a -G microk8s $USER
-sudo chown -f -R $USER ~/.kube
-su - $USER
-microk8s add-node #On Kubernetes Master
-microk8s join 172.16.23.1:25000/5da90d3a4f4d023948cb9545af97cd1c #On Kubernetes Workers
