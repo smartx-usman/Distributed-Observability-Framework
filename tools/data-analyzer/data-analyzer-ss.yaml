@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegraf-data-analyzer-svc
+  namespace: measurement
+  labels:
+    app: telegraf-data-analyzer-svc
+spec:
+  ports:
+  - port: 65432
+    name: socket
+  clusterIP: None
+  selector:
+    app: telegraf-data-analyzer
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: telegraf-data-analyzer
+  name: telegraf-data-analyzer
+  namespace: measurement
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: telegraf-data-analyzer
+  serviceName: telegraf-data-analyzer-svc
+  template:
+    metadata:
+      labels:
+        app: telegraf-data-analyzer
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - tcp-socket
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: telegraf-data-analyzer
+        image: usman476/telegraf-data-analyzer:latest
+        command: [ "python3" ]
+        args: [ "data-analyzer.py" ]
+        imagePullPolicy: "IfNotPresent"
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+        env:
+        - name: HOSTIP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
