@@ -18,9 +18,6 @@
         group: aida
         mode: 0777
       with_fileglob:
-        - kubernetes-dashboard/kubernetes-dashboard.yml
-        - kubernetes-dashboard/serviceaccount.yml
-        - kubernetes-dashboard/rbac.yml
         - kubernetes-dashboard/san.cnf
 
     - name: Set join command
@@ -51,6 +48,9 @@
         mode: '0777'
         recurse: yes
 
+- hosts: master
+  become: yes
+  tasks:
     - name: Create Kubernetes resources
       shell: |    
         kubectl apply -f kubernetes-dashboard/kubernetes-dashboard.yml
