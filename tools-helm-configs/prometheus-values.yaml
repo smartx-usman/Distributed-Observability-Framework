@@ -1439,9 +1439,18 @@ serverFiles:
 
     scrape_configs:
       - job_name: 'telegraf'
-        scrape_interval: 1s
-        static_configs:
-          - targets: [ '10.244.1.8:9126', '10.244.3.3:9126', '10.244.2.5:9126', '10.244.0.6:9126' ]
+        scrape_interval: 10s
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_endpoints_name ]
+            regex: 'telegraf-exporter'
+            action: keep
+
+#      - job_name: 'telegraf'
+#        scrape_interval: 1s
+#        static_configs:
+#          - targets: [ '10.244.1.8:9126', '10.244.3.3:9126', '10.244.2.5:9126', '10.244.0.6:9126' ]
 
 
 # adds additional scrape configs to prometheus.yml
