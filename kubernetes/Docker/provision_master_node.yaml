@@ -1,0 +1,27 @@
+---
+- hosts: master
+  become: yes
+  tasks:
+    - name: initialize the cluster
+      shell: kubeadm config images pull #--cri-socket unix:///run/containerd/containerd.sock
+
+    - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --cri-socket unix:///run/containerd/containerd.sock >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: aida
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/aida/.kube/config
+        remote_src: yes
+        owner: aida
