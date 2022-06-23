@@ -6,6 +6,7 @@ RUN mkdir $Pathdir
 RUN mkdir /data
 
 COPY es-data-querier.py $Pathdir
+COPY prometheus_data_querier.py $Pathdir
 
 #COPY requirements.txt .
 
