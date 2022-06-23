@@ -151,7 +151,7 @@ spec:
         - name: edge-metrics-analyzer
           image: usman476/telegraf-data-analyzer:latest
           command: [ "python3" ]
-          args: [ "data-analyzer.py" ]
+          args: [ "data-analyzer.py", "-n", "uc1", "-a", "app-1-pod", "-m", "memory_usage_bytes", "-v", "50000000" ]
           imagePullPolicy: "IfNotPresent"
           resources:
             limits:
