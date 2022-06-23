@@ -6,51 +6,84 @@ metadata:
   labels:
     k8s-app: telegraf
 data:
- telegraf.conf: |+
-   [agent]
-     interval= "1s"
-     round_interval= true
-     metric_batch_size= 1000
-     metric_buffer_limit= 10000
-     collection_jitter= "0s"
-     flush_interval= "1s"
-     flush_jitter= "0s"
-     precision= ""
-     debug= false
-     quiet= false
-     logfile= ""
-     hostname= "$HOSTNAME"
-     omit_hostname= false
+  telegraf.conf: |+
+    [agent]
+      interval= "10s"
+      round_interval= true
+      metric_batch_size= 1000
+      metric_buffer_limit= 10000
+      collection_jitter= "0s"
+      flush_interval= "10s"
+      flush_jitter= "0s"
+      precision= ""
+      debug= false
+      quiet= false
+      logfile= ""
+      hostname= "$HOSTNAME"
+      omit_hostname= false
+    
+    [[outputs.kafka]]
+      brokers = ["bitnami-kafka-0.bitnami-kafka-headless.observability.svc.cluster.local:9092"]
+      topic = "telegraf"
+      [outputs.kafka.topic_suffix]
+        method = "measurement"
+        separator = "_"
+    
+    [[outputs.prometheus_client]]
+          ## Address to listen on.
+          listen = ":9126"
+  
+    [[outputs.socket_writer]]
+      namepass = ["kubernetes_pod_container"]
+      ## URL to connect to
+      keep_alive_period = "5m"
+      address = "tcp://localhost:65432"
+                   
+    [[inputs.cpu]]
+      percpu = true
+      totalcpu = true
+      collect_cpu_time = false
+      report_active = false
+    [[inputs.disk]]
+      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
+    [[inputs.diskio]]
+      devices = ["sda", "sdb", "sdc"]
+    [[inputs.mem]]
+    [[inputs.net]]
+      interfaces= ["eth*", "ens*"]
+      ignore_protocol_stats= true
+    [[inputs.system]]
+    [[inputs.kubernetes]]
+      url = "https://$HOSTIP:10250"
+      bearer_token_string = "$TELEGRAF_TOKEN"
+      insecure_skip_verify = true
+        
+    [[processors.starlark]]
+      order = 1
+      namepass = ["kubernetes_pod_container"]
+    
+      ##[[processors.starlark.tagpass]]
+      ##  pod_name = ["kc-nm-deployment-*"]   
+      
+      ##  Measurement = "kubernetes_pod_container_memory_working_set_bytes"
+      ## The Starlark source can be set as a string in this configuration file, or
+      ## by referencing a file containing the script.  Only one source or script
+      ## should be set at once.
+    
+       ## Source of the Starlark script.
+       source = '''
+    def apply(metric):
+      if metric.fields["memory_usage_bytes"] >= 10000000:
+          # removing all fields deletes a metric
+          print("hello", "world", sep=", ")
+          print('Suspicious value')
+      return metric 
+    '''
 
-   [[outputs.kafka]]
-     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.observability.svc.cluster.local:9092"]
-     topic = "telegraf"
-     [outputs.kafka.topic_suffix]
-       method = "measurement"
-       separator = "_"
-
-   [[outputs.prometheus_client]]
-         ## Address to listen on.
-         listen = ":9126"
-
-   [[inputs.cpu]]
-     percpu = true
-     totalcpu = true
-     collect_cpu_time = false
-     report_active = false
-   [[inputs.disk]]
-     ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
-   [[inputs.diskio]]
-     devices = ["sda", "sdb", "sdc"]
-   [[inputs.mem]]
-   [[inputs.net]]
-     interfaces= ["eth*", "ens*"]
-     ignore_protocol_stats= true
-   [[inputs.system]]
-   [[inputs.kubernetes]]
-     url = "https://$HOSTIP:10250"
-     bearer_token_string = "$TELEGRAF_TOKEN"
-     insecure_skip_verify = true
+#    [[aggregators.minmax]]
+#      period = "10s"        # send & clear the aggregate every 30s.
+#      drop_original = false  # drop the original metrics.
+#      namepass = ["kubernetes"]   # only "pass" swap metrics through the aggregator.
 
 ---
 # Section: Daemonset
@@ -70,63 +103,88 @@ spec:
       labels:
         name: telegraf
     spec:
+      serviceAccountName: telegraf
       containers:
-      - name: telegraf
-        image: telegraf:latest
-        #args:
-        #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
-        resources:
-          limits:
-            memory: 200Mi
-          requests:
-            cpu: 200m
-            memory: 100Mi
-        env:
-        - name: HOSTIP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
-        - name: HOSTNAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        - name: "HOST_PROC"
-          value: "/rootfs/proc"
-        - name: "HOST_SYS"
-          value: "/rootfs/sys"
-        - name: "TELEGRAF_TOKEN"
-          valueFrom:
-            secretKeyRef:
-              name: telegraf-measurement-secret
-              key: token
-        volumeMounts:
-        - name: sys
-          mountPath: /rootfs/sys
-          readOnly: true
-        - name: proc
-          mountPath: /rootfs/proc
-          readOnly: true
-        - name: docker-socket
-          mountPath: /var/run/docker.sock
-        - name: utmp
-          mountPath: /var/run/utmp
-          readOnly: true
-        - name: config
-          mountPath: /etc/telegraf
+        - name: telegraf
+          image: telegraf:latest
+          #args:
+          #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 200m
+              memory: 100Mi
+          env:
+            - name: HOSTIP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: "HOST_PROC"
+              value: "/rootfs/proc"
+            - name: "HOST_SYS"
+              value: "/rootfs/sys"
+            - name: "TELEGRAF_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: telegraf-measurement-secret
+                  key: token
+          volumeMounts:
+            - name: sys
+              mountPath: /rootfs/sys
+              readOnly: true
+            - name: proc
+              mountPath: /rootfs/proc
+              readOnly: true
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+            - name: utmp
+              mountPath: /var/run/utmp
+              readOnly: true
+            - name: config
+              mountPath: /etc/telegraf
+
+        - name: edge-metrics-analyzer
+          image: usman476/telegraf-data-analyzer:latest
+          command: [ "python3" ]
+          args: [ "data-analyzer.py" ]
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            limits:
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+          env:
+            - name: HOSTIP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
       terminationGracePeriodSeconds: 10
       volumes:
-      - name: sys
-        hostPath:
-          path: /sys
-      - name: docker-socket
-        hostPath:
-          path: /var/run/docker.sock
-      - name: proc
-        hostPath:
-          path: /proc
-      - name: utmp
-        hostPath:
-          path: /var/run/utmp
-      - name: config
-        configMap:
-          name: telegraf
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: utmp
+          hostPath:
+            path: /var/run/utmp
+        - name: config
+          configMap:
+            name: telegraf
