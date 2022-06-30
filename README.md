@@ -78,7 +78,7 @@ helm upgrade --install promtail -n=measurement -f tools-helm-configs/promtail-va
 ### Install Telegraf via Kubectl
 ```shell
 kubectl apply -f tools/telegraf/telegraf-serviceaccount.yaml
-kubectl apply -n measurement -f tools/telegraf/telegraf-ds.yaml
+kubectl apply -n measurement -f tools/telegraf/telegraf-ds-worker.yaml
 kubectl apply -n measurement -f tools/telegraf/telegraf-ds-master.yaml
 ```
 
