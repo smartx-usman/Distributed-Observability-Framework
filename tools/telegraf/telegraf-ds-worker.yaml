@@ -53,6 +53,10 @@ data:
       interfaces= ["eth*", "ens*"]
       ignore_protocol_stats= true
     [[inputs.system]]
+    [[inputs.temp]]
+    [[inputs.intel_powerstat]]
+      package_metrics = ["current_power_consumption", "current_dram_power_consumption", "thermal_design_power"]
+      cpu_metrics = ["cpu_frequency", "cpu_temperature"]
     [[inputs.kubernetes]]
       url = "https://$HOSTIP:10250"
       bearer_token_string = "$TELEGRAF_TOKEN"
@@ -105,6 +109,30 @@ spec:
     spec:
       serviceAccountName: telegraf
       containers:
+        - name: edge-metrics-analyzer
+          image: usman476/telegraf-data-analyzer:latest
+          command: [ "python3" ]
+          args: [ "data-analyzer.py", "-n", "uc1", "-a", "app-1-pod", "-m", "memory_usage_bytes", "-v", "50000000" ]
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            limits:
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          env:
+            - name: HOSTIP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
         - name: telegraf
           image: telegraf:latest
           #args:
@@ -115,6 +143,9 @@ spec:
             requests:
               cpu: 200m
               memory: 100Mi
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
           env:
             - name: HOSTIP
               valueFrom:
@@ -147,30 +178,6 @@ spec:
               readOnly: true
             - name: config
               mountPath: /etc/telegraf
-
-        - name: edge-metrics-analyzer
-          image: usman476/telegraf-data-analyzer:latest
-          command: [ "python3" ]
-          args: [ "data-analyzer.py", "-n", "uc1", "-a", "app-1-pod", "-m", "memory_usage_bytes", "-v", "50000000" ]
-          imagePullPolicy: "IfNotPresent"
-          resources:
-            limits:
-              memory: 100Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
-          env:
-            - name: HOSTIP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: HOSTNAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
       terminationGracePeriodSeconds: 10
       volumes:
         - name: sys
