@@ -67,6 +67,9 @@
     - name: Hold tools
       command: apt-mark hold kubelet kubeadm
 
+    - name: Grant permissio for Telegraf to get metrics
+      command: chmod -R a+rx /sys/devices/virtual/powercap/intel-rapl/
+
     - name: Add the overlay module
       community.general.modprobe:
         name: overlay
@@ -75,6 +78,21 @@
     - name: Add the br_netfilter module
       community.general.modprobe:
         name: br_netfilter
+        state: present
+
+    - name: Add the rapl module
+      community.general.modprobe:
+        name: rapl
+        state: present
+
+    - name: Add the msr module
+      community.general.modprobe:
+        name: msr
+        state: present
+
+    - name: Add the intel_rapl_common module
+      community.general.modprobe:
+        name: intel_rapl_common
         state: present
 
     - name: Sysctl config for kubernetes.conf. Create file if not exists
@@ -107,6 +125,9 @@
         block: |
           overlay
           br_netfilter
+          rapl
+          msr
+          intel_rapl_common
         create: true
 
     - name: Creates containerd config directory
