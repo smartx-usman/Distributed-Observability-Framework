@@ -12,7 +12,7 @@ ENV FLASK_ENV=development
 ENV FLASK_DEBUG=0
 
 COPY requirements.txt .
-COPY app.py app2.py $Pathdir
+COPY app.py $Pathdir
 
 #RUN apk update && apk add build-essential
 #RUN /usr/local/bin/python3 -m pip install --upgrade pip
