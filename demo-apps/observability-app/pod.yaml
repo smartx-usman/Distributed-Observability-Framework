@@ -1,0 +1,25 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: demo-observability-app
+spec:
+  containers:
+    - name: demo-observability-app
+      image: usman476/demo-observability-app:latest
+      #command: [ "python3" ]
+      #args: [ "app.py" ]
+      command: [ "flask" ]
+      args: [ "run" ]
+      #command: [ "opentelemetry-instrument" ]
+      #args: [ "--traces_exporter", "jaeger_thrift", "flask", "run" ]
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "200m"
+      imagePullPolicy: "Always"
+      #command: ["/bin/bash", "-ec", "while :; do echo '.'; sleep 5 ; done"]
+  restartPolicy: Never
+  nodeName: worker1
