@@ -61,7 +61,7 @@ helm upgrade --install tempo -n=observability -f tools-helm-configs/tempo-values
 ### Install otel collector via Kubectl
 ```shell
 kubectl apply -n observability -f tools-helm-configs/otel-collector.yaml
-kubectl apply -n observability -f tools-helm-configs/otel-configmap.yaml
+#kubectl apply -n observability -f tools-helm-configs/otel-configmap.yaml
 ```
 
 ### Install Prometheus via Helm
@@ -69,6 +69,13 @@ kubectl apply -n observability -f tools-helm-configs/otel-configmap.yaml
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm upgrade --install -n observability prometheus -f tools-helm-configs/prometheus-values.yaml prometheus-community/prometheus
 ```
+
+### Install Jaeger via Helm
+````shell
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm upgrade --install -n observability  jaeger jaegertracing/jaeger
+#kubectl port-forward --namespace observability jaeger-query-74978f8888-qkgcj 16686:16686 --address 0.0.0.0
+````
 
 ### Install Promtail via Helm
 ```shell
