@@ -52,12 +52,24 @@ except Exception as ex:
     logging.info(f'Index already exists. Not creating.')
 
 try:
-    proc = subprocess.Popen(
-        "apache-cassandra-4.0.4/tools/bin/cassandra-stress user profile=stress.yaml ops\(insert=1,books=1\) n=10000  "
-        "-graph file=stress.html -node cassandra.uc1.svc.cluster.local "
-        "-port native=9042 jmx=7199 "
-        "-mode native cql3 user=cassandra password=cassandrapass",
-        stdout=subprocess.PIPE,
-        shell=True)
+    with subprocess.Popen(
+            "apache-cassandra-4.0.4/tools/bin/cassandra-stress user profile=stress.yaml ops\(insert=1,books=1\) n=10000  "
+            "-graph file=stress.html -node cassandra.uc1.svc.cluster.local "
+            "-port native=9042 jmx=7199 "
+            "-mode native cql3 user=cassandra password=cassandrapass",
+            stdout=subprocess.PIPE,
+            shell=True, bufsize=1) as proc:
+        for line in proc.stdout:
+            logging.info(line.decode('UTF-8'))
+        #char = proc.stdout.read(1)
+        #while char != b'':
+        #    logging.info(char.decode('UTF-8'), end='', flush=True)
+        #    char = proc.stdout.read(1)
+
+    # try:
+    #outs, errs = proc.communicate(timeout=5)
+    # except subprocess.TimeoutExpired:
+    #    proc.kill()
+
 except Exception as ex:
     logging.info(f'Run stress test failed. {ex}')
