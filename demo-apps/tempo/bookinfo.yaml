@@ -78,6 +78,8 @@ spec:
         - containerPort: 9080
         securityContext:
           runAsUser: 1000
+      nodeSelector:
+        kubernetes.io/hostname: worker2
 ---
 ##################################################################################################
 # Ratings service
@@ -131,6 +133,8 @@ spec:
         - containerPort: 9080
         securityContext:
           runAsUser: 1000
+      nodeSelector:
+        kubernetes.io/hostname: worker2
 ---
 ##################################################################################################
 # Reviews service
@@ -192,6 +196,8 @@ spec:
           mountPath: /opt/ibm/wlp/output
         securityContext:
           runAsUser: 1000
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       volumes:
       - name: wlp-output
         emptyDir: {}
@@ -234,6 +240,8 @@ spec:
           mountPath: /opt/ibm/wlp/output
         securityContext:
           runAsUser: 1000
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       volumes:
       - name: wlp-output
         emptyDir: {}
@@ -276,6 +284,8 @@ spec:
           mountPath: /opt/ibm/wlp/output
         securityContext:
           runAsUser: 1000
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       volumes:
       - name: wlp-output
         emptyDir: {}
@@ -337,6 +347,8 @@ spec:
           mountPath: /tmp
         securityContext:
           runAsUser: 1000
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       volumes:
       - name: tmp
         emptyDir: {}
