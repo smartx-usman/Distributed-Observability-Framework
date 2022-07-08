@@ -1,7 +1,5 @@
-# jaeger_example.py
 import subprocess
 import time
-# from os import abort
 from random import randint
 
 from flask import Flask, request, jsonify, abort
