@@ -105,6 +105,8 @@ def normal_load():
 @app.errorhandler(500)
 def server_error(error):
     return jsonify(success=False, message=error.description), 500
+
+#app.run((host="0.0.0.0")
 # if __name__ == "__main__":
 #    from waitress import serve
 #    serve(app, host="0.0.0.0", port=5000)
