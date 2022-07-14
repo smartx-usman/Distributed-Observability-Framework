@@ -2,8 +2,11 @@ import logging
 import subprocess
 import time
 from random import randint
+import uuid
 
 import numpy as np
+from cassandra.auth import PlainTextAuthProvider
+from cassandra.cluster import Cluster
 from flask import Flask, request, jsonify, abort
 from flask_mysqldb import MySQL
 from opentelemetry import trace
@@ -119,9 +122,10 @@ def sorting():
         start = int(request.args.get('start'))
         end = int(request.args.get('end'))
         size = int(request.args.get('size'))
+        store = request.args.get('store')
 
         data = generate_data(start=start, end=end, size=size)
-        sort_data(data=data, kind=kind)
+        sort_data(data=data, kind=kind, store=store)
 
         # Now the parent span is the current span again
         end_dt = time.time()
@@ -139,28 +143,32 @@ def generate_data(start, end, size):
         return data
 
 
-def sort_data(data, kind):
+def sort_data(data, kind, store):
     with tracer.start_as_current_span("sort-data-op") as child_span2:
         child_span2.set_attribute('kind', kind)
         sorted_data = np.sort(data, axis=0, kind=kind)
-        save_data(data=sorted_data, kind=kind)
+        if store == 'mysql':
+            save_data_mysql(data=sorted_data, kind=kind)
+        else:
+            save_data_cassandra(data=sorted_data, kind=kind)
 
 
-def save_data(data, kind):
+def save_data_mysql(data, kind):
+    """Save data to MySQL"""
     with tracer.start_as_current_span("save-data-op") as child_span3:
-        # child_span3.set_attribute('start_range', start)
-        # child_span3.set_attribute('end_range', end)
+        child_span3.set_attribute('store', 'MySQL')
+        child_span3.set_attribute('table', 'sorted_data')
         server = request.remote_addr
         client = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ['REMOTE_ADDR'])
-        # client = '127.0.0.1'
+
         # Creating a connection cursor
         cursor = mysql.connection.cursor()
 
         # Executing SQL Statements
 
-        #try:
+        # try:
         #    cursor.execute(''' DROP TABLE sorted_data ''')
-        #except Exception as error:
+        # except Exception as error:
         #    logging.warning("Table does not exist: {}".format(error))
 
         try:
@@ -186,6 +194,71 @@ def save_data(data, kind):
 
         # Closing the cursor
         cursor.close()
+
+
+def save_data_cassandra(data, kind):
+    """Save data to Cassandra"""
+    with tracer.start_as_current_span("save-data-op") as child_span3:
+        table_name = uuid.uuid1().hex
+        logging.info(f'Table name is {table_name}.')
+        child_span3.set_attribute('store', 'Cassandra')
+        child_span3.set_attribute('table', table_name)
+
+        server = request.remote_addr
+        client = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ['REMOTE_ADDR'])
+
+        auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandrapass')
+        cluster = Cluster(['cassandra-0.cassandra-headless.uc1.svc.cluster.local'],
+                          auth_provider=auth_provider,
+                          protocol_version=5)
+
+        try:
+            session = cluster.connect()
+        except Exception as ex:
+            logging.error(f'Problem while connecting to Casandra.')
+
+        try:
+            #session.execute(f'DROP keyspace IF EXISTS flask;')
+            session.execute(
+                "CREATE KEYSPACE flask WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
+            logging.info(f'Created keyspace flask.')
+        except Exception as ex:
+            logging.WARNING(f'Flask keyspace already exists.')
+
+        try:
+            session = cluster.connect('flask')
+            logging.info(f'Connected to keyspace flask.')
+        except Exception as ex:
+            logging.error(f'Problem while connecting to Casandra.')
+
+        create_table_query = f'''
+        CREATE TABLE {table_name} (
+        id int PRIMARY KEY,
+        server text,
+        client text,
+        algorithm text,
+        value int
+        );'''
+
+        try:
+            session.execute(create_table_query)
+            logging.info(f'Create table {table_name} success.')
+        except Exception as ex:
+            logging.info(f'Table already exists. Not creating.')
+
+        try:
+            row_id = 1
+            for value in data:
+                session.execute(
+                    f"""
+                    INSERT INTO {table_name} (id, server, client, algorithm, value) VALUES(%s, %s, %s, %s, %s)
+                    """,
+                    (row_id, server, client, kind, int(value))
+                )
+                row_id = row_id + 1
+        except Exception as error:
+            logging.error("Data is not inserted: {}".format(error))
+            abort(500, description="Data is not inserted")
 
 
 @app.route("/normal_load")
