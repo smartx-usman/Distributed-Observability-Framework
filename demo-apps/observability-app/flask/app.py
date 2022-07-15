@@ -1,8 +1,8 @@
 import logging
 import subprocess
 import time
-from random import randint
 import uuid
+from random import randint
 
 import numpy as np
 from cassandra.auth import PlainTextAuthProvider
@@ -18,7 +18,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 resource = Resource(attributes={
-    SERVICE_NAME: "observability-service"
+    SERVICE_NAME: "observability-microservice"
 })
 
 jaeger_exporter = JaegerExporter(
@@ -83,34 +83,45 @@ def multi_span():
     return 'Finished'
 
 
-@app.route("/matrix-multiplication")
-def matrix_multiply():
-    # Create a new span to track some work
-    start_dt = time.time()
-    start = int(request.args.get('start'))
-    end = int(request.args.get('end'))
-    rows = int(request.args.get('rows'))
-    cols = int(request.args.get('cols'))
-    with tracer.start_as_current_span("matrix-multiply") as parent_span:
-        with tracer.start_as_current_span("matrix-data-op") as child_span1:
-            child_span1.set_attribute('start_range', start)
-            child_span1.set_attribute('end_range', end)
-            matrix_a = np.random.randint(start, end, size=(rows, cols))
-            matrix_b = np.random.randint(start, end, size=(rows, cols))
+@app.route("/matrix")
+def matrix():
+    with tracer.start_as_current_span("matrix") as parent_span:
+        start_dt = time.time()
+        operation = request.args.get('operation')
+        parent_span.set_attribute('operation', operation)
 
-        # Create a nested span to track nested work
-        with tracer.start_as_current_span("matrix-multiply-op") as child_span2:
-            result = np.matmul(matrix_a, matrix_b)
-            child_span2.set_attribute('rows', rows)
-            child_span2.set_attribute('cols', cols)
-            # the nested span is closed when it's out of scope
-
-        # Now the parent span is the current span again
+        if operation == 'multiply':
+            matrix_multiply()
+        elif operation == 'add':
+            logging.ERROR(f'{operation} operation is not yet implemented.')
+            abort(400, description=f"{operation} operation is not yet implemented.")
+        else:
+            abort(400, description=f"{operation} operation is not valid.")
 
         end_dt = time.time()
         latency = end_dt - start_dt
         parent_span.set_attribute('e2e_latency', latency)
-    return 'Finished.'
+
+        return 'Finished execution successfully.'
+
+
+def matrix_multiply():
+    # Create a new span to track some work
+    start = int(request.args.get('start'))
+    end = int(request.args.get('end'))
+    rows = int(request.args.get('rows'))
+    cols = int(request.args.get('cols'))
+
+    with tracer.start_as_current_span("matrix-data-op") as child_span1:
+        child_span1.set_attribute('start_range', start)
+        child_span1.set_attribute('end_range', end)
+        matrix_a = np.random.randint(start, end, size=(rows, cols))
+        matrix_b = np.random.randint(start, end, size=(rows, cols))
+
+    with tracer.start_as_current_span("matrix-multiply-op") as child_span2:
+        result = np.matmul(matrix_a, matrix_b)
+        child_span2.set_attribute('rows', rows)
+        child_span2.set_attribute('cols', cols)
 
 
 @app.route("/sorting")
@@ -199,7 +210,9 @@ def save_data_mysql(data, kind):
 def save_data_cassandra(data, kind):
     """Save data to Cassandra"""
     with tracer.start_as_current_span("save-data-op") as child_span3:
-        table_name = uuid.uuid1().hex
+        table_name = 't'+str(uuid.uuid1().hex)
+        keyspace = request.args.get('database')
+        namespace = request.args.get('namespace')
         logging.info(f'Table name is {table_name}.')
         child_span3.set_attribute('store', 'Cassandra')
         child_span3.set_attribute('table', table_name)
@@ -208,7 +221,7 @@ def save_data_cassandra(data, kind):
         client = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ['REMOTE_ADDR'])
 
         auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandrapass')
-        cluster = Cluster(['cassandra-0.cassandra-headless.uc1.svc.cluster.local'],
+        cluster = Cluster([f'cassandra-0.cassandra-headless.{namespace}.svc.cluster.local'],
                           auth_provider=auth_provider,
                           protocol_version=5)
 
@@ -218,16 +231,15 @@ def save_data_cassandra(data, kind):
             logging.error(f'Problem while connecting to Casandra.')
 
         try:
-            #session.execute(f'DROP keyspace IF EXISTS flask;')
             session.execute(
-                "CREATE KEYSPACE flask WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
-            logging.info(f'Created keyspace flask.')
+                "CREATE KEYSPACE IF NOT EXISTS " + keyspace + " WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
+            logging.info(f'Created keyspace {keyspace}.')
         except Exception as ex:
-            logging.WARNING(f'Flask keyspace already exists.')
+            logging.WARNING(f'{keyspace} keyspace already exists.')
 
         try:
-            session = cluster.connect('flask')
-            logging.info(f'Connected to keyspace flask.')
+            session = cluster.connect(keyspace)
+            logging.info(f'Connected to keyspace {keyspace}.')
         except Exception as ex:
             logging.error(f'Problem while connecting to Casandra.')
 
@@ -244,7 +256,7 @@ def save_data_cassandra(data, kind):
             session.execute(create_table_query)
             logging.info(f'Create table {table_name} success.')
         except Exception as ex:
-            logging.info(f'Table already exists. Not creating.')
+            logging.fatal(f'Table already exists. Not creating. {ex}')
 
         try:
             row_id = 1
@@ -294,9 +306,61 @@ def normal_load():
     return 'Finished'
 
 
+@app.route("/drop_database")
+def drop_database():
+    keyspace = request.args.get('database')
+    namespace = request.args.get('namespace')
+    auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandrapass')
+    cluster = Cluster([f'cassandra-0.cassandra-headless.{namespace}.svc.cluster.local'],
+                      auth_provider=auth_provider,
+                      protocol_version=5)
+
+    try:
+        session = cluster.connect()
+    except Exception as ex:
+        logging.error(f'Problem while connecting to Cassandra.')
+
+    try:
+        session.execute(f'DROP keyspace IF EXISTS {keyspace};')
+        logging.info(f'Keyspace is dropped successfully.')
+    except Exception as ex:
+        logging.ERROR(f'Flask keyspace not dropped.')
+
+    return 'Keyspace is dropped successfully.'
+
+
+@app.route("/create_database")
+def create_database():
+    keyspace = request.args.get('database')
+    namespace = request.args.get('namespace')
+    auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandrapass')
+    cluster = Cluster([f'cassandra-0.cassandra-headless.{namespace}.svc.cluster.local'],
+                      auth_provider=auth_provider,
+                      protocol_version=5)
+
+    try:
+        session = cluster.connect()
+    except Exception as ex:
+        logging.error(f'Problem while connecting to Casandra.')
+
+    try:
+        session.execute(
+            "CREATE KEYSPACE IF NOT EXISTS "+keyspace+" WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
+        logging.info(f'Created keyspace {keyspace}.')
+    except Exception as ex:
+        logging.WARNING(f'{keyspace} keyspace already exists.')
+
+    return 'Keyspace is created successfully.'
+
+
 @app.errorhandler(500)
 def server_error(error):
     return jsonify(success=False, message=error.description), 500
+
+
+@app.errorhandler(400)
+def server_error(error):
+    return jsonify(success=False, message=error.description), 400
 
 
 # app.run((host="0.0.0.0")
