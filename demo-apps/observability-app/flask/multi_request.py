@@ -30,10 +30,7 @@ arguments = parse_arguments()
 url = f'http://{arguments.address[0]}:30101/sorting?namespace={arguments.namespace[0]}&size={arguments.size[0]}&start=1&end=1000&kind={arguments.algorithm[0]}&store={arguments.database[0]}&database=flask'
 print(url)
 
-# list_of_urls = ["http://130.243.26.28:30101/drop_database?namespace=uc1&database=flask"] * 1
-# list_of_urls = ["http://130.243.26.28:30101/create_database?namespace=uc1&database=flask"] * 1
 list_of_urls = [url] * int(arguments.requests[0])
-# list_of_urls = ["http://130.243.26.28:30101/matrix?namespace=uc1&rows=128&cols=128&start=0&end=1000&operation=multiply&database=flask"] * 128
 
 
 with ThreadPoolExecutor(max_workers=32) as pool:
