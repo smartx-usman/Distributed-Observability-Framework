@@ -1,8 +1,10 @@
 import logging
+import os
 import subprocess
 import time
 import uuid
 from random import randint
+from threading import Thread
 
 import numpy as np
 from cassandra.auth import PlainTextAuthProvider
@@ -14,6 +16,7 @@ from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from waitress import serve
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -191,7 +194,7 @@ def save_data_mysql(data, kind):
                 algorithm VARCHAR(255),
                 value INT UNSIGNED) ''')
         except Exception as error:
-            logging.fatal("Table is not created: {}".format(error))
+            pass
 
         try:
             for value in data:
@@ -210,7 +213,7 @@ def save_data_mysql(data, kind):
 def save_data_cassandra(data, kind):
     """Save data to Cassandra"""
     with tracer.start_as_current_span("save-data-op") as child_span3:
-        table_name = 't'+str(uuid.uuid1().hex)
+        table_name = 't' + str(uuid.uuid1().hex)
         keyspace = request.args.get('database')
         namespace = request.args.get('namespace')
         logging.info(f'Table name is {table_name}.')
@@ -227,15 +230,15 @@ def save_data_cassandra(data, kind):
 
         try:
             session = cluster.connect()
-        except Exception as ex:
-            logging.error(f'Problem while connecting to Casandra.')
+        except Exception as error:
+            logging.error("Problem while connecting to Casandra. {}".format(error))
 
         try:
             session.execute(
                 "CREATE KEYSPACE IF NOT EXISTS " + keyspace + " WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
             logging.info(f'Created keyspace {keyspace}.')
         except Exception as ex:
-            logging.WARNING(f'{keyspace} keyspace already exists.')
+            pass
 
         try:
             session = cluster.connect(keyspace)
@@ -256,7 +259,7 @@ def save_data_cassandra(data, kind):
             session.execute(create_table_query)
             logging.info(f'Create table {table_name} success.')
         except Exception as ex:
-            logging.fatal(f'Table already exists. Not creating. {ex}')
+            pass
 
         try:
             row_id = 1
@@ -345,7 +348,7 @@ def create_database():
 
     try:
         session.execute(
-            "CREATE KEYSPACE IF NOT EXISTS "+keyspace+" WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
+            "CREATE KEYSPACE IF NOT EXISTS " + keyspace + " WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };")
         logging.info(f'Created keyspace {keyspace}.')
     except Exception as ex:
         logging.WARNING(f'{keyspace} keyspace already exists.')
@@ -363,12 +366,47 @@ def server_error(error):
     return jsonify(success=False, message=error.description), 400
 
 
+def stress_task():
+    time.sleep(stress_initial_delay)
+    command = "stress  --cpu " + str(cpu) + " --vm " + str(vm) + " --vm-bytes " + str(vm_bytes) + " --hdd " + str(
+        hdd) + " --io " + str(io) + " --timeout " + str(stress_timeout)
+
+    while True:
+        logging.info('Stress test Started.')
+        logging.info(f'Stress command: [{command}].')
+
+        process = subprocess.Popen(
+            [command],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            universal_newlines=True)
+        stdout, stderr = process.communicate()
+        print(stdout)
+        logging.info('Stress test Ended.')
+        time.sleep(idle_timeout)
+
+
 # app.run((host="0.0.0.0")
 if __name__ == "__main__":
-    from waitress import serve
+    hdd = os.environ['STRESS_HDD']
+    io = os.environ['STRESS_IO']
+    vm = os.environ['STRESS_VM']
+    cpu = os.environ['STRESS_HDD']
+    vm_bytes = os.environ['STRESS_VM_BYTES']
+    stress_timeout = os.environ['STRESS_TIMEOUT']
+    idle_timeout = int(os.environ['IDLE_TIMEOUT'])
+    stress_initial_delay = int(os.environ['STRESS_INIT_DELAY'])
+    stress = (os.environ['STRESS_APP']).capitalize()
 
-    serve(app, host="0.0.0.0", port=5000)
+    if stress is True:
+        thread = Thread(target=stress_task)
+        thread.daemon = True
+        thread.start()
 
+    serve(app, host="0.0.0.0", port=5000, threads=32)
+    # app.run(host="0.0.0.0", debug=True)
+    # thread.join()
 # curl 'http://127.0.0.1:5000/roll?sides=10&rolls=5'
 # curl 'http://127.0.0.1:5000/multispan'
 # curl 'http://127.0.0.1:5000/normal_load?hdd=1&io=1&vm=1&cpu=1&timeout=60'
