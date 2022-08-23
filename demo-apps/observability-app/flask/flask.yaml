@@ -1,16 +1,35 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: uc3
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: demo-flask-quota
+  namespace: uc3
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 256Mi
+    limits.cpu: "2"
+    limits.memory: 512Mi
+
+---
+apiVersion: v1
 kind: Service
 metadata:
-  name: demo-flask-svc
+  name: demo-flask-svc-1
   namespace: uc3
   labels:
-    app: demo-flask-svc
+    app: demo-flask-svc-1
 spec:
   type: NodePort
   selector:
-    app: flask-app
+    app: flask-app-1
   ports:
-    - port: 4000
+    - port: 4001
       targetPort: 5000
       nodePort: 30101
       name: flask-port
@@ -19,42 +38,44 @@ spec:
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: demo-flask-app
+  name: demo-flask-app-1
   namespace: uc3
   labels:
-    app: flask-app
+    app: flask-app-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flask-app
+      app: flask-app-1
   template:
     metadata:
       labels:
-        app: flask-app
+        app: flask-app-1
     spec:
       containers:
-        - name: demo-flask-app
+        - name: demo-flask-app-1
           image: usman476/demo-flask-app:latest
           env:
             - name: STRESS_APP
-              value: "false"
+              value: "true"
             - name: STRESS_CPU
-              value: "1"
+              value: "0"
             - name: STRESS_VM
               value: "1"
             - name: STRESS_VM_BYTES
               value: "150M"
             - name: STRESS_HDD
-              value: "1"
+              value: "0"
             - name: STRESS_IO
-              value: "4"
+              value: "0"
             - name: STRESS_TIMEOUT
               value: "120s"
             - name: IDLE_TIMEOUT
               value: "60"
             - name: STRESS_INIT_DELAY
               value: "60"
+            - name: FLASK_THREADS
+              value: "128"
 
           command: [ "python3" ]
           args: [ "app.py" ]
