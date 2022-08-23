@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import sys
 import time
 import uuid
 from random import randint
@@ -368,8 +369,20 @@ def server_error(error):
 
 def stress_task():
     time.sleep(stress_initial_delay)
-    command = "stress  --cpu " + str(cpu) + " --vm " + str(vm) + " --vm-bytes " + str(vm_bytes) + " --hdd " + str(
-        hdd) + " --io " + str(io) + " --timeout " + str(stress_timeout)
+    command = "stress"
+
+    if int(vm) <= 0 and int(cpu) <= 0 and int(hdd) <= 0 and int(io) <= 0:
+        logging.error('Invalid stress options provided. Application is exiting.')
+        sys.exit()
+    else:
+        command = command + " --cpu " + str(cpu) if int(cpu) >= 1 else command
+        command = command + " --vm " + str(vm) + " --vm-bytes " + str(vm_bytes) if int(vm) >= 1 else command
+        command = command + " --hdd " + str(hdd) if int(hdd) >= 1 else command
+        command = command + " --io " + str(io) if int(io) >= 1 else command
+
+        command = command + " --timeout " + str(stress_timeout)
+    # command = "stress  --cpu " + str(cpu) + " --vm " + str(vm) + " --vm-bytes " + str(vm_bytes) + " --hdd " + str(
+    #    hdd) + " --io " + str(io) + " --timeout " + str(stress_timeout)
 
     while True:
         logging.info('Stress test Started.')
@@ -392,19 +405,20 @@ if __name__ == "__main__":
     hdd = os.environ['STRESS_HDD']
     io = os.environ['STRESS_IO']
     vm = os.environ['STRESS_VM']
-    cpu = os.environ['STRESS_HDD']
+    cpu = os.environ['STRESS_CPU']
     vm_bytes = os.environ['STRESS_VM_BYTES']
     stress_timeout = os.environ['STRESS_TIMEOUT']
     idle_timeout = int(os.environ['IDLE_TIMEOUT'])
     stress_initial_delay = int(os.environ['STRESS_INIT_DELAY'])
     stress = (os.environ['STRESS_APP']).capitalize()
+    total_threads = int(os.environ['FLASK_THREADS'])
 
-    if stress is True:
+    if stress is not False:
         thread = Thread(target=stress_task)
         thread.daemon = True
         thread.start()
 
-    serve(app, host="0.0.0.0", port=5000, threads=32)
+    serve(app, host="0.0.0.0", port=5000, connection_limit=1024, threads=total_threads)
     # app.run(host="0.0.0.0", debug=True)
     # thread.join()
 # curl 'http://127.0.0.1:5000/roll?sides=10&rolls=5'
