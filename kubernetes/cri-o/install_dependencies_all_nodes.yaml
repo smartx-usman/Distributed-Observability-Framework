@@ -21,105 +21,105 @@
     - name: Setup timezone
       command: timedatectl set-timezone Europe/Stockholm
 
-   - name: Remove swapfile from /etc/fstab
-     mount:
-       name: "{{ item }}"
-       fstype: swap
-       state: absent
-     #  src: none
-     with_items:
-         - swap
-         - none
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: "{{ item }}"
+        fstype: swap
+        state: absent
+      #  src: none
+      with_items:
+        - swap
+        - none
 
-   - name: Disable swap
-     command: swapoff -a
-     #when: ansible_swaptotal_mb > 0
+    - name: Disable swap
+      command: swapoff -a
+      #when: ansible_swaptotal_mb > 0
 
-   - name: Add Kubernetes apt-key
-     apt_key:
-       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-       state: present
+    - name: Add Kubernetes apt-key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
 
-   - name: Add Kubernetes' apt repository
-     apt_repository:
-      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-      state: present
-      filename: 'kubernetes'
+    - name: Add Kubernetes' apt repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes'
 
-   - name: Install kubeadm, kubelet and kubernetes-cni
-     ansible.builtin.package:
-       name:
-         - kubelet
-         - kubeadm
-         - kubernetes-cni
+    - name: Install kubeadm, kubelet and kubernetes-cni
+      ansible.builtin.package:
+        name:
+          - kubelet
+          - kubeadm
+          - kubernetes-cni
 
-   - name: Hold tools
-     command: apt-mark hold kubelet kubeadm
+    - name: Hold tools
+      command: apt-mark hold kubelet kubeadm
 
-   - name: Add the overlay module
-     community.general.modprobe:
-       name: overlay
-       state: present
+    - name: Add the overlay module
+      community.general.modprobe:
+        name: overlay
+        state: present
 
-   - name: Add the br_netfilter module
-     community.general.modprobe:
-       name: br_netfilter
-       state: present
+    - name: Add the br_netfilter module
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
 
-   - name: Sysctl config for kubernetes.conf. Create file if not exists
-     blockinfile:
-       path: /etc/sysctl.d/kubernetes.conf
-       block: |
-         net.bridge.bridge-nf-call-ip6tables = 1
-         net.bridge.bridge-nf-call-iptables = 1
-         net.ipv4.ip_forward = 1
-       create: true
+    - name: Sysctl config for kubernetes.conf. Create file if not exists
+      blockinfile:
+        path: /etc/sysctl.d/kubernetes.conf
+        block: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+        create: true
 
-   - name: Reload sysctl
-     shell: sysctl --system
+    - name: Reload sysctl
+      shell: sysctl --system
 
-   - name: Add cri-o apt-key
-     apt_key:
-       url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.24/xUbuntu_22.04/Release.key
-       state: present
+    - name: Add cri-o apt-key
+      apt_key:
+        url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.24/xUbuntu_22.04/Release.key
+        state: present
 
-   - name: Add cri-o libcontainers apt-key
-     apt_key:
-       url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_22.04/Release.key
-       state: present
+    - name: Add cri-o libcontainers apt-key
+      apt_key:
+        url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_22.04/Release.key
+        state: present
 
-   - name: Add cri-o's libcontainers apt repository
-     apt_repository:
-       repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_22.04/ /
-       state: present
-       filename: 'devel:kubic:libcontainers:stable.list'
+    - name: Add cri-o's libcontainers apt repository
+      apt_repository:
+        repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_22.04/ /
+        state: present
+        filename: 'devel:kubic:libcontainers:stable.list'
 
-   - name: Add cri-o's apt repository
-     apt_repository:
-       repo: deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.24/xUbuntu_22.04/ /
-       state: present
-       filename: 'devel:kubic:libcontainers:stable:cri-o:1.24.list'
+    - name: Add cri-o's apt repository
+      apt_repository:
+        repo: deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.24/xUbuntu_22.04/ /
+        state: present
+        filename: 'devel:kubic:libcontainers:stable:cri-o:1.24.list'
 
-   - name: Install cri-o
-     ansible.builtin.package:
-       name:
-         - cri-o
-         - cri-o-runc
+    - name: Install cri-o
+      ansible.builtin.package:
+        name:
+          - cri-o
+          - cri-o-runc
 
-   - name: Restart cri-o service
-     ansible.builtin.systemd:
-       state: restarted
-       daemon_reload: yes
-       name: crio
+    - name: Restart cri-o service
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: crio
 
 - hosts: master
   become: yes
   tasks:
-   - name: install kubectl
-     apt:
-       name: kubectl
-       state: present
-       force: yes
+    - name: install kubectl
+      apt:
+        name: kubectl
+        state: present
+        force: yes
 
-   - name: Hold tools
-     command: apt-mark hold kubectl
+    - name: Hold tools
+      command: apt-mark hold kubectl
