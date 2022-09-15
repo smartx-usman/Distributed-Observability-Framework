@@ -76,24 +76,3 @@ curl -X POST \
         }
     }' http://10.103.247.74:8083/connectors
 
-
-#Add Kubernetes node
-2  sudo visudo
-3  sudo apt -y update && sudo apt -y upgrade
-6  sudo vim /etc/hostname
-7  sudo vim /etc/hosts
-10  hostnamectl set-hostname worker-vm-2
-12  hostnamectl
-13  sudo vim /etc/multipath.conf
-14  sudo systemctl restart multipathd.service
-15  sudo systemctl restart multipath-tools.service
-18  sudo snap install microk8s --classic --channel=1.18
-18  sudo snap refresh microk8s --classic --channel=1.19
-18  sudo snap refresh microk8s --classic --channel=1.20
-20  sudo usermod -a -G microk8s javid
-21  sudo chown -f -R javid ~/.kube
-22  microk8s status
-
-#Kubernetes dashboard token
-token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
-microk8s kubectl -n kube-system describe secret $token
