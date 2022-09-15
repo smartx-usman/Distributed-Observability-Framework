@@ -99,3 +99,5 @@ logging.info(f'Process completed.')
 #-p 30010 -r 10000 -i telegraf_docker_index -st 1646297400000 -et 1646301000000
 #curl -g 'http://10.96.7.218/api/v1/query_range?query=docker_n_containers_running{host="worker-vm-1"}&start=2022-03-09T09:45:00.000Z&end=2022-03-09T17:00:00.000Z&step=10s'
 #curl -g 'http://10.96.7.218/api/v1/query_range?query=disk_used_percent{host="worker-vm-1",device="sda2"}&start=2022-03-09T09:45:00.000Z&end=2022-03-09T17:00:00.000Z&step=10s'
+# curl es-master-0.es-master-headless.observability.svc.cluster.local:9200/_cat/indices
+# curl -X DELETE "es-master-0.es-master-headless.observability.svc.cluster.local:9200/telegraf_kubernetes_pod_container_index_2022-07-29?pretty"
