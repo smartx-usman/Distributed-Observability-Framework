@@ -4,6 +4,17 @@ A set of monitoring and observability tools that are being developed for AIDA pr
 ### Setup a Kubernetes cluster
 Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/README.md).
 
+
+### Install kubernetes ansible module
+```shell
+ansible-galaxy collection install kubernetes.core
+```
+
+### Install required tools and packages
+```shell
+ansible-playbook -i desk-install/hosts desk-install/install_desk.yaml
+```
+
 ### Install Helm package manager
 ```shell
 curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
