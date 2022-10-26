@@ -1,0 +1,8 @@
+[master]
+master1 ansible_host=x.x.x.x ansible_user=aida
+
+[workers]
+observability1 ansible_host=x.x.x.x ansible_user=aida
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
