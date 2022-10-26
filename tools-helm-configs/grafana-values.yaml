@@ -524,6 +524,15 @@ datasources:
       isDefault: false
       editable: true
 
+    - name: Jaeger
+      type: jaeger
+      access: browser
+      orgId: 1
+      uid: jaeger
+      url: http://jaeger-query.observability.svc.cluster.local:80
+      isDefault: false
+      editable: true
+
     - name: Loki
       type: loki
       access: browser
