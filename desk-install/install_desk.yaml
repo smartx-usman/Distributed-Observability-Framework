@@ -74,7 +74,7 @@
         chart_ref: bitnami/kafka
         release_namespace: observability
         values_files:
-          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/kafka-values.yaml
+          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/kafka-values.yaml
 
     - name: Add Elasticsearch Helm repo
       kubernetes.core.helm_repository:
@@ -88,7 +88,7 @@
         chart_ref: elastic/elasticsearch
         release_namespace: observability
         values_files:
-          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/elasticsearch-values.yaml
+          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/elasticsearch-values.yaml
 
     - name: Add Prometheus Helm repo
       kubernetes.core.helm_repository:
@@ -102,7 +102,7 @@
         chart_ref: prometheus-community/prometheus
         release_namespace: observability
         values_files:
-          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/prometheus-values.yaml
+          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/prometheus-values.yaml
 
     - name: Add Grafana Helm repo
       kubernetes.core.helm_repository:
@@ -116,10 +116,10 @@
     #        chart_ref: grafana/loki
     #        release_namespace: observability
     #        values_files:
-    #          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/loki-values.yaml
+    #          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/loki-values.yaml
 
     - name: Install Loki using Helm
-      ansible.builtin.shell: helm upgrade --install loki -n=observability -f /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/loki-values.yaml grafana/loki
+      ansible.builtin.shell: helm upgrade --install loki -n=observability -f /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/loki-values.yaml grafana/loki
 
     #    - name: Install Tempo using Helm
     #      kubernetes.core.helm:
@@ -128,7 +128,7 @@
     #        chart_ref: grafana/tempo
     #        release_namespace: observability
     #        values_files:
-    #          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/tempo-values.yaml
+    #          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/tempo-values.yaml
 
     - name: Install Grafana using Helm
       kubernetes.core.helm:
@@ -137,7 +137,7 @@
         chart_ref: grafana/grafana
         release_namespace: observability
         values_files:
-          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/grafana-values.yaml
+          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/grafana-values.yaml
 
     #    - name: Install Promtail using Helm
     #      kubernetes.core.helm:
@@ -146,9 +146,9 @@
     #        chart_ref: grafana/promtail
     #        release_namespace: measurement
     #        values_files:
-    #          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/promtail-values.yaml
+    #          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/promtail-values.yaml
     - name: Install Promtail using Helm
-      ansible.builtin.shell: helm upgrade --install promtail -n=measurement -f /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/promtail-values.yaml grafana/promtail
+      ansible.builtin.shell: helm upgrade --install promtail -n=measurement -f /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/promtail-values.yaml grafana/promtail
 
     #    - name: Deploy Telegraf Agent
     #      kubernetes.core.k8s:
@@ -197,4 +197,4 @@
         chart_ref: jaegertracing/jaeger
         release_namespace: observability
         values_files:
-          - /home/aida/AIDA-Distributed-Observability-Framework/tools-helm-configs/jaeger-values.yaml
+          - /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/jaeger-values.yaml
