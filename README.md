@@ -12,8 +12,9 @@ ansible-galaxy collection install kubernetes.core
 
 ### Install DESK
 ```shell
-ansible-playbook -i desk-install/hosts desk-install/install_desk.yaml
+ansible-playbook -i install-desk/hosts install-desk/main.yaml
 ```
+
 
 ### Deprecated Instructions (will be removed in next release)
 #### Install Helm package manager
@@ -62,7 +63,7 @@ helm upgrade --install -n observability grafana -f helm-configs/grafana-values.y
 
 #### Install Loki via Helm
 ```shell
-helm upgrade --install loki -n=observability -f helm-configs/loki-values.yaml grafana/loki
+helm upgrade --install loki -n=observability -f helm-configs/loki-values.yaml grafana/loki --version 2.16.0
 ```
 
 #### Install Tempo via Helm
