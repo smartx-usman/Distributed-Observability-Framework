@@ -126,6 +126,56 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  name: loki-pv-read-1
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: /opt/loki
+  claimRef:
+    namespace: observability
+    name: data-loki-read-0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - observability1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: loki-pv-write-1
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: /opt/loki
+  claimRef:
+    namespace: observability
+    name: data-loki-write-0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - observability1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
   name: grafana-pv-1
 spec:
   capacity:
