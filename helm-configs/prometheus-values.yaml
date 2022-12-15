@@ -645,17 +645,19 @@ serverFiles:
             regex: 'telegraf-exporter'
             action: keep
 
-
-      - job_name: 'prometheus-pushgateway'
+      - job_name: 'pushgateway'
+        scrape_interval: 1s
         honor_labels: true
+        static_configs:
+          - targets: [ 'prometheus-prometheus-pushgateway.observability.svc.cluster.local:9091' ]
 
-        kubernetes_sd_configs:
-          - role: service
-
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
-            action: keep
-            regex: pushgateway
+#      - job_name: pushgateway
+#        scrape_interval: 1s
+#        honor_labels: false
+#        static_configs:
+#          - targets: [ 'prometheus-prometheus-pushgateway.observability.svc.cluster.local:9091' ]
+#            labels:
+#              pushgateway_instance: aida
 
 
 # adds additional scrape configs to prometheus.yml
@@ -720,7 +722,7 @@ alertmanager:
   config:
     global:
       resolve_timeout: 1m
-      slack_api_url: https://hooks.slack.com/services/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'
+      slack_api_url: ''
 
   nodeSelector:
     kubernetes.io/hostname: observability1
