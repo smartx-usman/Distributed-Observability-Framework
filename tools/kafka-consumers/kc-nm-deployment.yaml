@@ -19,7 +19,7 @@ spec:
       containers:
       - name: kc-nm-container
         image: usman476/kafka-consumer-metrics:latest
-        imagePullPolicy: "IfNotPresent"
+        imagePullPolicy: "Always"
         resources:
           requests:
             memory: "128Mi"
