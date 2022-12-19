@@ -26,7 +26,8 @@ helm upgrade --install bitnami -n monitoring -f kafka-values.yaml bitnami/kafka
 curl https://raw.githubusercontent.com/elastic/helm-charts/7.13/elasticsearch/values.yaml > elasticsearch-values.yaml
 helm repo add elastic https://helm.elastic.co
 helm upgrade --install elasticsearch -n monitoring elastic/elasticsearch -f elasticsearch-values.yaml
-#curl "10.152.183.134:9200/_aliases?pretty"
+#curl "es-master-headless.observability.svc.cluster.local:9200/_aliases?pretty"
+#curl -X GET "es-master-headless.observability.svc.cluster.local:9200/_cat/indices?pretty"
 
 #Prometheus
 sudo mkdir /opt/prometheus #create dir on the node where prometheus will be deployed
