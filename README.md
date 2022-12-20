@@ -86,7 +86,7 @@ helm upgrade --install -n observability prometheus -f helm-configs/prometheus-va
 #### Install Jaeger via Helm
 ````shell
 helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
-helm upgrade --install -n observability  jaeger jaegertracing/jaeger
+helm upgrade --install -n observability  jaeger jaegertracing/jaeger -f helm-configs/jaeger-values.yaml
 #kubectl port-forward --namespace observability jaeger-query-74978f8888-qkgcj 16686:16686 --address 0.0.0.0
 ````
 
