@@ -1,0 +1,7 @@
+curl -X GET "es-master-headless.observability.svc.cluster.local:9200/_cat/indices?pretty"
+curl -X GET "es-master-headless.observability.svc.cluster.local:9200/telegraf_cpu_index_2022/_search?pretty"
+curl -X GET "es-master-headless.observability.svc.cluster.local:9200/telegraf_cpu_index_2022/_stat?pretty"
+curl -X DELETE "es-master-headless.observability.svc.cluster.local:9200/telegraf_cpu_index_2022?pretty"
+curl -X GET "es-master-headless.observability.svc.cluster.local:9200/telegraf_cpu_index_2022-12-21/_ilm/explain?pretty"
+curl -X GET "es-master-headless.observability.svc.cluster.local:9200/telegraf_cpu_index_2022-12-21/_mapping?pretty"
+curl -X GET "es-master-headless.observability.svc.cluster.local:9200/telegraf_cpu_index_2022-12-21/_settings?pretty"
