@@ -1,0 +1,70 @@
+curl -X PUT "es-master-headless.observability.svc.cluster.local:9200/_index_template/jaeger-service?pretty" -H 'Content-Type: application/json' -d '{
+  "priority": 1,
+  "template": {
+    "settings": {
+      "index": {
+        "mapping": {
+          "nested_fields": {
+            "limit": "50"
+          }
+        },
+        "requests": {
+          "cache": {
+            "enable": "true"
+          }
+        },
+        "number_of_shards": "6",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "_routing": {
+        "required": false
+      },
+      "numeric_detection": false,
+      "dynamic_date_formats": [
+        "strict_date_optional_time",
+        "yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"
+      ],
+      "_source": {
+        "excludes": [],
+        "includes": [],
+        "enabled": true
+      },
+      "dynamic": true,
+      "dynamic_templates": [
+        {
+          "span_tags_map": {
+            "path_match": "tag.*",
+            "mapping": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        {
+          "process_tags_map": {
+            "path_match": "process.tag.*",
+            "mapping": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        }
+      ],
+      "date_detection": true,
+      "properties": {
+        "operationName": {
+          "type": "keyword"
+        },
+        "serviceName": {
+          "type": "keyword"
+        }
+      }
+    }
+  },
+  "index_patterns": [
+    "*jaeger-service-*"
+  ],
+  "composed_of": []
+}'
