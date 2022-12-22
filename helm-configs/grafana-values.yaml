@@ -539,6 +539,24 @@ datasources:
       url: http://jaeger-query.observability.svc.cluster.local:80
       isDefault: false
       editable: true
+      jsonData:
+        tracesToLogs:
+          # Field with internal link pointing to a logs data source in Grafana.
+          # datasourceUid value must match the datasourceUid value of the logs data source.
+          datasourceUid: 'loki'
+          tags: [ 'job', 'instance', 'pod', 'namespace' ]
+          mappedTags: [ { key: 'service.name', value: 'service' } ]
+          mapTagNamesEnabled: false
+          spanStartTimeShift: '1h'
+          spanEndTimeShift: '1h'
+          filterByTraceID: false
+          filterBySpanID: false
+        tracesToMetrics:
+          datasourceUid: 'prometheus'
+          tags: [ { key: 'service.name', value: 'service' }, { key: 'job' } ]
+          queries:
+            - name: 'Sample query'
+              query: 'sum(rate(tempo_spanmetrics_latency_bucket{$__tags}[5m]))'
 
     - name: Elasticsearch
       type: elasticsearch
