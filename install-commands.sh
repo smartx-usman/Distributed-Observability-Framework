@@ -58,7 +58,7 @@ helm upgrade --install -n monitoring grafana -f grafana-values.yaml grafana/graf
 #Prometheus datasource url (http://prometheus-server.monitoring.svc.cluster.local/)
 
 
-#Grafan Loki for logs (server)
+#Grafana Loki for logs (server)
 sudo mkdir /opt/loki #create dir on the vm where loki will be deployed
 curl https://raw.githubusercontent.com/grafana/helm-charts/tempo-distributed-0.9.14/charts/loki/values.yaml > loki-values.yaml
 helm upgrade --install loki -n=monitoring -f loki-values.yaml grafana/loki
