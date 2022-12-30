@@ -12,6 +12,7 @@ ansible-galaxy collection install kubernetes.core
 
 ### Install DESK
 ```shell
+pip3 install kubernetes
 ansible-playbook -i install-desk/hosts install-desk/main.yaml
 ```
 
@@ -94,6 +95,11 @@ helm upgrade --install -n observability  jaeger jaegertracing/jaeger -f helm-con
 #### Install Promtail via Helm
 ```shell
 helm upgrade --install promtail -n=measurement -f helm-configs/promtail-values.yaml grafana/promtail
+```
+
+#### Install Rabbitmq via Helm
+```shell
+helm upgrade --install rabbitmq -n measurement bitnami/rabbitmq -f helm-configs/rabbitmq-values.yaml
 ```
 
 #### Install Telegraf via Kubectl
