@@ -153,7 +153,7 @@
     - name: Configure the systemd cgroup driver
       lineinfile:
         path: /etc/containerd/config.toml
-        regexp: '^SystemdCgroup = true$'
+        regexp: '^SystemdCgroup = false$'
         insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
         line: '            SystemdCgroup = true'
 
