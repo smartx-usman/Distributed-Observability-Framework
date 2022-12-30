@@ -47,7 +47,6 @@
 #          - kubernetes
 
 - hosts: master
-#  become: yes
   gather_facts: true
   tasks:
     - name: Create kubernetes namespaces
@@ -76,6 +75,15 @@
         values_files:
           - "{{ playbook_dir }}/../helm-configs/kafka-values.yaml"
 
+    - name: Install Rabbitmq using Helm
+      kubernetes.core.helm:
+        kubeconfig: /home/aida/.kube/config
+        name: bitnami
+        chart_ref: bitnami/rabbitmq
+        release_namespace: measurement
+        values_files:
+          - "{{ playbook_dir }}/../helm-configs/rabbitmq-values.yaml"
+
     - name: Add Elasticsearch Helm repo
       kubernetes.core.helm_repository:
         name: elastic
@@ -91,7 +99,7 @@
           - "{{ playbook_dir }}/../helm-configs/elasticsearch-values.yaml"
 
     - name: Wait for Pods to start
-      ansible.builtin.shell: sleep 30
+      ansible.builtin.shell: sleep 60
 
     - name: Add Prometheus Helm repo
       kubernetes.core.helm_repository:
@@ -167,7 +175,7 @@
     #        #src: /home/aida/AIDA-Distributed-Observability-Framework/tools/telegraf/telegraf-serviceaccount.yaml
 
     - name: Wait for Pods to start
-      ansible.builtin.shell: sleep 30
+      ansible.builtin.shell: sleep 60
 
     - name: Create Telegraf Service
       kubernetes.core.k8s:
