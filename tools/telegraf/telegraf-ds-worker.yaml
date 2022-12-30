@@ -35,7 +35,7 @@ data:
     
     [[outputs.amqp]]
       namepass = ["kubernetes_pod_container"]
-      brokers = ["amqp://rabbitmq-headless.observability.svc.cluster.local:5672"]
+      brokers = ["amqp://rabbitmq-headless.measurement.svc.cluster.local:5672"]
       exchange = "telegraf"
       exchange_type = "direct"
       exchange_durability = "transient"
@@ -107,7 +107,7 @@ spec:
         - name: edge-metrics-analyzer
           image: usman476/telegraf-data-analyzer:latest
           command: [ "python3" ]
-          args: [ "data-analyzer.py", "-n", "uc1", "-a", "app-1-pod", "-m", "memory_usage_bytes", "-v", "50000000", "-r", "amqp://user:user@rabbitmq-headless.observability.svc.cluster.local:5672/%2F" ]
+          args: [ "data-analyzer.py", "-n", "uc1", "-a", "app-1-pod", "-m", "memory_usage_bytes", "-v", "50000000", "-r", "amqp://user:user@rabbitmq-headless.measurement.svc.cluster.local:5672/%2F" ]
           imagePullPolicy: "Always"
           resources:
             limits:
@@ -134,10 +134,11 @@ spec:
           #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
           resources:
             limits:
-              memory: 150Mi
-            requests:
-              cpu: 200m
+              cpu: 100m
               memory: 50Mi
+            requests:
+              cpu: 25m
+              memory: 25Mi
           #securityContext:
           #  runAsUser: 1001
           #  runAsGroup: 1001
