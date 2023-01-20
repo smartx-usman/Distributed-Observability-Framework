@@ -58,4 +58,5 @@ for result in results:
         writer.writerow(final_row)
 
 # How to run
-# python3 prometheus.py 10.102.141.236 kubernetes_pod_container_memory_usage_bytes 2022-06-21T08:20:00.000Z 2022-06-21T08:25:00.000Z 10s | grep 'app\|name' >> result.csv
+# python3 prometheus_data_querier.py 10.102.141.236 kubernetes_pod_container_memory_usage_bytes 2022-06-21T08:20:00.000Z 2022-06-21T08:25:00.000Z 10s | grep 'app\|name' >> result.csv
+# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_network_tx_bytes 2023-01-02T12:31:01.000Z 2023-01-02T13:29:59.000Z 10s | grep -e 'name' -e 'measurement' | grep -v -e edge-metrics-analyzer -e promtail -e master>> telegraf_network_result_250ms.csv
