@@ -272,13 +272,13 @@ agent:
     binaryPort: 6832
     # samplingPort: (HTTP) serve configs, sampling strategies
     samplingPort: 5778
-  resources: {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources:
+     limits:
+       cpu: 100m
+       memory: 100Mi
+     requests:
+       cpu: 10m
+       memory: 25Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
