@@ -47,7 +47,9 @@ sudo chown -R aida:aida /opt/*  #Replace user with real username
 ```shell
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm upgrade --install bitnami -n observability -f helm-configs/kafka-values.yaml bitnami/kafka
+helm upgrade --install schema-registry -n observability bitnami/schema-registry -f helm-configs/schema-registry-values.yaml
 ```
+
 
 #### Install Elasticsearch via Helm
 ```shell
