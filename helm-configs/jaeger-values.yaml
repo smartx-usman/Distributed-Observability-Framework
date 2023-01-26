@@ -331,11 +331,11 @@ collector:
   extraEnv: []
   cmdlineParams: {}
   basePath: /
-  replicaCount: 1
+  replicaCount: 3
   autoscaling:
     enabled: false
-    minReplicas: 2
-    maxReplicas: 10
+    minReplicas: 1
+    maxReplicas: 3
     # targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   service:
@@ -657,7 +657,7 @@ esIndexCleaner:
     # requests:
     #   cpu: 256m
     #   memory: 128Mi
-  numberOfDays: 7
+  numberOfDays: 5
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -705,7 +705,8 @@ esRollover:
     # Explicitly mounts the API credentials for the Service Account
     automountServiceAccountToken: false
     name:
-  nodeSelector: {}
+  nodeSelector:
+    kubernetes.io/hostname: observability1
   tolerations: []
   affinity: {}
   extraSecretMounts: []
