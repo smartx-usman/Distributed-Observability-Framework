@@ -78,7 +78,7 @@ config:
   limits_config:
     enforce_metric_name: false
     reject_old_samples: true
-    reject_old_samples_max_age: 168h
+    reject_old_samples_max_age: 72h
     max_entries_limit_per_query: 5000
   schema_config:
     configs:
@@ -189,13 +189,13 @@ readinessProbe:
 
 replicas: 1
 
-resources: {}
-# limits:
-#   cpu: 200m
-#   memory: 256Mi
-# requests:
-#   cpu: 100m
-#   memory: 128Mi
+resources:
+ limits:
+   cpu: 1000m
+   memory: 3072Mi
+ requests:
+   cpu: 100m
+   memory: 512Mi
 
 securityContext:
   fsGroup: 10001
