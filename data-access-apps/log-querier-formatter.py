@@ -7,30 +7,35 @@
 header = "timestamp,level,message,sensor,status\n"
 
 # File for writing
-write_file = open('sensor-mixed-formatted.csv', 'w')
+write_file = open('publisher-formatted.csv', 'w')
 write_file.writelines(header)
 
+
 # File to read
-file1 = open('publisher-mixed', 'r')
-Lines = file1.readlines()
+input_files = ['publisher-abnormal', 'publisher-mixed', 'publisher-normal']
+for file in input_files:
+    # Open the file
+    input_file_handler = open(file, 'r')
+    Lines = input_file_handler.readlines()
 
-count = 0
-# Process the file
-for line in Lines:
-    count += 1
-    try:
-        line_split = line.split(",")
-        timestamp = line_split[0]
-        level_message = line_split[1].split("-")
-        level = level_message[1].strip()
-        message = level_message[2].split(":")[1].strip()
-        sensor = line_split[2].split(":")[1].strip()
-        status = line_split[3].split(":")[1].strip()
+    # Process the file
+    count = 0
+    for line in Lines:
+        count += 1
+        print("Line{}: {}".format(count, line.strip()))
+        try:
+            line_split = line.split(",")
+            timestamp = line_split[0]
+            level_message = line_split[1].split("-")
+            level = level_message[1].strip()
+            message = level_message[2].split(":")[1].strip()
+            sensor = line_split[2].split(":")[1].strip()[:-2]
+            status = line_split[3].split(":")[1].strip()
 
-        write_file.writelines(timestamp + "," + level + "," + message + "," + sensor + "," + status + "\n")
-    except IndexError as e:
-        print("Error at line: " + str(count))
-        print('Continue...')
-    print("Line{}: {}".format(count, line.strip()))
+            write_file.writelines(timestamp + "," + level + "," + message + "," + sensor + "," + status + "\n")
+        except IndexError as e:
+            print("Error at line: " + str(count))
+            print('Continue...')
 
+    input_file_handler.close()
 write_file.close()
