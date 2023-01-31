@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: logcli-pod
+  namespace: observability
+  labels:
+    environment: development
+    app: logcli-pod
+spec:
+  containers:
+  - name: logcli-container
+    image: grafana/logcli:main-ddc1d17-amd64
+    command: ["sleep"]
+    #args: ["10000"]
+    args: ["1000000"]
+    imagePullPolicy: "IfNotPresent"
+    volumeMounts:
+    - mountPath: /test-pd
+      name: test-volume
+  volumes:
+    - name: test-volume
+      hostPath:
+        # directory location on host
+        path: /opt/data
+        # this field is optional
+        type: Directory
+  restartPolicy: OnFailure
+  nodeSelector:
+    kubernetes.io/hostname: worker2
