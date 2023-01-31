@@ -27,6 +27,8 @@ writeHeader = True
 # now its hardcoded for hourly
 QuryURL = f'http://' + sys.argv[1] + '/api/v1/query_range?query=' + sys.argv[
     2] + '&start=' + sys.argv[3] + '&end=' + sys.argv[4] + '&step=' + sys.argv[5]
+print(QuryURL)
+
 response = requests.get(QuryURL)  # ,
 # params={'query': metrixName + '[1h]'})
 # kubernetes_pod_container_memory_usage_bytes
@@ -37,9 +39,11 @@ results = response.json()['data']['result']
 labelnames = set()
 for result in results:
     labelnames.update(result['metric'].keys())
+
 # Canonicalize
 labelnames.discard('__name__')
 labelnames = sorted(labelnames)
+
 # Write the samples.
 if writeHeader:
     writer.writerow(['name', 'timestamp', 'value'] + labelnames)
@@ -54,7 +58,7 @@ for result in results:
     for rec in result['values']:
         final_row = str(l[0]) + ',' + str(rec[0]) + ',' + str(rec[1]) + ',' + str(l[1]) + ',' + str(l[2]) + ',' + str(
             l[3]) + ',' + str(l[4]) + ',' + str(l[5]) + ',' + str(l[6]) + ',' + str(l[7])
-        print(final_row)
+        #print(final_row)
         writer.writerow(final_row)
 
 # How to run
