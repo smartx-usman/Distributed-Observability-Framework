@@ -582,6 +582,11 @@ datasources:
             name: TraceID
             url: "$${__value.raw}"
             datasourceUid: tempo
+          - datasourceName: Jaeger
+            matcherRegex: "trace_id=([A-Za-z0-9]+)"
+            name: TraceID
+            url: "$${__value.raw}"
+            datasourceUid: jaeger
 
 ## Configure grafana alerting (can be templated)
 ## ref: http://docs.grafana.org/administration/provisioning/#alerting
