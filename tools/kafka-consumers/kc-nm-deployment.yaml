@@ -27,6 +27,16 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
+        volumeMounts:
+          - mountPath: /metrics
+            name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            # directory location on host
+            path: /opt/observability/metrics
+            # this field is optional
+            type: Directory
       restartPolicy: Always
       nodeSelector:
         kubernetes.io/hostname: observability1
