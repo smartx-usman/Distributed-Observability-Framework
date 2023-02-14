@@ -15,7 +15,7 @@ def GetMetrixNames(url):
 Prometheus data as csv.
 """
 writer = csv.writer(sys.stdout)
-if len(sys.argv) != 6:
+if len(sys.argv) != 7:
     print('Usage: {0} http://localhost:9090'.format(sys.argv[0]))
     sys.exit(1)
 
@@ -26,8 +26,8 @@ writeHeader = True
 # for metrixName in (kubernetes_pod_container_memory_usage_bytes):
 # now its hardcoded for hourly
 QuryURL = f'http://' + sys.argv[1] + '/api/v1/query_range?query=' + sys.argv[
-    2] + '&start=' + sys.argv[3] + '&end=' + sys.argv[4] + '&step=' + sys.argv[5]
-print(QuryURL)
+    2] + '{namespace=\"' + sys.argv[6] + '\"}&start=' + sys.argv[3] + '&end=' + sys.argv[4] + '&step=' + sys.argv[5]
+#print(QuryURL)
 
 response = requests.get(QuryURL)  # ,
 # params={'query': metrixName + '[1h]'})
@@ -58,11 +58,11 @@ for result in results:
     for rec in result['values']:
         final_row = str(l[0]) + ',' + str(rec[0]) + ',' + str(rec[1]) + ',' + str(l[1]) + ',' + str(l[2]) + ',' + str(
             l[3]) + ',' + str(l[4]) + ',' + str(l[5]) + ',' + str(l[6]) + ',' + str(l[7])
-        #print(final_row)
-        writer.writerow(final_row)
+        print(final_row)
+        # writer.writerow(final_row)
 
 # How to run
 # python3 prometheus_data_querier.py 10.102.141.236 kubernetes_pod_container_memory_usage_bytes 2022-06-21T08:20:00.000Z 2022-06-21T08:25:00.000Z 10s | grep 'app\|name' >> result.csv
-# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_network_tx_bytes 2023-01-02T12:31:01.000Z 2023-01-02T13:29:59.000Z 10s | grep -e 'name' -e 'measurement' | grep -v -e edge-metrics-analyzer -e promtail -e master>> telegraf_network_result_250ms.csv
-# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_container_memory_usage_bytes 2023-01-13T12:00:00.000Z 2023-01-13T13:59:59.000Z 10s | grep -e 'name' -e 'measurement' | grep -v -e rabbitmq -e edge-metrics-analyzer >> loki_memory_result_200-pods.csv
-# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_container_cpu_usage_nanocores 2023-01-20T14:00:00.000Z 2023-01-20T14:59:59.000Z 10s | grep -e 'jaeger-agent' >> jaeger_cpu_result_200-pods.csv
+# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_network_tx_bytes 2023-01-02T12:31:01.000Z 2023-01-02T13:29:59.000Z 10s measurement | grep -e 'name' | grep -v -e edge-metrics-analyzer -e promtail -e master>> telegraf_network_result_250ms.csv
+# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_container_memory_usage_bytes 2023-01-13T12:00:00.000Z 2023-01-13T13:59:59.000Z 10s measurement | grep -e 'name' | grep -v -e rabbitmq -e edge-metrics-analyzer >> loki_mem_result_200-pods.csv
+# python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_container_cpu_usage_nanocores 2023-01-20T14:00:00.000Z 2023-01-20T14:59:59.000Z 10s observability | grep -e 'name' grep -e 'jaeger-agent' >> jaeger_cpu_result_200-pods.csv
