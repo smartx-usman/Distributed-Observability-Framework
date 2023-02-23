@@ -34,9 +34,11 @@ ansible-playbook -i hosts create_user.yaml
 ansible-playbook -i hosts containerd/install_dependencies_all_nodes.yaml
 ```
 
-**Step 4** — Set Up the Master (Control Plane) Node
+**Step 4** — Initialize the K8S cluster from the Master Node (Control Plane) 
 ```bash
-ansible-playbook -i hosts containerd/provision_master_node.yaml
+ansible-playbook -i hosts containerd/init_k8s_cluster.yaml
+ansible-playbook -i hosts containerd/config_k8s_cluster.yaml
+ansible-playbook -i hosts containerd/init_cni_k8s_cluster.yaml
 ```
 
 **Step 5** — Set Up the Worker Nodes
