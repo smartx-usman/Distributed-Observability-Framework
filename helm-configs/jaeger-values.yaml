@@ -117,8 +117,8 @@ storage:
       es.create-index-templates: "false"
   kafka:
     brokers:
-      - kafka:9092
-    topic: jaeger_v1_test
+      - bitnami-kafka-headless.observability.svc.cluster.local:9092
+    topic: jaeger_v1_traces
     authentication: none
     extraEnv: []
   grpcPlugin:
@@ -190,7 +190,7 @@ schema:
 elasticsearch: {}
 
 ingester:
-  enabled: false
+  enabled: true
   podSecurityContext: {}
   securityContext: {}
   annotations: {}
@@ -223,7 +223,8 @@ ingester:
     # Explicitly mounts the API credentials for the Service Account
     automountServiceAccountToken: false
     name:
-  nodeSelector: {}
+  nodeSelector:
+    kubernetes.io/hostname: observability1
   tolerations: []
   affinity: {}
   podAnnotations: {}
