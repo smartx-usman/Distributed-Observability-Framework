@@ -137,7 +137,7 @@
       lineinfile:
         path: /etc/containerd/config.toml
         regexp: '^SystemdCgroup = false$'
-        insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
+        #insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
         line: '            SystemdCgroup = true'
 
     - name: Create crictl config file.
