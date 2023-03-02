@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.2.2"
+      "version": "9.3.8"
     },
     {
       "type": "datasource",
@@ -156,7 +156,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"uc2\",  container_name=~\"pub.*\"}",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"uc1\",  container_name=~\"pub.*\"}",
           "legendFormat": "{{pod_name}}",
           "range": true,
           "refId": "A"
@@ -463,7 +463,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  container_name=~\"mqtt-subscriber.*\"}",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  container_name=~\"mqtt-to-k.*\"}",
           "legendFormat": "{{pod_name}}",
           "range": true,
           "refId": "A"
@@ -556,7 +556,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  container_name=~\"mqtt-subscriber.*\"}",
+          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  container_name=~\"mqtt-to-k.*\"}",
           "legendFormat": "{{pod_name}}",
           "range": true,
           "refId": "A"
@@ -650,7 +650,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\", pod_name=~\"mqtt-subscriber.*\"}[$__interval])",
+          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\", pod_name=~\"mqtt-to-k.*\"}[$__interval])",
           "interval": "60s",
           "legendFormat": "{{host}} - {{pod_name}}",
           "range": true,
@@ -662,7 +662,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\", pod_name=~\"mqtt-subscriber.*\"}[$__interval])",
+          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\", pod_name=~\"mqtt-to-k.*\"}[$__interval])",
           "hide": false,
           "interval": "60s",
           "legendFormat": "{{host}} - {{pod_name}}",
@@ -1025,7 +1025,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1134,6 +1135,6 @@
   "timezone": "utc",
   "title": "IoT Application Dashboard",
   "uid": "BQTMW0dVk",
-  "version": 19,
+  "version": 3,
   "weekStart": ""
 }
