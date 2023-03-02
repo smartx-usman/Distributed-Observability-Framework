@@ -77,6 +77,15 @@
     - name: Grant permission for Telegraf to get metrics
       command: chmod -R a+rx /sys/devices/virtual/powercap/intel-rapl/
 
+    - name: Creates an entry in cron to re-grant permission to file on reboot
+      ansible.builtin.cron:
+        name: "a job for reboot"
+        state: present
+        special_time: reboot
+        user: "root"
+        cron_file: "powercap"
+        job: "chmod -R a+rx /sys/devices/virtual/powercap/intel-rapl/"
+
     - name: Add kernel modules
       shell: |
         sudo modprobe overlay
@@ -133,12 +142,17 @@
     - name: containerd default configuration
       ansible.builtin.shell: containerd config default >> /etc/containerd/config.toml
 
-    - name: Configure the systemd cgroup driver
-      lineinfile:
-        path: /etc/containerd/config.toml
-        regexp: '^SystemdCgroup = false$'
-        #insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
-        line: '            SystemdCgroup = true'
+
+    - name: containerd default configuration
+      ansible.builtin.shell: sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+
+#    - name: Configure the systemd cgroup driver
+#      lineinfile:
+#        path: /etc/containerd/config.toml
+#        regexp: '^SystemdCgroup = false$'
+#        #insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
+#        line: '            SystemdCgroup = true'
+
 
     - name: Create crictl config file.
       blockinfile:
