@@ -22,7 +22,7 @@
           - helm
         state: latest
 
-- hosts: observability1
+- hosts: observability
   become: yes
   gather_facts: true
   tasks:
@@ -39,6 +39,7 @@
         - /opt/grafana
         - /opt/loki
         - /opt/prometheus
+        - /opt/observability/metrics
 
 #    - name: Install kubernetes apply pre-requisites
 #      pip:
@@ -75,14 +76,20 @@
         values_files:
           - "{{ playbook_dir }}/../helm-configs/kafka-values.yaml"
 
+    - name: Wait for Pods to start
+      ansible.builtin.shell: sleep 30
+
     - name: Install Rabbitmq using Helm
       kubernetes.core.helm:
         kubeconfig: /home/aida/.kube/config
-        name: bitnami
+        name: rabbitmq
         chart_ref: bitnami/rabbitmq
         release_namespace: measurement
         values_files:
           - "{{ playbook_dir }}/../helm-configs/rabbitmq-values.yaml"
+
+    - name: Wait for Pods to start
+      ansible.builtin.shell: sleep 30
 
     - name: Add Elasticsearch Helm repo
       kubernetes.core.helm_repository:
@@ -115,6 +122,9 @@
         values_files:
           - "{{ playbook_dir }}/../helm-configs/prometheus-values.yaml"
 
+    - name: Wait for Pods to start
+      ansible.builtin.shell: sleep 30
+
     - name: Add Grafana Helm repo
       kubernetes.core.helm_repository:
         name: grafana
@@ -130,8 +140,8 @@
         values_files:
           - "{{ playbook_dir }}/../helm-configs/loki-values.yaml"
 
-    #- name: Install Loki using Helm
-    #  ansible.builtin.shell: helm upgrade --install loki -n=observability -f "{{ playbook_dir }}/../helm-configs/loki-values.yaml" --version 2.16.0 grafana/loki
+    - name: Wait for Pods to start
+      ansible.builtin.shell: sleep 30
 
     #    - name: Install Tempo using Helm
     #      kubernetes.core.helm:
@@ -151,6 +161,9 @@
         values_files:
           - "{{ playbook_dir }}/../helm-configs/grafana-values.yaml"
 
+    - name: Wait for Pods to start
+      ansible.builtin.shell: sleep 30
+
     - name: Install Promtail using Helm
       kubernetes.core.helm:
         kubeconfig: /home/aida/.kube/config
@@ -159,20 +172,6 @@
         release_namespace: measurement
         values_files:
           - "{{ playbook_dir }}/../helm-configs/promtail-values.yaml"
-
-    #- name: Install Promtail using Helm
-    #  ansible.builtin.shell: helm upgrade --install promtail -n=measurement -f /home/aida/AIDA-Distributed-Observability-Framework/helm-configs/promtail-values.yaml grafana/promtail
-
-    #    - name: Deploy Telegraf Agent
-    #      kubernetes.core.k8s:
-    #        kubeconfig: /home/aida/.kube/config
-    #        state: present
-    #        definition: "{{ lookup('template', '{{ item }}') | from_yaml }}"
-    #      with_fileglob:
-    #        - "/home/aida/AIDA-Distributed-Observability-Framework/tools/telegraf/telegraf-serviceaccount.yaml"
-    #        - "/home/aida/AIDA-Distributed-Observability-Framework/tools/telegraf/telegraf-ds-worker.yaml"
-    #        - "/home/aida/AIDA-Distributed-Observability-Framework/tools/telegraf/telegraf-ds-master.yaml"
-    #        #src: /home/aida/AIDA-Distributed-Observability-Framework/tools/telegraf/telegraf-serviceaccount.yaml
 
     - name: Wait for Pods to start
       ansible.builtin.shell: sleep 60
