@@ -238,7 +238,7 @@ extraVolumes: []
 
 # -- Node labels for pod assignment. See: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector:
-  kubernetes.io/hostname: observability1
+  appstype: observability
 
 # -- Tolerations for pod assignment. See: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 tolerations: []

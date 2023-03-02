@@ -22,7 +22,7 @@ spec:
           name: querier-volume
       restartPolicy: Never
       nodeSelector:
-        kubernetes.io/hostname: observability-vm-1
+        appstype: observability
       volumes:
       - name: querier-volume
         hostPath:

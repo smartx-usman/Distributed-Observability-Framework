@@ -144,7 +144,7 @@ spec:
               path: /
               port: 13133 # Health Check extension default port.
       nodeSelector:
-        kubernetes.io/hostname: observability1
+        appstype: observability
       volumes:
         - configMap:
             name: otel-collector-conf

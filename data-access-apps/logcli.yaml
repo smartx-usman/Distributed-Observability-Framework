@@ -27,4 +27,4 @@ spec:
         type: Directory
   restartPolicy: OnFailure
   nodeSelector:
-    kubernetes.io/hostname: worker2
+    appstype: observability

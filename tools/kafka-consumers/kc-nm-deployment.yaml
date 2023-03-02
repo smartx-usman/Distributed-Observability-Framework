@@ -39,4 +39,4 @@ spec:
             type: Directory
       restartPolicy: Always
       nodeSelector:
-        kubernetes.io/hostname: observability1
+        appstype: observability

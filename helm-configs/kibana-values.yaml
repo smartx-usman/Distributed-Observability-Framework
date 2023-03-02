@@ -159,7 +159,7 @@ readinessProbe:
 
 imagePullSecrets: []
 nodeSelector:
-  kubernetes.io/hostname: observability-vm-1
+  appstype: observability
 tolerations: []
 affinity: {}
 

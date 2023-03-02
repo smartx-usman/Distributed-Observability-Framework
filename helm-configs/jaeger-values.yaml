@@ -224,7 +224,7 @@ ingester:
     automountServiceAccountToken: false
     name:
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
   tolerations: []
   affinity: {}
   podAnnotations: {}
@@ -405,7 +405,7 @@ collector:
     name:
     annotations: {}
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
   tolerations: []
   affinity: {}
   podAnnotations: {}
@@ -555,7 +555,7 @@ query:
     name:
     annotations: {}
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
   tolerations: []
   affinity: {}
   podAnnotations: {}
@@ -665,7 +665,7 @@ esIndexCleaner:
     automountServiceAccountToken: false
     name:
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
   tolerations: []
   affinity: {}
   extraSecretMounts: []
@@ -707,7 +707,7 @@ esRollover:
     automountServiceAccountToken: false
     name:
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
   tolerations: []
   affinity: {}
   extraSecretMounts: []

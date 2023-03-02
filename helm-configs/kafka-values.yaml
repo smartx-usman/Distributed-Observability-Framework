@@ -589,7 +589,7 @@ affinity: {}
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
 nodeSelector:
-  kubernetes.io/hostname: observability1
+  appstype: observability
 ## @param tolerations Tolerations for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
