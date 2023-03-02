@@ -27,7 +27,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.2.2"
+      "version": "9.3.8"
     },
     {
       "type": "datasource",
@@ -278,7 +278,7 @@
           "editorMode": "code",
           "exemplar": true,
           "expr": "powerstat_package_current_power_consumption_watts{host=~\"^$Node$\", job=\"telegraf\"}",
-          "interval": "2m",
+          "interval": "1m",
           "legendFormat": "{{host}}",
           "range": true,
           "refId": "A"
@@ -339,6 +339,9 @@
             "lineWidth": 1,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
           },
           "mappings": [],
@@ -1293,8 +1296,8 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\"}[$__interval]))",
-          "interval": "60s",
+          "expr": "sum(rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval]))",
+          "interval": "",
           "legendFormat": "{{host}} - recv",
           "metrics": [
             {
@@ -1313,9 +1316,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- sum(rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\"}[$__interval]))",
+          "expr": "- sum(rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval]))",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}} - sent",
           "range": true,
           "refId": "B"
@@ -1365,7 +1368,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1395,7 +1399,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.2.2",
+      "pluginVersion": "9.3.8",
       "targets": [
         {
           "alias": "",
@@ -1460,7 +1464,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1492,7 +1497,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "9.2.2",
+      "pluginVersion": "9.3.8",
       "targets": [
         {
           "alias": "",
@@ -1584,7 +1589,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1615,7 +1621,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.2.2",
+      "pluginVersion": "9.3.8",
       "targets": [
         {
           "alias": "",
@@ -1676,7 +1682,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1707,7 +1714,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.2.2",
+      "pluginVersion": "9.3.8",
       "targets": [
         {
           "alias": "",
@@ -2764,7 +2771,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2895,7 +2903,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2989,7 +2998,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2999,32 +3009,7 @@
           },
           "unit": "bytes"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "observability1"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 11,
@@ -3054,9 +3039,9 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"tele.*\"}[$__interval])",
+          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"tele.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}}",
           "range": true,
           "refId": "A"
@@ -3067,9 +3052,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"tele.*\"}[$__interval])",
+          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"tele.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}}",
           "range": true,
           "refId": "B"
@@ -3126,7 +3111,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3257,7 +3243,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3351,7 +3338,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3391,9 +3379,9 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"promtail.*\"}[$__interval])",
+          "expr": "rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"promtail.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}}",
           "range": true,
           "refId": "A"
@@ -3404,9 +3392,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"promtail.*\"}[$__interval])",
+          "expr": "- rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"measurement\", pod_name=~\"promtail.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}}",
           "range": true,
           "refId": "B"
@@ -3463,7 +3451,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3594,7 +3583,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3688,7 +3678,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3728,9 +3719,9 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__interval])",
+          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}} ",
           "range": true,
           "refId": "A"
@@ -3741,9 +3732,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__interval])",
+          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "",
           "legendFormat": "{{host}} ",
           "range": true,
           "refId": "B"
@@ -3800,7 +3791,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3850,37 +3842,16 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "alias": "",
-          "bucketAggs": [
-            {
-              "field": "@timestamp",
-              "id": "2",
-              "settings": {
-                "interval": "auto"
-              },
-              "type": "date_histogram"
-            }
-          ],
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": true,
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"observability\"}",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{job=\"telegraf\",host=~\"^$Node$\", namespace=~\"^$Namespace$\"}",
           "hide": false,
-          "interval": "",
           "legendFormat": "{{pod_name}}",
-          "metrics": [
-            {
-              "id": "1",
-              "type": "count"
-            }
-          ],
-          "query": "",
           "range": true,
-          "refId": "A",
-          "timeField": "@timestamp"
+          "refId": "B"
         }
       ],
       "title": "Observability - Pod Memory Usage (Bytes)",
@@ -3948,6 +3919,6 @@
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 34,
+  "version": 3,
   "weekStart": ""
 }
