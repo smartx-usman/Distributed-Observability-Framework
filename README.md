@@ -16,10 +16,10 @@ Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/RE
 ### Install kubernetes ansible module
 ```shell
 ansible-galaxy collection install kubernetes.core
+pip3 install kubernetes
 ```
 
 ### Install DESK
 ```shell
-pip3 install kubernetes
 ansible-playbook -i install-desk/hosts install-desk/main.yaml
 ```
