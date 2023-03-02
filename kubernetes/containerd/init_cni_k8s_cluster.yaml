@@ -37,3 +37,7 @@
 #      args:
 #        chdir: $HOME
 #        creates: pod_network_setup.txt
+
+#    - name: Enable kube-proxy, if needed (e.g., in case disabled when creating cluster and later want to deploy a CNI with flannel)
+#      become: yes
+#      shell: kubeadm init phase addon kube-proxy  --kubeconfig ~/.kube/config
