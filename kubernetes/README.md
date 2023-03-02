@@ -34,17 +34,27 @@ ansible-playbook -i hosts create_user.yaml
 ansible-playbook -i hosts containerd/install_dependencies_all_nodes.yaml
 ```
 
-**Step 4** — Set Up the Master (Control Plane) Node
+**Step 4** — Initialize the K8S cluster from the Master Node (Control Plane) 
 ```bash
-ansible-playbook -i hosts containerd/provision_master_node.yaml
+ansible-playbook -i hosts containerd/init_k8s_cluster.yaml
+ansible-playbook -i hosts containerd/config_k8s_cluster.yaml
+ansible-playbook -i hosts containerd/init_cni_k8s_cluster.yaml
 ```
 
-**Step 5** — Set Up the Worker Nodes
+**Step 5** — Add Worker Nodes to the Cluster
 ```bash
 ansible-playbook -i hosts provision_worker_nodes.yaml
 ```
 
-**Step 6** — Verify the Cluster
+**Step 6** — Add Labels to the Cluster Nodes
+```bash
+kubectl get nodes --show-labels
+kubectl label nodes worker1 disktype=ssd ostype=normal appstype=user
+kubectl label nodes worker2 disktype=ssd ostype=realtime appstype=user
+kubectl label nodes worker3 disktype=ssd ostype=normal appstype=observability
+```
+
+**Step 7** — Verify the Cluster
 ```bash
 ssh aida@control_plane_ip
 ```
@@ -53,12 +63,12 @@ Then execute the following command to get the status of the cluster:
 kubectl get nodes -o wide
 ```
 
-**Step 7a** — Running an application on the cluster with runC
+**Step 8a** — Running an application on the cluster with runC
 ```bash
 kubectl create deployment nginx --image=nginx
 ```
 
-**Step 7b** — Running an application on the cluster with Kata
+**Step 8b** — Running an application on the cluster with Kata
 ```bash
 kubectl apply -f containerd/kata-runtime-class.yaml
 kubectl apply -f containerd/example-kata-pod.yaml

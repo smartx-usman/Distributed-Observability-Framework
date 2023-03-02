@@ -17,10 +17,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -42,10 +42,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -67,10 +67,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -92,10 +92,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -117,10 +117,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -142,10 +142,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -167,10 +167,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability
 
 ---
 apiVersion: v1
@@ -192,7 +192,7 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: appstype
           operator: In
           values:
-          - observability1
+          - observability

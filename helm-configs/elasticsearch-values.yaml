@@ -249,7 +249,7 @@ schedulerName: ""
 
 imagePullSecrets: []
 nodeSelector:
-  kubernetes.io/hostname: observability1
+  appstype: observability
 tolerations: []
 
 # Enabling this will publicly expose your Elasticsearch instance.

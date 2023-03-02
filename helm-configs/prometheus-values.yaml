@@ -312,7 +312,7 @@ server:
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
 
   ## Pod affinity
   ##
@@ -725,7 +725,7 @@ alertmanager:
       slack_api_url: ''
 
   nodeSelector:
-    kubernetes.io/hostname: observability1
+    appstype: observability
 
   podSecurityContext:
     runAsUser: 65534

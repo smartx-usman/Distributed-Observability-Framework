@@ -77,30 +77,22 @@
     - name: Grant permission for Telegraf to get metrics
       command: chmod -R a+rx /sys/devices/virtual/powercap/intel-rapl/
 
-    - name: Add the overlay module
-      community.general.modprobe:
-        name: overlay
+    - name: Creates an entry in cron to re-grant permission to file on reboot
+      ansible.builtin.cron:
+        name: "a job for reboot"
         state: present
+        special_time: reboot
+        user: "root"
+        cron_file: "powercap"
+        job: "chmod -R a+rx /sys/devices/virtual/powercap/intel-rapl/"
 
-    - name: Add the br_netfilter module
-      community.general.modprobe:
-        name: br_netfilter
-        state: present
-
-    - name: Add the rapl module
-      community.general.modprobe:
-        name: rapl
-        state: present
-
-    - name: Add the msr module
-      community.general.modprobe:
-        name: msr
-        state: present
-
-    - name: Add the intel_rapl_common module
-      community.general.modprobe:
-        name: intel_rapl_common
-        state: present
+    - name: Add kernel modules
+      shell: |
+        sudo modprobe overlay
+        sudo modprobe br_netfilter
+        sudo modprobe rapl
+        sudo modprobe msr
+        sudo modprobe intel_rapl_common
 
     - name: Sysctl config for kubernetes.conf. Create file if not exists
       blockinfile:
@@ -150,12 +142,17 @@
     - name: containerd default configuration
       ansible.builtin.shell: containerd config default >> /etc/containerd/config.toml
 
-    - name: Configure the systemd cgroup driver
-      lineinfile:
-        path: /etc/containerd/config.toml
-        regexp: '^SystemdCgroup = false$'
-        insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
-        line: '            SystemdCgroup = true'
+
+    - name: containerd default configuration
+      ansible.builtin.shell: sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+
+#    - name: Configure the systemd cgroup driver
+#      lineinfile:
+#        path: /etc/containerd/config.toml
+#        regexp: '^SystemdCgroup = false$'
+#        #insertafter: '^\s*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]\s*$'
+#        line: '            SystemdCgroup = true'
+
 
     - name: Create crictl config file.
       blockinfile:

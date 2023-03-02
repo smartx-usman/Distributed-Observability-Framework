@@ -81,13 +81,13 @@ readinessProbe:
   timeoutSeconds: 1
 
 # -- Resource requests and limits
-resources: {}
-#  limits:
-#    cpu: 200m
-#    memory: 128Mi
-#  requests:
-#    cpu: 100m
-#    memory: 128Mi
+resources:
+  limits:
+    cpu: 150m
+    memory: 100Mi
+  requests:
+    cpu: 10m
+    memory: 50Mi
 
 # -- The security context for pods
 podSecurityContext:
@@ -161,10 +161,22 @@ defaultVolumeMounts:
     readOnly: true
 
 # Extra volumes to be added in addition to those specified under `defaultVolumes`.
-extraVolumes: []
+extraVolumes:
+  - name: journal
+    hostPath:
+      path: /var/log/journal
+  - name: machine-id
+    hostPath:
+      path: /etc/machine-id
 
 # Extra volume mounts together. Corresponds to `extraVolumes`.
-extraVolumeMounts: []
+extraVolumeMounts:
+  - name: journal
+    mountPath: /var/log/journal
+    readOnly: true
+  - name: machine-id
+    mountPath: /etc/machine-id
+    readOnly: true
 
 # Extra args for the Promtail container.
 extraArgs: []
@@ -337,7 +349,28 @@ config:
 
     # -- You can put here any additional scrape configs you want to add to the config file.
     # @default -- empty
-    extraScrapeConfigs: ""
+    extraScrapeConfigs: |
+      # Add an additional scrape config for syslog
+      - job_name: journal
+        journal:
+          path: /var/log/journal
+          max_age: 12h
+          labels:
+            job: systemd-journal
+        relabel_configs:
+          - source_labels:
+              - __journal__hostname
+            target_label: hostname
+
+          # example label values: kubelet.service, containerd.service
+          - source_labels:
+              - __journal__systemd_unit
+            target_label: unit
+
+          # example label values: debug, notice, info, warning, error
+          - source_labels:
+              - __journal_priority_keyword
+            target_label: level
 
     # -- You can put here any additional relabel_configs to "kubernetes-pods" job
     extraRelabelConfigs: []

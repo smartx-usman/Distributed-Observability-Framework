@@ -1,0 +1,12 @@
+---
+- hosts: master
+  become: yes
+  tasks:
+    - name: Fetch the required images for initating the cluster
+      shell: kubeadm config images pull --cri-socket unix:///run/containerd/containerd.sock
+
+    - name: Initialize the cluster
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --cri-socket unix:///run/containerd/containerd.sock --skip-phases=addon/kube-proxy >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
