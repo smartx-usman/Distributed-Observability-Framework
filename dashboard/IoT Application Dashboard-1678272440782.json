@@ -2310,13 +2310,13 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "utc",
   "title": "IoT Application Dashboard",
   "uid": "BQTMW0dVk",
-  "version": 15,
+  "version": 16,
   "weekStart": ""
 }
