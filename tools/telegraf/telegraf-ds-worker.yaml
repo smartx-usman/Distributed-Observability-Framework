@@ -32,7 +32,8 @@ data:
     [[outputs.prometheus_client]]
           ## Address to listen on.
           listen = ":9126"
-    
+          collectors_exclude = ["gocollector", "process"]
+
     [[outputs.amqp]]
       namepass = ["kubernetes_pod_container"]
       brokers = ["amqp://rabbitmq-headless.measurement.svc.cluster.local:5672"]
