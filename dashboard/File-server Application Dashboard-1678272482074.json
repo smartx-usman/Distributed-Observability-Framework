@@ -7,6 +7,14 @@
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
     }
   ],
   "__elements": {},
@@ -19,9 +27,21 @@
     },
     {
       "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
       "id": "prometheus",
       "name": "Prometheus",
       "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
     },
     {
       "type": "panel",
@@ -134,7 +154,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "file-server-deployment-dc45bbbf9-6rwq9"
+                  "file-server-deployment-dc45bbbf9-nhcw4"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -252,7 +272,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "file-server-deployment-dc45bbbf9-6rwq9"
+                  "file-server-deployment-dc45bbbf9-nhcw4"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -370,7 +390,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker1 - file-server-deployment-dc45bbbf9-6rwq9"
+                  "worker1 - file-server-deployment-dc45bbbf9-nhcw4"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -514,7 +534,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "file-client-deployment-657c8cd445-4tcbp"
+                  "file-client-deployment-657c8cd445-pfqz6"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -725,7 +745,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker2 - file-client-deployment-657c8cd445-4tcbp"
+                  "worker3 - file-client-deployment-657c8cd445-pfqz6"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -793,9 +813,89 @@
       ],
       "title": "Pod Network Usage",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Line"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 554
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 39,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.3.8",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          },
+          "editorMode": "builder",
+          "expr": "count(rate({namespace=\"$Namespace\"} [$__interval]))",
+          "legendFormat": "{{pod_name}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Requests Count",
+      "type": "table"
     }
   ],
-  "refresh": "10s",
+  "refresh": "30s",
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
@@ -849,13 +949,13 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "utc",
   "title": "File-server Application Dashboard",
   "uid": "BQTMW0dVi",
-  "version": 3,
+  "version": 7,
   "weekStart": ""
 }

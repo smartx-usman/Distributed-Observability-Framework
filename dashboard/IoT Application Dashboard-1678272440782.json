@@ -625,7 +625,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker2 - mqtt-mosquitto-6f5cc8c7-m6bql"
+                  "worker2 - mqtt-mosquitto-6f5cc8c7-r5mml"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -1106,7 +1106,7 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true,
           "width": 200
         },
@@ -1122,7 +1122,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"uc1\",  container_name=~\"pub.*\"}",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  container_name=~\"pub.*\"}",
           "legendFormat": "{{pod_name}}",
           "range": true,
           "refId": "A"
@@ -1200,7 +1200,7 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true,
           "width": 200
         },
@@ -1294,7 +1294,7 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true,
           "width": 200
         },
@@ -2317,6 +2317,6 @@
   "timezone": "utc",
   "title": "IoT Application Dashboard",
   "uid": "BQTMW0dVk",
-  "version": 16,
+  "version": 18,
   "weekStart": ""
 }

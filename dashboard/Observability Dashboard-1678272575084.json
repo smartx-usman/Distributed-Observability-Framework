@@ -651,6 +651,348 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 62,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.3.8",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto"
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu0\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{host}} - {{cpu}}",
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "",
+          "range": true,
+          "refId": "A",
+          "timeField": "@timestamp"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu1\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu2\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu3\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu4\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu5\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu6\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "G"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu7\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "H"
+        }
+      ],
+      "title": "CPU Usage (System)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 63,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.3.8",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto"
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu0\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{host}} - {{cpu}}",
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "",
+          "range": true,
+          "refId": "A",
+          "timeField": "@timestamp"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu1\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu2\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu3\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu4\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu5\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu6\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "G"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu7\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "H"
+        }
+      ],
+      "title": "CPU Usage (User)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -711,7 +1053,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 24
       },
       "id": 4,
       "options": {
@@ -823,7 +1165,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 24
       },
       "id": 6,
       "options": {
@@ -855,8 +1197,9 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=\"sda2\"}",
+          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"sda2|nvme0n1p2\"}",
           "interval": "",
           "legendFormat": "{{host}} - {{device}}",
           "metrics": [
@@ -866,6 +1209,7 @@
             }
           ],
           "query": "",
+          "range": true,
           "refId": "A",
           "timeField": "@timestamp"
         }
@@ -935,7 +1279,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 32
       },
       "id": 14,
       "options": {
@@ -1063,7 +1407,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 32
       },
       "id": 47,
       "options": {
@@ -1158,7 +1502,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 33
+        "y": 40
       },
       "id": 34,
       "options": {
@@ -1267,7 +1611,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 33
+        "y": 40
       },
       "id": 16,
       "options": {
@@ -1343,7 +1687,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 47
       },
       "id": 20,
       "panels": [
@@ -1362,8 +1706,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1458,8 +1801,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1583,8 +1925,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1676,8 +2017,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1773,7 +2113,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 48
       },
       "id": 49,
       "panels": [],
@@ -1861,7 +2201,7 @@
         "h": 11,
         "w": 9,
         "x": 0,
-        "y": 42
+        "y": 49
       },
       "id": 50,
       "options": {
@@ -1977,7 +2317,7 @@
         "h": 11,
         "w": 8,
         "x": 9,
-        "y": 42
+        "y": 49
       },
       "id": 51,
       "options": {
@@ -2072,7 +2412,7 @@
         "h": 11,
         "w": 7,
         "x": 17,
-        "y": 42
+        "y": 49
       },
       "id": 52,
       "options": {
@@ -2201,7 +2541,7 @@
         "h": 11,
         "w": 9,
         "x": 0,
-        "y": 53
+        "y": 60
       },
       "id": 53,
       "options": {
@@ -2317,7 +2657,7 @@
         "h": 11,
         "w": 8,
         "x": 9,
-        "y": 53
+        "y": 60
       },
       "id": 55,
       "options": {
@@ -2412,7 +2752,7 @@
         "h": 11,
         "w": 7,
         "x": 17,
-        "y": 53
+        "y": 60
       },
       "id": 56,
       "options": {
@@ -2541,7 +2881,7 @@
         "h": 11,
         "w": 9,
         "x": 0,
-        "y": 64
+        "y": 71
       },
       "id": 54,
       "options": {
@@ -2657,7 +2997,7 @@
         "h": 11,
         "w": 8,
         "x": 9,
-        "y": 64
+        "y": 71
       },
       "id": 57,
       "options": {
@@ -2752,7 +3092,7 @@
         "h": 11,
         "w": 7,
         "x": 17,
-        "y": 64
+        "y": 71
       },
       "id": 58,
       "options": {
@@ -2806,7 +3146,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 75
+        "y": 82
       },
       "id": 61,
       "panels": [],
@@ -2861,7 +3201,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 76
+        "y": 83
       },
       "id": 59,
       "options": {
@@ -2970,6 +3310,6 @@
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 7,
+  "version": 10,
   "weekStart": ""
 }
