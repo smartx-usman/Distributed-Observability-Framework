@@ -43,7 +43,7 @@ data:
      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
      fieldpass = ["free", "used", "total", "used_percent"]
    [[inputs.diskio]]
-     devices = ["sda", "sdb", "sdc"]
+     devices = ["sda", "sdb", "sdc", "nvme0n1p3"]
      fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
    [[inputs.mem]]
      fieldpass = ["available", "free", "total", "used_percent"]
