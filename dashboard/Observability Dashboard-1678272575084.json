@@ -13,12 +13,6 @@
   "__requires": [
     {
       "type": "panel",
-      "id": "barchart",
-      "name": "Bar chart",
-      "version": ""
-    },
-    {
-      "type": "panel",
       "id": "gauge",
       "name": "Gauge",
       "version": ""
@@ -335,16 +329,26 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 80,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -376,26 +380,18 @@
       },
       "id": 2,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
-        "showValue": "always",
-        "stacking": "percent",
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 100
+        }
       },
-      "pluginVersion": "9.2.2",
+      "pluginVersion": "9.3.8",
       "targets": [
         {
           "alias": "",
@@ -528,7 +524,7 @@
         }
       ],
       "title": "CPU Usage",
-      "type": "barchart"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -1199,7 +1195,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"sda2|nvme0n1p2\"}",
+          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"vda1|sda2|nvme0n1p2\"}",
           "interval": "",
           "legendFormat": "{{host}} - {{device}}",
           "metrics": [
@@ -1706,8 +1702,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1802,8 +1797,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1927,8 +1921,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2020,8 +2013,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3314,6 +3306,6 @@
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 12,
+  "version": 15,
   "weekStart": ""
 }
