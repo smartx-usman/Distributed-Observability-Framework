@@ -92,7 +92,7 @@ spec:
       tolerations:
       - operator: "Exists"
       nodeSelector:
-        kubernetes.io/hostname: master
+        node-role.kubernetes.io/control-plane: ""
       containers:
       - name: telegraf
         image: telegraf:latest
