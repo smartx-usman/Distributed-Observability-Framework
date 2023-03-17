@@ -234,9 +234,10 @@ spec:
           emptyDir: {}
       serviceAccountName: kubernetes-dashboard
       nodeSelector:
-        "kubernetes.io/hostname": worker1
-        "kubernetes.io/os": linux
-      # Comment the following tolerations if Dashboard must not be deployed on master
+        node-role.kubernetes.io/control-plane: ""
+          #"kubernetes.io/hostname": k8s-master-1
+          #"kubernetes.io/os": linux
       tolerations:
-        - key: node-role.kubernetes.io/master
+        - key: node-role.kubernetes.io/control-plane
+          operator: "Exists"
           effect: NoSchedule
