@@ -13,7 +13,13 @@ A set of monitoring and observability tools that are being developed for AIDA pr
 Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/README.md) to setup a cluster using kubeadm.
 
 
-### Install kubernetes ansible module
+### Install Ansible on Kubernetes master node
+```shell
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+```
+
+### Install Kubernetes ansible module on master node
 ```shell
 ansible-galaxy collection install kubernetes.core
 pip3 install kubernetes
