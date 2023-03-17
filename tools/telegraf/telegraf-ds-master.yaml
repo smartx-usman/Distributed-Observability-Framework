@@ -8,7 +8,7 @@ metadata:
 data:
  telegraf.conf: |+
    [agent]
-     interval= "10s"
+     interval= "1s"
      round_interval= true
      metric_batch_size= 1000
      metric_buffer_limit= 10000
@@ -23,7 +23,7 @@ data:
      omit_hostname= false
 
    [[outputs.kafka]]
-     brokers = ["bitnami-kafka-0.bitnami-kafka-headless.observability.svc.cluster.local:9092"]
+     brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
      topic = "telegraf"
      [outputs.kafka.topic_suffix]
        method = "measurement"
@@ -44,7 +44,7 @@ data:
      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
      fieldpass = ["free", "used", "total", "used_percent"]
    [[inputs.diskio]]
-     devices = ["sda", "sdb", "sdc", "nvme0n1p3"]
+     devices = ["sda", "sdb", "sdc", "nvme0n1p3", "vda"]
      fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
    [[inputs.mem]]
      fieldpass = ["available", "free", "total", "used_percent"]
@@ -65,6 +65,7 @@ data:
      namespace = ""
      insecure_skip_verify = true
     [[inputs.kubernetes]]
+      interval = "10s"
       url = "https://$HOSTIP:10250"
       bearer_token_string = "$TELEGRAF_TOKEN"
       insecure_skip_verify = true

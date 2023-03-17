@@ -23,7 +23,7 @@ data:
       omit_hostname= false
     
     [[outputs.kafka]]
-      brokers = ["bitnami-kafka-0.bitnami-kafka-headless.observability.svc.cluster.local:9092"]
+      brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
       topic = "telegraf"
       [outputs.kafka.topic_suffix]
         method = "measurement"
@@ -56,7 +56,7 @@ data:
       ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
       fieldpass = ["free", "used", "total", "used_percent"]
     [[inputs.diskio]]
-      devices = ["sda", "sdb", "sdc"]
+      devices = ["sda", "sdb", "sdc", "vda"]
       fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
     [[inputs.mem]]
       fieldpass = ["available", "free", "total", "used_percent"]
@@ -70,6 +70,7 @@ data:
       package_metrics = ["current_power_consumption", "current_dram_power_consumption", "thermal_design_power"]
       cpu_metrics = ["cpu_frequency", "cpu_temperature"]
     [[inputs.kubernetes]]
+      interval = "10s"
       url = "https://$HOSTIP:10250"
       bearer_token_string = "$TELEGRAF_TOKEN"
       insecure_skip_verify = true
