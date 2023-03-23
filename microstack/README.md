@@ -1,20 +1,28 @@
 # Instructions for Provisioning a Microstack Cluster
 These are the instructions to setup a lightweight Kubernetes cluster using Microstack.
 
-## Provision cluster
+### Provision Microstack cluster
 Execute the commands from [provision-microstack-cluster.sh](provision-microstack-cluster.sh)
 
-## Provision VMs
+### Provision VMs
 Execute the commands from [provision-microstack-vms.sh](provision-microstack-vms.sh)
 
-## Create labels for nodes after Kubernetes cluster is up
-Execute the commands from [create-labels.sh](create-labels.sh)
+### Provisioning K8S Cluster Using Provisioned VMs
+Once MicroStack cluster is up, you can follow k8s installation instructions from [here](../kubernetes/README.md).
+
+### Create Labels for Nodes after Kubernetes Cluster is UP
+Execute the commands from [create-labels.sh](create-labels.sh) 
+
+### Installing DESK
+Once k8s cluster is up, you can follow DESK installation instructions from [here](../README.md).
 
 
-### Example how to modify cloud image to create a new user and add ssh key
-- First get the cloud image from https://cloud-images.ubuntu.com/releases/20.04/release/
+### Additional: Modify Cloud VM Image to Create a New User and Add SSH Key
+If you are unable to access VM using the ssh key provided by MicroStack, you can modify the cloud image to create a new user and add your ssh key.
 
-- Next run the following commands to modify the image and don't forget to change the ssh key.
+- First get the cloud image from [official repo](https://cloud-images.ubuntu.com/releases/20.04/release/).
+
+- Next run the following commands to modify the image (e.g., jammy-server-cloudimg-amd64.img) and don't forget to change the ssh key.
 
     ```bash
     sudo guestfish --rw -a jammy-server-cloudimg-amd64.img
@@ -36,7 +44,5 @@ Execute the commands from [create-labels.sh](create-labels.sh)
         ssh_authorized_keys:
          - ssh-rsa xyz= abc@test-server
     
-    #><fs> exit
+    ><fs> exit
     ```
-### Installing DESK
-Once MicroStack cluster is setup, you can follow DESK installation instructions from [here](../README.md).
