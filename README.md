@@ -2,8 +2,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/smartx-usman/Distributed-Observability-Framework?style=plastic)](https://github.com/smartx-usman/Distributed-Observability-Framework/issues)
 [![GitHub forks](https://img.shields.io/github/forks/smartx-usman/Distributed-Observability-Framework?style=plastic)](https://github.com/smartx-usman/Distributed-Observability-Framework/network)
 
-# AIDA-Distributed-Observability-Framework
-A set of monitoring and observability tools that are being developed for AIDA project.
+# Distributed-Observability-Framework (DESK)
+This repository contains a set of monitoring and observability tools that are being developed for AIDA project.
 
 ### Prerequisites
 - Kubernetes 1.23+
@@ -24,6 +24,9 @@ sudo apt install ansible
 ansible-galaxy collection install kubernetes.core
 pip3 install kubernetes
 ```
+
+### Before installing DESK
+Modify desk-install/hosts file to specify correct IP addresses of the Kubernetes cluster nodes.
 
 ### Install DESK
 ```shell
