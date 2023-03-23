@@ -1,40 +1,3 @@
-# Install microstack on all servers
-sudo snap install microstack --devmode --beta
-
-# Initialize microstack on controller node
-sudo microstack init --auto --control --setup-loop-based-cinder-lvm-backend --loop-device-file-size 120
-
-# Generate connection string
-sudo microstack add-compute
-
-# Initialize microstack on compute nodes
-sudo microstack init --auto --compute --join <connection-string>
-
-# Get key
-sudo snap get microstack config.credentials.keystone-password
-
-# Modify cloud image to create a new user and add ssh key
-sudo guestfish --rw -a jammy-server-cloudimg-amd64.img
-#><fs> run
-#><fs> list-filesystems
-#/dev/sda1: ext4
-#><fs> mount /dev/sda1 /
-#><fs> vi /etc/cloud/cloud.cfg
-#users:
-#  - default
-#  - name: aida
-#    passwd: "aida"
-#    shell: /bin/bash
-#    lock-passwd: false
-#    ssh_pwauth: True
-#    chpasswd: { expire: False }
-#    sudo: ALL=(ALL) NOPASSWD:ALL
-#    groups: users, admin
-#    ssh_authorized_keys:
-#     - ssh-rsa xyz= abc@test-server
-
-#><fs> exit
-
 # Create Ubuntu 22.04 image
 microstack.openstack image create --file jammy-server-cloudimg-amd64.img --disk-format qcow2 \
 --container-format bare --public ubuntu22.04
@@ -79,14 +42,3 @@ microstack.openstack server add floating ip worker6 10.20.20.16
 microstack.openstack server add floating ip worker7 10.20.20.17
 microstack.openstack server add floating ip worker8 10.20.20.18
 microstack.openstack server add floating ip worker9 10.20.20.19
-
-# Add labels to the k8s nodes (after cluster is setup)
-kubectl label nodes k8s-worker-1 disktype=ssd ostype=normal appstype=user flavor=medium
-kubectl label nodes k8s-worker-2 disktype=ssd ostype=normal appstype=observability flavor=large
-kubectl label nodes k8s-worker-3 disktype=ssd ostype=normal appstype=user flavor=small
-kubectl label nodes k8s-worker-4 disktype=ssd ostype=normal appstype=user flavor=medium
-kubectl label nodes k8s-worker-5 disktype=ssd ostype=normal appstype=user flavor=small
-kubectl label nodes k8s-worker-6 disktype=ssd ostype=normal appstype=user flavor=small
-kubectl label nodes k8s-worker-7 disktype=ssd ostype=normal appstype=user flavor=small
-kubectl label nodes k8s-worker-8 disktype=ssd ostype=normal appstype=user flavor=tiny
-kubectl label nodes k8s-worker-9 disktype=ssd ostype=normal appstype=user flavor=tiny
