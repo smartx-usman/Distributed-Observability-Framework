@@ -21,6 +21,16 @@
     - name: Setup timezone
       command: timedatectl set-timezone Europe/Stockholm
 
+    - name: Create required directories for persistent volumes
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: aida
+        group: aida
+        mode: 0755
+      with_items:
+        - /opt/data
+
     - name: Remove swapfile from /etc/fstab
       mount:
         name: "{{ item }}"
