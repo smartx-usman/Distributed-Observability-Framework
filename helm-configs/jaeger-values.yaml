@@ -7,6 +7,9 @@ provisionDataStore:
   elasticsearch: false
   kafka: false
 
+networkPolicy:
+  enabled: false
+
 # Overrides the image tag where default is the chart appVersion.
 tag: ""
 
@@ -126,7 +129,7 @@ storage:
   kafka:
     brokers:
       - bitnami-kafka-headless.observability.svc.cluster.local:9092
-    topic: jaeger_v1_traces
+    topic: jaeger_v1_test
     authentication: none
     extraEnv: []
   grpcPlugin:
@@ -344,8 +347,8 @@ collector:
   replicaCount: 3
   autoscaling:
     enabled: false
-    minReplicas: 1
-    maxReplicas: 3
+    minReplicas: 2
+    maxReplicas: 10
     behavior: {}
     # targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
@@ -370,11 +373,11 @@ collector:
       # port: 9411
       # nodePort:
     otlp:
-      grpc: {}
-        # port: 4317
+      grpc:
+        port: 4317
         # nodePort:
-      http: {}
-        # port: 4318
+      http:
+        port: 4318
         # nodePort:
   ingress:
     enabled: false
@@ -476,6 +479,16 @@ collector:
     # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#endpoint
     metricRelabelings: []
   initContainers: []
+  networkPolicy:
+    enabled: false
+    # ingressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
+    # egressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
 
 query:
   enabled: true
@@ -609,6 +622,16 @@ query:
   #       "trackErrors": true
   #     }
   #   }
+  networkPolicy:
+    enabled: false
+    # ingressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
+    # egressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
 
 spark:
   enabled: false
@@ -671,7 +694,7 @@ esIndexCleaner:
     # requests:
     #   cpu: 256m
     #   memory: 128Mi
-  numberOfDays: 5
+  numberOfDays: 3
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
