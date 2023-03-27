@@ -40,6 +40,8 @@
         - /opt/loki
         - /opt/prometheus
         - /opt/observability/metrics
+        - /opt/observability/logs
+        - /opt/observability/traces
 
 #    - name: Install kubernetes apply pre-requisites
 #      pip:
