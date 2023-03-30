@@ -1,12 +1,3 @@
-# Create Ubuntu 22.04 image
-microstack.openstack image create --file jammy-server-cloudimg-amd64.img --disk-format qcow2 \
---container-format bare --public ubuntu22.04
-
-# Create flavors
-microstack.openstack flavor create m2.tiny --id 6 --ram 1024 --disk 10 --vcpus 1 --rxtx-factor 1
-microstack.openstack flavor create m2.small --id 7 --ram 4096 --disk 80 --vcpus 2 --rxtx-factor 1
-microstack.openstack flavor create m2.large --id 8 --ram 8192 --disk 120 --vcpus 4 --rxtx-factor 1
-
 # Create vm instances
 microstack.openstack server create --image  ubuntu22.04 --security-group default --availability-zone nova:worker1 --flavor m2.small --network c62d9fb5-ebeb-4c19-837c-0882129f5918 master1
 microstack.openstack server create --image  ubuntu22.04 --security-group default --availability-zone nova:worker1 --flavor m1.medium --network c62d9fb5-ebeb-4c19-837c-0882129f5918 worker1

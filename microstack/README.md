@@ -4,6 +4,9 @@ These are the instructions to setup a lightweight Kubernetes cluster using Micro
 ### Provision Microstack cluster
 Execute the commands from [provision-microstack-cluster.sh](provision-microstack-cluster.sh)
 
+### Create Images and Flavors for VMs
+Execute the commands from [create-image-flavor.sh](create-image-flavor.sh)
+
 ### Provision VMs
 Execute the commands from [provision-microstack-vms.sh](provision-microstack-vms.sh)
 
@@ -20,9 +23,9 @@ Once k8s cluster is up, you can follow DESK installation instructions from [here
 ### Additional: Modify Cloud VM Image to Create a New User and Add SSH Key
 If you are unable to access VM using the ssh key provided by MicroStack, you can modify the cloud image to create a new user and add your ssh key.
 
-- First get the cloud image from [official repo](https://cloud-images.ubuntu.com/releases/20.04/release/).
+- First go to the directory where your cloud image resides.
 
-- Next run the following commands to modify the image (e.g., jammy-server-cloudimg-amd64.img) and don't forget to change the ssh key.
+- Next run the following commands to modify the image (e.g., jammy-server-cloudimg-amd64.img) and don't forget to change the ssh key. Also, make sure correct indentation after copying and pasting the below code in the cloud.cfg file.
 
     ```bash
     sudo guestfish --rw -a jammy-server-cloudimg-amd64.img
