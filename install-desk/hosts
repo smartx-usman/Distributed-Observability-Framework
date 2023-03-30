@@ -3,7 +3,7 @@ master1 ansible_host=10.20.20.10 ansible_user=aida
 
 [workers]
 worker1 ansible_host=10.20.20.11 ansible_user=aida
-worker2 ansible_host=10.20.20.12 ansible_user=aida
+observability ansible_host=10.20.20.12 ansible_user=aida
 worker3 ansible_host=10.20.20.13 ansible_user=aida
 worker4 ansible_host=10.20.20.14 ansible_user=aida
 worker5 ansible_host=10.20.20.15 ansible_user=aida
