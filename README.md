@@ -29,6 +29,8 @@ pip3 install kubernetes
 Modify desk-install/hosts file to specify correct IP addresses of the Kubernetes cluster nodes.
 
 ### Install DESK
+Before starting the installation process, please modify install-observability-services.yaml file to enable which services you want to install. By default, all services are disabled.
 ```shell
-ansible-playbook -i install-desk/hosts install-desk/main.yaml
+cd install-desk
+ansible-playbook -i hosts install-observability-services.yaml 
 ```

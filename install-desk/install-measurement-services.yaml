@@ -1,0 +1,41 @@
+---
+- name: Add Promtail Helm repo
+  when: install_promtail
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: "https://grafana.github.io/helm-charts"
+
+- name: Install Promtail using Helm
+  when: install_promtail
+  kubernetes.core.helm:
+    kubeconfig: /home/aida/.kube/config
+    name: promtail
+    chart_ref: grafana/promtail
+    release_namespace: measurement
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/promtail-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 60
+  when: install_promtail
+
+- name: Create Telegraf Service
+  when: install_telegraf
+  kubernetes.core.k8s:
+    kubeconfig: /home/aida/.kube/config
+    state: present
+    src: "{{ playbook_dir }}/../tools/telegraf/telegraf-serviceaccount.yaml"
+
+- name: Deploy Telegraf Agent on Workers Node
+  when: install_telegraf
+  kubernetes.core.k8s:
+    kubeconfig: /home/aida/.kube/config
+    state: present
+    src: "{{ playbook_dir }}/../tools/telegraf/telegraf-ds-worker.yaml"
+
+- name: Deploy Telegraf Agent on Master Node
+  when: install_telegraf
+  kubernetes.core.k8s:
+    kubeconfig: /home/aida/.kube/config
+    state: present
+    src: "{{ playbook_dir }}/../tools/telegraf/telegraf-ds-master.yaml"

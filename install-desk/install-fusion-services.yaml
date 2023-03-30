@@ -1,0 +1,7 @@
+---
+- name: Deploy Kafka consumers
+  when: install_kc_nm
+  kubernetes.core.k8s:
+    kubeconfig: /home/aida/.kube/config
+    state: present
+    src: "{{ playbook_dir }}/../tools/kafka-consumers/kc-nm-deployment.yaml"
