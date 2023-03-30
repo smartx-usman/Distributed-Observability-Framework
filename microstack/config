@@ -1,0 +1,39 @@
+Host k8s-master-1
+    HostName 10.20.20.10
+    User aida
+
+Host k8s-worker-1
+    HostName 10.20.20.11
+    User aida
+
+Host k8s-worker-2
+    HostName 10.20.20.12
+    User aida
+
+Host k8s-worker-3
+    HostName 10.20.20.13
+    User aida
+
+Host k8s-worker-4
+    HostName 10.20.20.14
+    User aida
+
+Host k8s-worker-5
+    HostName 10.20.20.15
+    User aida
+
+Host k8s-worker-6
+    HostName 10.20.20.16
+    User aida
+
+Host k8s-worker-7
+    HostName 10.20.20.17
+    User aida
+
+Host k8s-worker-8
+    HostName 10.20.20.18
+    User aida
+
+Host k8s-worker-9
+    HostName 10.20.20.19
+    User aida
