@@ -28,7 +28,13 @@ pip3 install kubernetes
 ### Before installing DESK
 Modify desk-install/hosts file to specify correct IP addresses of the Kubernetes cluster nodes.
 
-### Install DESK
+#### Create Node Label
+Set label on the kubernetes nodes where these monitoring services will be installed (if not already done).
+```shell
+kubectl label nodes worker3 disktype=ssd ostype=normal appstype=observability flavor=large
+```
+
+#### Install DESK
 Before starting the installation process, please modify install-observability-services.yaml file to enable which services you want to install. By default, all services are disabled.
 ```shell
 cd install-desk
