@@ -1,0 +1,44 @@
+---
+- hosts: master
+  become: yes
+  gather_facts: true
+  vars:
+    install_deps_master: true
+  tasks:
+    - include_tasks: 10-install-deps-master.yaml
+      when: install_deps_master
+
+- hosts: observability
+  gather_facts: true
+  vars:
+    install_deps_obs_server: true
+  tasks:
+    - include_tasks: 20-install-deps-obs-server.yaml
+      when: install_deps_obs_server
+
+- hosts: master
+  gather_facts: true
+  vars:
+    kubernetes_config_path: "{{ ansible_user_dir }}/.kube/config"
+    install_kafka: false
+    install_rabbitmq: false
+    install_elasticsearch: false
+    install_grafana: false
+    install_prometheus: false
+    install_loki: false
+    install_jaeger: false
+    install_telegraf: false
+    install_promtail: false
+    install_kc_nm: false
+  tasks:
+    - include_tasks: 30-create-kubernetes-objects.yaml
+
+    - include_tasks: 40-install-delivery-services.yaml
+
+    - include_tasks: 50-install-storage-services.yaml
+
+    - include_tasks: 60-install-visualization-services.yaml
+
+    - include_tasks: 70-install-fusion-services.yaml
+
+    - include_tasks: 80-install-measurement-services.yaml
