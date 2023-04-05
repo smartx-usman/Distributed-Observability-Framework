@@ -8,7 +8,7 @@
 - name: Install Grafana using Helm
   when: install_grafana
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: grafana
     chart_ref: grafana/grafana
     release_namespace: observability
