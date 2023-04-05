@@ -1,5 +1,6 @@
 ---
 - name: Add Zookeeper and Kafka Helm repo
+  when: install_kafka
   kubernetes.core.helm_repository:
     name: bitnami
     repo_url: "https://charts.bitnami.com/bitnami"
@@ -7,7 +8,7 @@
 - name: Install Zookeeper and Kafka using Helm
   when: install_kafka
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: bitnami
     chart_ref: bitnami/kafka
     release_namespace: observability
@@ -21,7 +22,7 @@
 - name: Install Rabbitmq using Helm
   when: install_rabbitmq
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: rabbitmq
     chart_ref: bitnami/rabbitmq
     release_namespace: measurement
