@@ -8,7 +8,7 @@
 - name: Install Promtail using Helm
   when: install_promtail
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: promtail
     chart_ref: grafana/promtail
     release_namespace: measurement
@@ -22,20 +22,20 @@
 - name: Create Telegraf Service
   when: install_telegraf
   kubernetes.core.k8s:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     state: present
     src: "{{ playbook_dir }}/../tools/telegraf/telegraf-serviceaccount.yaml"
 
 - name: Deploy Telegraf Agent on Workers Node
   when: install_telegraf
   kubernetes.core.k8s:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     state: present
     src: "{{ playbook_dir }}/../tools/telegraf/telegraf-ds-worker.yaml"
 
 - name: Deploy Telegraf Agent on Master Node
   when: install_telegraf
   kubernetes.core.k8s:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     state: present
     src: "{{ playbook_dir }}/../tools/telegraf/telegraf-ds-master.yaml"
