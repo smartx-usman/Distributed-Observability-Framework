@@ -3,23 +3,25 @@
 [![GitHub forks](https://img.shields.io/github/forks/smartx-usman/Distributed-Observability-Framework?style=plastic)](https://github.com/smartx-usman/Distributed-Observability-Framework/network)
 
 # Distributed-Observability-Framework (DESK)
-This repository contains a set of monitoring and observability tools that are being developed for AIDA project.
+This repository contains a set of monitoring and observability tools that are being developed for infra, platform and applications performance observability.
 
 ### Prerequisites
 - Kubernetes 1.23+
 - Ubuntu 20.04+
+- Identical OS user (e.g., user with name 'aida') on all the cluster nodes with root privileges
 
 ### Setup a Kubernetes cluster
 Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/README.md) to setup a cluster using kubeadm.
 
 
-### Install Ansible on Kubernetes master node
+### Install Required Dependencies
+#### Ansible on Kubernetes master node
 ```shell
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible
 ```
 
-### Install Kubernetes ansible module on master node
+#### Install Kubernetes ansible module on master node
 ```shell
 ansible-galaxy collection install kubernetes.core
 pip3 install kubernetes
@@ -38,5 +40,5 @@ kubectl label nodes worker3 disktype=ssd ostype=normal appstype=observability fl
 Before starting the installation process, please modify install-observability-services.yaml file to enable which services you want to install. By default, all services are disabled.
 ```shell
 cd install-desk
-ansible-playbook -i hosts install-observability-services.yaml 
+ansible-playbook -i hosts 00-install-desk.yaml 
 ```
