@@ -8,7 +8,7 @@
 - name: Install Elasticsearch using Helm
   when: install_elasticsearch
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: elasticsearch
     chart_ref: elastic/elasticsearch
     release_namespace: observability
@@ -28,7 +28,7 @@
 - name: Install Prometheus using Helm
   when: install_prometheus
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: prometheus
     chart_ref: prometheus-community/prometheus
     release_namespace: observability
@@ -48,7 +48,7 @@
 - name: Install Loki using Helm
   when: install_loki
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: loki
     chart_ref: grafana/loki
     chart_version: 2.16.0
@@ -78,7 +78,7 @@
 - name: Install Jaeger using Helm
   when: install_jaeger
   kubernetes.core.helm:
-    kubeconfig: /home/aida/.kube/config
+    kubeconfig: "{{ kubernetes_config_path }}"
     name: jaeger
     chart_ref: jaegertracing/jaeger
     release_namespace: observability
