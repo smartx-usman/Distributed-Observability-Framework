@@ -1,0 +1,17 @@
+---
+- name: Create required directories for persistent volumes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  with_items:
+    - "{{ ansible_user_dir }}/observability/elasticsearch"
+    - "{{ ansible_user_dir }}/observability/kafka"
+    - "{{ ansible_user_dir }}/observability/grafana"
+    - "{{ ansible_user_dir }}/observability/loki"
+    - "{{ ansible_user_dir }}/observability/prometheus"
+    - "{{ ansible_user_dir }}/observability/metrics"
+    - "{{ ansible_user_dir }}/observability/logs"
+    - "{{ ansible_user_dir }}/observability/traces"
