@@ -28,7 +28,7 @@ pip3 install kubernetes
 ```
 
 ### Before installing DESK
-Modify desk-install/hosts file to specify correct IP addresses of the Kubernetes cluster nodes.
+Modify desk-install/hosts file to specify correct ansible_user and IP addresses of the Kubernetes cluster nodes.
 
 #### Create Node Label
 Set label on the kubernetes nodes where these monitoring services will be installed (if not already done).
