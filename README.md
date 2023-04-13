@@ -37,7 +37,7 @@ kubectl label nodes worker3 disktype=ssd ostype=normal appstype=observability fl
 ```
 
 #### Install DESK
-Before starting the installation process, please modify install-observability-services.yaml file to enable which services you want to install. By default, all services are disabled.
+Before starting the installation process, please modify 00-install-desk.yaml file to enable which services you want to install. By default, all services are disabled.
 ```shell
 cd install-desk
 ansible-playbook -i hosts 00-install-desk.yaml 
