@@ -22,6 +22,7 @@
     kubernetes_config_path: "{{ ansible_user_dir }}/.kube/config"
     install_kafka: false
     install_rabbitmq: false
+    install_otel_collector: false
     install_elasticsearch: false
     install_grafana: false
     install_prometheus: false

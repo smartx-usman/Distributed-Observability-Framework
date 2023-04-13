@@ -32,3 +32,17 @@
 - name: Wait for Pods to start
   ansible.builtin.shell: sleep 30
   when: install_rabbitmq
+
+- name: Install OpenTelemetry Collector using Helm
+  when: install_otel_collector
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: otel
+    chart_ref: open-telemetry/opentelemetry-collector
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/otel-collector-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 30
+  when: install_otel_collector
