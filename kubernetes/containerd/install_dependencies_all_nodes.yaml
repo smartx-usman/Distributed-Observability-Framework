@@ -25,8 +25,8 @@
       file:
         path: "{{ item }}"
         state: directory
-        owner: aida
-        group: aida
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: 0755
       with_items:
         - /opt/data
