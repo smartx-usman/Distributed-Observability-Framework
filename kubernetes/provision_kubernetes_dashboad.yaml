@@ -1,45 +1,36 @@
 ---
-- hosts: workers
+- hosts: master
   become: yes
   gather_facts: false
   tasks:
     - name: Creates certs config directory
+      become: yes
       file:
         path: /certs
         state: directory
         mode: '0777'
         recurse: yes
 
-    - name: Copying files to the remote server
-      copy:
-        src: "{{ item }}"
-        dest: /home/aida
-        owner: aida
-        group: aida
-        mode: 0777
-      with_fileglob:
-        - kubernetes-dashboard/san.cnf
-
-    - name: Set join command
+    - name: Set Host IP address
       set_fact:
         target_ip: "{{ ansible_ssh_host }}"
 
-    - name: Change the IP address
+    - name: Change the IP address in the san.cnf file
       lineinfile:
-        path: san.cnf
+        path: kubernetes-dashboard/san.cnf
         regexp: '^IP.1    = "Kubernetes master IP"$'
         insertafter: '^\s*\[alt_names\]\s*$'
         line: "IP.1    = {{ target_ip }}"
 
-    - name: Show host's ip
+    - name: Print host's ip address
       debug:
         msg: "{{ ansible_ssh_host }}"
 
     - name: Create openssl key file
-      shell: openssl req -out /certs/dashboard.csr -newkey rsa:2048 -nodes -keyout /certs/dashboard.key -config san.cnf
+      shell: openssl req -out /certs/dashboard.csr -newkey rsa:2048 -nodes -keyout /certs/dashboard.key -config kubernetes-dashboard/san.cnf
 
     - name: Create certificate file
-      shell: openssl x509 -req -sha256 -days 3650 -in /certs/dashboard.csr -signkey /certs/dashboard.key -out /certs/dashboard.crt -extensions req_ext -extfile san.cnf
+      shell: openssl x509 -req -sha256 -days 3650 -in /certs/dashboard.csr -signkey /certs/dashboard.key -out /certs/dashboard.crt -extensions req_ext -extfile kubernetes-dashboard/san.cnf
 
     - name: Changes certs config directory permissions
       file:
@@ -51,11 +42,23 @@
 - hosts: master
   become: yes
   tasks:
-    - name: Create Kubernetes resources
-      shell: |    
-        kubectl apply -f kubernetes-dashboard/kubernetes-dashboard.yml
-        kubectl apply -f kubernetes-dashboard/serviceaccount.yml
-        kubectl apply -f kubernetes-dashboard/rbac.yml
+    - name: Deploy Kubernetes Dashboard Resources on the Master Node
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubernetes_config_path }}"
+        state: present
+        src: "{{ playbook_dir }}/kubernetes-dashboard/kubernetes-dashboard.yml"
 
-    - name: List kubernetes resources
+    - name: Create Kubernetes Dashboard Service Account
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubernetes_config_path }}"
+        state: present
+        src: "{{ playbook_dir }}/kubernetes-dashboard/serviceaccount.yml"
+
+    - name: Create Kubernetes Dashboard RBAC
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubernetes_config_path }}"
+        state: present
+        src: "{{ playbook_dir }}/kubernetes-dashboard/rbac.yml"
+
+    - name: List Kubernetes Dashboard Pods
       shell: kubectl get po -n kubernetes-dashboard
