@@ -18,7 +18,7 @@ Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/RE
 #### Ansible on Kubernetes master node
 ```shell
 sudo add-apt-repository --yes --update ppa:ansible/ansible
-sudo apt install -y ansible
+sudo apt install -y ansible python3-pip
 ```
 
 #### Install Kubernetes ansible module on master node
