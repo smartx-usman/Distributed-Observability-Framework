@@ -1,12 +1,11 @@
 ---
 - hosts: master
-  become: yes
   tasks:
     - name: Create .kube directory
-      become: yes
-      become_user: aida
+      become: true
+      become_user: "{{ ansible_user }}"
       file:
-        path: $HOME/.kube
+        path: "{{ ansible_user_dir }}/.kube"
         state: directory
         mode: 0755
 
@@ -14,13 +13,13 @@
       become: yes
       copy:
         src: /etc/kubernetes/admin.conf
-        dest: /home/aida/.kube/config
+        dest: "{{ ansible_user_dir }}/.kube/config"
         remote_src: yes
-        owner: aida
+        owner: "{{ ansible_user }}"
 
     - name: Get the token for joining the worker nodes
       become: yes
-      become_user: aida
+      become_user: "{{ ansible_user }}"
       shell: kubeadm token create  --print-join-command
       register: kubernetes_join_command
 
