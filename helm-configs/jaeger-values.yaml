@@ -258,7 +258,7 @@ ingester:
 agent:
   podSecurityContext: {}
   securityContext: {}
-  enabled: true
+  enabled: false
   annotations: {}
   image: jaegertracing/jaeger-agent
   # tag: 1.22
