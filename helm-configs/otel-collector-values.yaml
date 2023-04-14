@@ -95,6 +95,11 @@ config:
             type: latency,
             latency: { threshold_ms: 20 }
           },
+          {
+            name: randomized-policy,
+            type: probabilistic,
+            probabilistic: { sampling_percentage: 10 }
+          },
         ]
   receivers:
     otlp:
