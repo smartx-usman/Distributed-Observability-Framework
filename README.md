@@ -10,24 +10,16 @@ This repository contains a set of monitoring and observability tools that are be
 - Ubuntu 20.04+
 - Identical OS user (e.g., user with name 'aida') on all the cluster nodes with root privileges
 
-### Setup a Kubernetes cluster
+### Setup a Kubernetes Cluster
 Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/README.md) to setup a cluster using kubeadm.
 
 
-### Install Required Dependencies
-#### Ansible on Kubernetes master node
+### Install Required Tools for Initiating DESK Installation
 ```shell
-sudo add-apt-repository --yes --update ppa:ansible/ansible
-sudo apt install -y ansible python3-pip
+sudo ./install-deps.sh
 ```
 
-#### Install Kubernetes ansible module on master node
-```shell
-ansible-galaxy collection install kubernetes.core
-pip3 install kubernetes
-```
-
-### Before installing DESK
+### Before Installing DESK
 Modify desk-install/hosts file to specify correct ansible_user and IP addresses of the Kubernetes cluster nodes.
 
 #### Create Node Label
