@@ -10,9 +10,11 @@ This repository contains a set of monitoring and observability tools that are be
 - Ubuntu 20.04+
 - Identical OS user (e.g., user with name 'aida') on all the cluster nodes with root privileges
 
-### Setup a Kubernetes Cluster
-Please follow the instructions from [Kubeadm Ansible Installation](kubernetes/README.md) to setup a cluster using kubeadm.
-
+### Get the DESK Repository
+```shell
+git clone https://github.com/smartx-usman/Distributed-Observability-Framework.git
+cd Distributed-Observability-Framework
+```
 
 ### Install Required Tools for Initiating DESK Installation
 ```shell
@@ -20,7 +22,8 @@ sudo ./install-deps.sh
 ```
 
 ### Before Installing DESK
-Modify desk-install/hosts file to specify correct ansible_user and IP addresses of the Kubernetes cluster nodes.
+#### Setup Ansible Inventory and SSH Access
+Modify [install-desk/hosts](install-desk/hosts) file to specify correct ansible_user and IP addresses of the Kubernetes cluster nodes. Also, make sure password-less SSH access is enabled to all the cluster nodes from the master node.
 
 #### Create Node Label
 Set label on the kubernetes nodes where these monitoring services will be installed (if not already done).
@@ -28,7 +31,7 @@ Set label on the kubernetes nodes where these monitoring services will be instal
 kubectl label nodes worker3 disktype=ssd ostype=normal appstype=observability flavor=large
 ```
 
-#### Install DESK
+### Install DESK
 Before starting the installation process, please modify 00-install-desk.yaml file to enable which services you want to install. By default, all services are disabled.
 ```shell
 cd install-desk
