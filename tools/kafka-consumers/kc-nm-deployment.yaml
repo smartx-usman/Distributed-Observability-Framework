@@ -53,7 +53,7 @@ spec:
         - name: test-volume
           hostPath:
             # directory location on host
-            path: /opt/observability/metrics
+            path: /home/aida/observability/metrics
             # this field is optional
             type: Directory
       restartPolicy: Always
