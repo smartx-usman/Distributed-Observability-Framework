@@ -1,0 +1,52 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-metrics-streaming
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: "usman476/streaming:latest"
+  imagePullPolicy: Always
+  mainApplicationFile: "local:///opt/spark/examples/src/main/python/metrics-stream.py"
+  sparkVersion: "3.1.1"
+  restartPolicy:
+    type: Never
+  volumes:
+    - name: "test-volume"
+      hostPath:
+        path: "/tmp"
+        type: Directory
+  driver:
+    env:
+      - name: KAFKA_BROKER
+        value: "bitnami-kafka-headless.observability.svc.cluster.local:9092"
+      - name: KAFKA_TOPIC
+        value: "telegraf_disk"
+      - name: ES_NODES
+        value: "es-master-headless.observability.svc.cluster.local"
+    cores: 1
+      #coreLimit: "200m"
+    memory: "512m"
+    labels:
+      version: 3.1.1
+    serviceAccount: spark
+    volumeMounts:
+      - name: "test-volume"
+        mountPath: "/tmp"
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    env:
+      - name: KAFKA_BROKER
+        value: "bitnami-kafka-headless.observability.svc.cluster.local:9092"
+      - name: KAFKA_TOPIC
+        value: "telegraf_disk"
+      - name: ES_NODES
+        value: "es-master-headless.observability.svc.cluster.local"
+    labels:
+      version: 3.1.1
+    volumeMounts:
+      - name: "test-volume"
+        mountPath: "/tmp"

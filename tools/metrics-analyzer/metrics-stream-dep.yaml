@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: metrics-anomaly-detector
+  namespace: observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metrics-anomaly-detector
+  template:
+    metadata:
+      labels:
+        app: metrics-anomaly-detector
+    spec:
+      containers:
+      - name: metrics-anomaly-detector
+        image: usman476/desk-metrics-streaming:latest
+        #command: ["spark-submit", "--master", "k8s://https://192.168.222.82:6443", "--deploy-mode", "cluster", "--name", "desk-metrics-anomaly", "--conf", "spark.executor.instances=2", "--conf", "spark.kubernetes.container.image=usman476/desk-metrics-streaming:latest", "--conf", "spark.kubernetes.authenticate.driver.serviceAccountName=spark", "--conf", "spark.kubernetes.driver.pod.name=metrics-anomaly-detector", "--conf", "spark.kubernetes.namespace=observability", "--conf", "spark.authenticate=false", "/kafka_elasticsearch_anomaly.py"]
+        command: [sleep, "infinity"]
+        #command: ["spark-submit", "--master", "spark://192.168.222.82:30023", "--name", "desk-metrics-anomaly", "--conf", "spark.executor.instances=2", "--conf", "spark.authenticate=false", "metrics-stream.py"]
+        #command: ["spark-submit"]
+        #args:  ["--master", "spark://192.168.222.82:30023", "--name", "desk-metrics-anomaly", "--conf", "spark.executor.instances=2", "--conf", "spark.jars.ivy=/tmp/.ivy", "--class", "org.fusion.streaming.MetricsStreaming", "examples/jars/desk_metrics_stream.jar"]
+        volumeMounts:
+          - mountPath: /metrics
+            name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            # directory location on host
+            path: /home/aida/observability/metrics
+            # this field is optional
+            type: Directory
+      nodeSelector:
+        appstype: observability

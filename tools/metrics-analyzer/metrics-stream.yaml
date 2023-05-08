@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-stream-deployment
+  namespace: observability
+  labels:
+    app: desk-metrics-stream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: desk-metrics-stream
+  template:
+    metadata:
+      labels:
+        app: desk-metrics-stream
+    spec:
+      containers:
+      - name: desk-metrics-stream-container
+        image: usman476/desk-metrics-streaming:latest
+        imagePullPolicy: "Always"
+        env:
+        - name: "JAR_FILE"
+          value: "kafka-consumer-metrics-0.1.0-jar-with-dependencies.jar"
+        - name: "KAFKA_BROKER"
+          value: "bitnami-kafka-headless.observability.svc.cluster.local:9092"
+        - name: "DATA_STORE"
+          value: "file"
+        - name: "ES_HOSTNAME"
+          value: "es-master-headless.observability.svc.cluster.local"
+        - name: "ES_PORT"
+          value: "9200"
+        - name: "ES_INDEX_RETENTION_DAYS"
+          value: "2d"
+        - name: "PROMETHEUS_PUSHGATEWAY"
+          value: "prometheus-prometheus-pushgateway.observability.svc.cluster.local:9091"
+        - name: "TOPICS_LIST"
+          value: "topics-list.json"
+        #command: ["spark-submit"]
+        command : ["sleep"]
+        args: ["infinity"]
+        #args: ["--master", "spark://10.20.20.184:30023", "metrics-stream.py"]
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        volumeMounts:
+          - mountPath: /metrics
+            name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            # directory location on host
+            path: /home/aida/observability/metrics
+            # this field is optional
+            type: Directory
+      restartPolicy: Always
+      nodeSelector:
+        appstype: observability
