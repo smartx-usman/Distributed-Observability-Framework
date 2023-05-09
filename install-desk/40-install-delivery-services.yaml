@@ -33,6 +33,12 @@
   ansible.builtin.shell: sleep 30
   when: install_rabbitmq
 
+- name: Add OpenTelemetry Collector Helm repo
+  when: install_otel_collector
+  kubernetes.core.helm_repository:
+    name: open-telemetry
+    repo_url: "https://open-telemetry.github.io/opentelemetry-helm-charts"
+
 - name: Install OpenTelemetry Collector using Helm
   when: install_otel_collector
   kubernetes.core.helm:
