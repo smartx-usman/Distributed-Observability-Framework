@@ -20,6 +20,7 @@
   gather_facts: true
   vars:
     kubernetes_config_path: "{{ ansible_user_dir }}/.kube/config"
+    create_kubernetes_objects: false
     install_kafka: false
     install_rabbitmq: false
     install_otel_collector: false
@@ -28,11 +29,13 @@
     install_prometheus: false
     install_loki: false
     install_jaeger: false
+    install_spark: false
     install_telegraf: false
     install_promtail: false
     install_kc_nm: false
   tasks:
     - include_tasks: 30-create-kubernetes-objects.yaml
+      when: create_kubernetes_objects
 
     - include_tasks: 40-install-delivery-services.yaml
 
