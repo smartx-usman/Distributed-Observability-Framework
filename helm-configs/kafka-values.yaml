@@ -940,7 +940,7 @@ networkPolicy:
 persistence:
   ## @param persistence.enabled Enable Kafka data persistence using PVC, note that ZooKeeper persistence is unaffected
   ##
-  enabled: true
+  enabled: false
   ## @param persistence.existingClaim A manually managed Persistent Volume and Claim
   ## If defined, PVC must be created manually before volume will be bound
   ## The value is evaluated as a template
@@ -1772,6 +1772,8 @@ zookeeper:
   ## @param zookeeper.replicaCount Number of ZooKeeper nodes
   ##
   replicaCount: 1
+  nodeSelector:
+    appstype: observability
   ## ZooKeeper authenticaiton
   ##
   auth:
@@ -1799,7 +1801,7 @@ zookeeper:
   ## @param zookeeper.persistence.size Persistent Volume size
   ##
   persistence:
-    enabled: true
+    enabled: false
     storageClass: ""
     accessModes:
       - ReadWriteOnce
