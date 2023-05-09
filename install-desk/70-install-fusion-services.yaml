@@ -5,3 +5,23 @@
     kubeconfig: "{{ kubernetes_config_path }}"
     state: present
     src: "{{ playbook_dir }}/../tools/kafka-consumers/kc-nm-deployment.yaml"
+
+- name: Add Spark-Operator Helm repo
+  when: install_spark
+  kubernetes.core.helm_repository:
+    name: spark-operator
+    repo_url: "https://googlecloudplatform.github.io/spark-on-k8s-operator"
+
+- name: Install Spark using Helm
+  when: install_spark
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: spark
+    chart_ref: spark-operator/spark-operator
+    release_namespace: observability
+    values:
+      enableWebhook: true
+      enableMetrics: false
+      nodeSelector.appstype: observability
+      serviceAccounts.spark.name: spark
+      sparkJobNamespace: default
