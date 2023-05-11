@@ -17,7 +17,7 @@ trap '{ set +x; } 2>/dev/null; echo -n "[$(date -Is)]  "; set -x' DEBUG
 
 echo -e "$Yellow Installing required tools for initiating DESK deployment..." >&3
 echo -e "$BBlue Install Python3 pip" >&3
-sudo apt install -y ansible python3-pip
+sudo apt install -y python3-pip
 
 echo -e "$BBlue Install Ansible" >&3
 sudo add-apt-repository --yes --update ppa:ansible/ansible
