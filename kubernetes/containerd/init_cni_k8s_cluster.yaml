@@ -1,9 +1,6 @@
 ---
 - hosts: master
   become: yes
-  vars:
-    API_SERVER_IP: "{{ ansible_ssh_host }}"
-    API_SERVER_PORT: 6443
   tasks:
     - name: Add Helm apt-key
       apt_key:
@@ -24,6 +21,12 @@
           - helm
         state: latest
 
+- hosts: master
+  become_user: aida
+  vars:
+    API_SERVER_IP: "{{ ansible_ssh_host }}"
+    API_SERVER_PORT: 6443
+  tasks:
     - name: Add Cilium Helm repo
       kubernetes.core.helm_repository:
         name: cilium
