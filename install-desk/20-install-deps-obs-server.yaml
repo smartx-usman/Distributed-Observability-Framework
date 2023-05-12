@@ -12,6 +12,16 @@
     - "{{ ansible_user_dir }}/observability/grafana"
     - "{{ ansible_user_dir }}/observability/loki"
     - "{{ ansible_user_dir }}/observability/prometheus"
+
+- name: Create required directories for data storage
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: a+rwx
+  with_items:
     - "{{ ansible_user_dir }}/observability/metrics"
     - "{{ ansible_user_dir }}/observability/logs"
     - "{{ ansible_user_dir }}/observability/traces"
