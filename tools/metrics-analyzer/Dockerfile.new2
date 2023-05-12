@@ -1,0 +1,67 @@
+# Base image with Python and Spark installed
+#FROM apache/spark:v3.4.0
+#FROM jupyter/pyspark-notebook:latest
+#FROM gcr.io/spark-operator/spark-py:v3.1.1
+FROM python:3.8-slim-buster
+
+# Install Java
+RUN apt-get update && apt-get install -y openjdk-11-jre-headless && apt-get clean
+
+# Set Spark and Hadoop versions
+ENV SPARK_VERSION 3.4.0
+ENV HADOOP_VERSION 3
+
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install wget curl
+
+# Download and install Spark
+RUN curl -O https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz && \
+    tar -xvf spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz && \
+    mv spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION /opt/spark && \
+    rm spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz
+
+# Set Spark home
+ENV SPARK_HOME /opt/spark
+
+# Set Python path for PySpark
+ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip
+
+# Install PySpark
+RUN pip install pyspark
+
+# Set entrypoint
+#ENTRYPOINT ["/spark/bin/spark-submit"]
+
+
+ARG Pathdir="/opt/spark/examples/src/main/python"
+#WORKDIR $Pathdir
+#RUN mkdir $Pathdir
+
+#USER 0
+
+
+
+# Install Kafka and Elasticsearch dependencies
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt && rm -rf requirements.txt
+
+# Download required jars for Spark
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.4.0/spark-sql-kafka-0-10_2.12-3.4.0.jar
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/apache/spark/spark-streaming-kafka-0-10_2.12/3.4.0/spark-streaming-kafka-0-10_2.12-3.4.0.jar
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-spark-30_2.12/7.15.1/elasticsearch-spark-30_2.12-7.15.1.jar
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.0/kafka-clients-3.4.0.jar
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/3.4.0/spark-token-provider-kafka-0-10_2.13-3.4.0.jar
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar
+RUN apt-get remove --purge -y wget && rm -rf /var/lib/apt/lists/*
+
+USER 185
+
+# Copy the application files
+COPY metrics-stream.py $Pathdir
+
+ENV PYSPARK_PYTHON=/usr/bin/python3
+RUN export PYSPARK_PYTHON=/usr/bin/python3
+
+# Start the Spark Streaming job when the container starts
+#CMD ["spark-submit", "--master", "local[*]", "metrics-stream.py"]
+#CMD ["spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0,org.elasticsearch:elasticsearch-spark-30_2.12:7.15.1", "--master", "local[*]", "--py-files", "metrics-stream.py", "metrics-stream.py"]
+#spark-submit --master local[*] --deploy-mode client --class org.apache.spark.deploy.PythonRunner --conf spark.jars.ivy=/tmp/.ivy local:///opt/spark/examples/src/main/python/metrics-stream.py

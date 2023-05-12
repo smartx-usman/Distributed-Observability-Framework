@@ -1,6 +1,28 @@
 ---
 - hosts: master
   become: yes
+  tasks:
+    - name: Add Helm apt-key
+      apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+        state: present
+
+    - name: Add Helm apt repository
+      apt_repository:
+        repo: deb https://baltocdn.com/helm/stable/debian/ all main
+        state: present
+        filename: 'helm-stable-debian.list'
+
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - apt-transport-https
+          - python3-pip
+          - helm
+        state: latest
+
+- hosts: master
+  become_user: aida
   vars:
     API_SERVER_IP: "{{ ansible_ssh_host }}"
     API_SERVER_PORT: 6443
@@ -12,7 +34,7 @@
 
     - name: Install Cilium CNI using Helm
       kubernetes.core.helm:
-        kubeconfig: /home/aida/.kube/config
+        kubeconfig: "{{ ansible_user_dir }}/.kube/config"
         name: cilium
         chart_ref: cilium/cilium
         chart_version: 1.13.0

@@ -7,6 +7,9 @@ provisionDataStore:
   elasticsearch: false
   kafka: false
 
+networkPolicy:
+  enabled: false
+
 # Overrides the image tag where default is the chart appVersion.
 tag: ""
 
@@ -48,6 +51,7 @@ allInOne:
     #   - secretName: chart-example-tls
     #     hosts:
     #       - chart-example.local
+    pathType:
   # resources:
   #   limits:
   #     cpu: 500m
@@ -61,8 +65,11 @@ storage:
   # allowed values (cassandra, elasticsearch)
   type: elasticsearch
   cassandra:
-    host: cassandra-headless.uc1.svc.cluster.local
+    host: cassandra-headless.observability.svc.cluster.local
     port: 9042
+    # Change this value to false if you want to avoid starting the
+    # -cassandra-schema Job
+    schemaJobEnabled: true
     tls:
       enabled: false
       secretName: cassandra-tls-secret
@@ -92,6 +99,7 @@ storage:
     scheme: http
     host: es-master-headless.observability.svc.cluster.local
     port: 9200
+    anonymous: false
     user: elastic
     usePassword: false
     password: changeme
@@ -115,10 +123,13 @@ storage:
       # es.index-prefix: test
       es.version: 7
       es.create-index-templates: "false"
+    tls:
+      enabled: false
+      secretName: es-tls-secret
   kafka:
     brokers:
       - bitnami-kafka-headless.observability.svc.cluster.local:9092
-    topic: jaeger_v1_traces
+    topic: jaeger_v1_test
     authentication: none
     extraEnv: []
   grpcPlugin:
@@ -190,7 +201,7 @@ schema:
 elasticsearch: {}
 
 ingester:
-  enabled: true
+  enabled: false
   podSecurityContext: {}
   securityContext: {}
   annotations: {}
@@ -204,6 +215,7 @@ ingester:
     enabled: false
     minReplicas: 2
     maxReplicas: 10
+    behavior: {}
     # targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   service:
@@ -246,7 +258,7 @@ ingester:
 agent:
   podSecurityContext: {}
   securityContext: {}
-  enabled: true
+  enabled: false
   annotations: {}
   image: jaegertracing/jaeger-agent
   # tag: 1.22
@@ -335,8 +347,9 @@ collector:
   replicaCount: 3
   autoscaling:
     enabled: false
-    minReplicas: 1
-    maxReplicas: 3
+    minReplicas: 2
+    maxReplicas: 10
+    behavior: {}
     # targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   service:
@@ -360,11 +373,11 @@ collector:
       # port: 9411
       # nodePort:
     otlp:
-      grpc: {}
-        # port: 4317
+      grpc:
+        port: 4317
         # nodePort:
-      http: {}
-        # port: 4318
+      http:
+        port: 4318
         # nodePort:
   ingress:
     enabled: false
@@ -391,6 +404,7 @@ collector:
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
+    pathType:
   resources: {}
     # limits:
     #   cpu: 1
@@ -464,6 +478,17 @@ collector:
     # -- ServiceMonitor metric relabel configs to apply to samples before ingestion
     # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#endpoint
     metricRelabelings: []
+  initContainers: []
+  networkPolicy:
+    enabled: false
+    # ingressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
+    # egressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
 
 query:
   enabled: true
@@ -539,6 +564,7 @@ query:
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
+    pathType:
     health:
       exposed: false
   resources: {}
@@ -596,6 +622,16 @@ query:
   #       "trackErrors": true
   #     }
   #   }
+  networkPolicy:
+    enabled: false
+    # ingressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
+    # egressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
 
 spark:
   enabled: false
@@ -603,7 +639,7 @@ spark:
   image: jaegertracing/spark-dependencies
   imagePullSecrets: []
   tag: latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   cmdlineParams: {}
   extraEnv: []
   schedule: "49 23 * * *"
@@ -642,7 +678,7 @@ esIndexCleaner:
   annotations: {}
   image: jaegertracing/jaeger-es-index-cleaner
   imagePullSecrets: []
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   cmdlineParams: {}
   extraEnv: []
     # - name: ROLLOVER
@@ -658,7 +694,7 @@ esIndexCleaner:
     # requests:
     #   cpu: 256m
     #   memory: 128Mi
-  numberOfDays: 5
+  numberOfDays: 3
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -685,7 +721,7 @@ esRollover:
   image: jaegertracing/jaeger-es-rollover
   imagePullSecrets: []
   tag: latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   cmdlineParams: {}
   extraEnv:
     - name: CONDITIONS
@@ -735,7 +771,7 @@ esLookback:
   image: jaegertracing/jaeger-es-rollover
   imagePullSecrets: []
   tag: latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   cmdlineParams: {}
   extraEnv:
     - name: UNIT
@@ -777,7 +813,7 @@ hotrod:
   replicaCount: 1
   image:
     repository: jaegertracing/example-hotrod
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     pullSecrets: []
   service:
     annotations: {}
@@ -802,6 +838,7 @@ hotrod:
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
+    pathType:
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little

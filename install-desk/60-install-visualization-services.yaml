@@ -1,0 +1,20 @@
+---
+- name: Add Grafana Helm repo
+  when: install_grafana
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: "https://grafana.github.io/helm-charts"
+
+- name: Install Grafana using Helm
+  when: install_grafana
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: grafana
+    chart_ref: grafana/grafana
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/grafana-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 30
+  when: install_grafana

@@ -1,0 +1,86 @@
+---
+- name: Add Elasticsearch Helm repo
+  when: install_elasticsearch
+  kubernetes.core.helm_repository:
+    name: elastic
+    repo_url: "https://helm.elastic.co"
+
+- name: Install Elasticsearch using Helm
+  when: install_elasticsearch
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: elasticsearch
+    chart_ref: elastic/elasticsearch
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/elasticsearch-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 60
+  when: install_elasticsearch
+
+- name: Add Prometheus Helm repo
+  when: install_prometheus
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: "https://prometheus-community.github.io/helm-charts"
+
+- name: Install Prometheus using Helm
+  when: install_prometheus
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: prometheus
+    chart_ref: prometheus-community/prometheus
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/prometheus-values.yaml"
+
+- name: Wait for Pods to start
+  when: install_prometheus
+  ansible.builtin.shell: sleep 30
+
+- name: Add Loki Helm repo
+  when: install_loki
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: "https://grafana.github.io/helm-charts"
+
+- name: Install Loki using Helm
+  when: install_loki
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: loki
+    chart_ref: grafana/loki
+    chart_version: 2.16.0
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/loki-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 30
+  when: install_loki
+
+#    - name: Install Tempo using Helm
+#      kubernetes.core.helm:
+#        kubeconfig: /home/aida/.kube/config
+#        name: tempo
+#        chart_ref: grafana/tempo
+#        release_namespace: observability
+#        values_files:
+#          - "{{ playbook_dir }}/../helm-configs/tempo-values.yaml"
+
+- name: Add Jaeger Helm repo
+  when: install_jaeger
+  kubernetes.core.helm_repository:
+    name: jaegertracing
+    repo_url: "https://jaegertracing.github.io/helm-charts"
+
+- name: Install Jaeger using Helm
+  when: install_jaeger
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: jaeger
+    chart_ref: jaegertracing/jaeger
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/jaeger-values.yaml"

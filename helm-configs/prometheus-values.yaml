@@ -4,7 +4,7 @@ rbac:
 podSecurityPolicy:
   enabled: false
 
-imagePullSecrets:
+imagePullSecrets: []
 # - name: "image-pull-secret"
 
 ## Define serviceAccount names for components. Defaults to component's fully qualified name.
@@ -12,11 +12,11 @@ imagePullSecrets:
 serviceAccounts:
   server:
     create: true
-    name:
+    name: ""
     annotations: {}
 
 ## Monitors ConfigMap changes and POSTs to a URL
-## Ref: https://github.com/jimmidyson/configmap-reload
+## Ref: https://github.com/prometheus-operator/prometheus-operator/tree/main/cmd/prometheus-config-reloader
 ##
 configmapReload:
   prometheus:
@@ -31,8 +31,10 @@ configmapReload:
     ## configmap-reload container image
     ##
     image:
-      repository: jimmidyson/configmap-reload
-      tag: v0.8.0
+      repository: quay.io/prometheus-operator/prometheus-config-reloader
+      tag: v0.63.0
+      # When digest is set to a non-empty value, images will be pulled by digest (regardless of tag value).
+      digest: ""
       pullPolicy: IfNotPresent
 
     # containerPort: 9533
@@ -107,6 +109,8 @@ server:
     repository: quay.io/prometheus/prometheus
     # if not set appVersion field from Chart.yaml is used
     tag: ""
+    # When digest is set to a non-empty value, images will be pulled by digest (regardless of tag value).
+    digest: ""
     pullPolicy: IfNotPresent
 
   ## prometheus server priorityClassName
@@ -185,6 +189,17 @@ server:
   ## https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_read
   ##
   remoteRead: []
+
+  ## https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tsdb
+  ##
+  tsdb: {}
+    # out_of_order_time_window: 0s
+
+  ## https://prometheus.io/docs/prometheus/latest/configuration/configuration/#exemplars
+  ## Must be enabled via --enable-feature=exemplar-storage
+  ##
+  exemplars: {}
+    # max_exemplars: 100000
 
   ## Custom HTTP headers for Liveness/Readiness/Startup Probe
   ##
@@ -317,6 +332,10 @@ server:
   ## Pod affinity
   ##
   affinity: {}
+
+  ## Pod topology spread constraints
+  ## ref. https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  topologySpreadConstraints: []
 
   ## PodDisruptionBudget settings
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
@@ -589,9 +608,9 @@ serverFiles:
   ## Ref: https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
   alerting_rules.yml:
     groups:
-    - name: Instances
+    - name: Hosts
       rules:
-        - alert: InstanceDown
+        - alert: HostDown
           expr: up == 0
           for: 5m
           labels:
@@ -659,11 +678,10 @@ serverFiles:
 #            labels:
 #              pushgateway_instance: aida
 
-
 # adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
 # example adds prometheus-blackbox-exporter scrape config
-extraScrapeConfigs:
+extraScrapeConfigs: ""
   # - job_name: 'prometheus-blackbox-exporter'
   #   metrics_path: /probe
   #   params:
@@ -681,7 +699,7 @@ extraScrapeConfigs:
 
 # Adds option to add alert_relabel_configs to avoid duplicate alerts in alertmanager
 # useful in H/A prometheus with different external labels but the same alerts
-alertRelabelConfigs:
+alertRelabelConfigs: {}
   # alert_relabel_configs:
   # - source_labels: [dc]
   #   regex: (.+)\d+
@@ -693,7 +711,7 @@ networkPolicy:
   enabled: false
 
 # Force namespace of namespaced resources
-forceNamespace: null
+forceNamespace: ""
 
 # Extra manifests to deploy as an array
 extraManifests: []
@@ -715,17 +733,12 @@ alertmanager:
   ##
   enabled: true
 
+  nodeSelector:
+    appstype: observability
+
   persistence:
     enabled: false
     size: 2Gi
-
-  config:
-    global:
-      resolve_timeout: 1m
-      slack_api_url: ''
-
-  nodeSelector:
-    appstype: observability
 
   podSecurityContext:
     runAsUser: 65534
@@ -762,6 +775,8 @@ prometheus-pushgateway:
   ## If false, pushgateway will not be installed
   ##
   enabled: true
+  nodeSelector:
+    appstype: observability
 
   # Optional service annotations
   serviceAnnotations:

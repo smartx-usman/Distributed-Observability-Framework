@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kc-nm-deployment
+  name: metrics-stream-deployment
   namespace: observability
   labels:
-    app: kafka-consumer-observability
+    app: desk-metrics-stream
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka-consumer-observability
+      app: desk-metrics-stream
   template:
     metadata:
       labels:
-        app: kafka-consumer-observability
+        app: desk-metrics-stream
     spec:
       containers:
-      - name: kc-nm-container
-        image: usman476/kafka-consumer-metrics:latest
+      - name: desk-metrics-stream-container
+        image: usman476/desk-metrics-streaming:latest
         imagePullPolicy: "Always"
         env:
         - name: "JAR_FILE"
@@ -37,8 +37,10 @@ spec:
           value: "prometheus-prometheus-pushgateway.observability.svc.cluster.local:9091"
         - name: "TOPICS_LIST"
           value: "topics-list.json"
-        command: ["java"]
-        args: ["-jar", "/consumers/kafka-consumer-metrics-0.1.0-jar-with-dependencies.jar"]
+        #command: ["spark-submit"]
+        command : ["sleep"]
+        args: ["infinity"]
+        #args: ["--master", "spark://10.20.20.184:30023", "metrics-stream.py"]
         resources:
           requests:
             memory: "128Mi"

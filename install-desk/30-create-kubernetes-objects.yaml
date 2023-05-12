@@ -1,0 +1,18 @@
+---
+- name: Create kubernetes namespaces
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    state: present
+    src: "{{ playbook_dir }}/../namespaces/create-namespaces.yaml"
+
+- name: Modify persistent volume yaml file
+  ansible.builtin.replace:
+    path: "{{ playbook_dir }}/../persistent-volumes/create-persistent-volume.yaml"
+    regexp: 'DATA_DIR'
+    replace: "{{ ansible_user_dir }}/observability"
+
+- name: Create kubernetes persistent volumes
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    state: present
+    src: "{{ playbook_dir }}/../persistent-volumes/create-persistent-volume.yaml"

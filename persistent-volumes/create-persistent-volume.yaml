@@ -9,7 +9,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/kafka
+    path: DATA_DIR/kafka
   claimRef:
     namespace: observability
     name: data-bitnami-zookeeper-0
@@ -34,7 +34,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/kafka
+    path: DATA_DIR/kafka
   claimRef:
     namespace: observability
     name: data-bitnami-kafka-0
@@ -59,7 +59,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/prometheus
+    path: DATA_DIR/prometheus
   claimRef:
     namespace: observability
     name: prometheus-server
@@ -84,7 +84,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/elasticsearch
+    path: DATA_DIR/elasticsearch
   claimRef:
     namespace: observability
     name: es-master-es-master-0
@@ -109,7 +109,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/loki
+    path: DATA_DIR/loki
   claimRef:
     namespace: observability
     name: storage-loki-0
@@ -134,7 +134,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/loki
+    path: DATA_DIR/loki
   claimRef:
     namespace: observability
     name: data-loki-read-0
@@ -159,7 +159,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/loki
+    path: DATA_DIR/loki
   claimRef:
     namespace: observability
     name: data-loki-write-0
@@ -184,7 +184,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /opt/grafana
+    path: DATA_DIR/grafana
   claimRef:
     namespace: observability
     name: grafana

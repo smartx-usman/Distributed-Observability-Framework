@@ -1,0 +1,54 @@
+---
+- name: Add Zookeeper and Kafka Helm repo
+  when: install_kafka
+  kubernetes.core.helm_repository:
+    name: bitnami
+    repo_url: "https://charts.bitnami.com/bitnami"
+
+- name: Install Zookeeper and Kafka using Helm
+  when: install_kafka
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: bitnami
+    chart_ref: bitnami/kafka
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/kafka-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 30
+  when: install_kafka
+
+- name: Install Rabbitmq using Helm
+  when: install_rabbitmq
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: rabbitmq
+    chart_ref: bitnami/rabbitmq
+    release_namespace: measurement
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/rabbitmq-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 30
+  when: install_rabbitmq
+
+- name: Add OpenTelemetry Collector Helm repo
+  when: install_otel_collector
+  kubernetes.core.helm_repository:
+    name: open-telemetry
+    repo_url: "https://open-telemetry.github.io/opentelemetry-helm-charts"
+
+- name: Install OpenTelemetry Collector using Helm
+  when: install_otel_collector
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: otel
+    chart_ref: open-telemetry/opentelemetry-collector
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/otel-collector-values.yaml"
+
+- name: Wait for Pods to start
+  ansible.builtin.shell: sleep 30
+  when: install_otel_collector
