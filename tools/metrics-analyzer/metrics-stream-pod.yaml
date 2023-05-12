@@ -3,21 +3,30 @@ kind: SparkApplication
 metadata:
   name: spark-metrics-streaming
 spec:
-  type: Scala
+  type: Python
+  pythonVersion: "3"
   mode: cluster
   image: "usman476/desk-metrics-streaming:latest"
   imagePullPolicy: Always
-  mainClass: org.fusion.streaming.MetricsStreaming
-  mainApplicationFile: "local:///apps/desk-metrics-stream.jar"
+  mainApplicationFile: "local:///opt/spark/examples/src/main/python/metrics-stream.py"
   sparkVersion: "3.1.1"
   restartPolicy:
     type: Never
   volumes:
-    - name: "test-volume"
+    - name: data-volume
       hostPath:
-        path: "/tmp"
+        path: /home/aida/observability/metrics
         type: Directory
+  nodeSelector:
+    appstype: observability
   driver:
+    env:
+      - name: KAFKA_BROKER
+        value: "bitnami-kafka-headless.observability.svc.cluster.local:9092"
+      - name: KAFKA_TOPIC
+        value: "telegraf_disk"
+      - name: ES_NODES
+        value: "es-master-headless.observability.svc.cluster.local"
     cores: 1
       #coreLimit: "200m"
     memory: "512m"
@@ -25,14 +34,21 @@ spec:
       version: 3.1.1
     serviceAccount: spark
     volumeMounts:
-      - name: "test-volume"
-        mountPath: "/tmp"
+      - name: data-volume
+        mountPath: /home
   executor:
     cores: 1
     instances: 1
     memory: "512m"
+    env:
+      - name: KAFKA_BROKER
+        value: "bitnami-kafka-headless.observability.svc.cluster.local:9092"
+      - name: KAFKA_TOPIC
+        value: "telegraf_disk"
+      - name: ES_NODES
+        value: "es-master-headless.observability.svc.cluster.local"
     labels:
       version: 3.1.1
     volumeMounts:
-      - name: "test-volume"
-        mountPath: "/tmp"
+      - name: data-volume
+        mountPath: /home
