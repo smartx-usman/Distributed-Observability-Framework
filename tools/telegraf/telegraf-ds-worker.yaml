@@ -25,6 +25,7 @@ data:
     [[outputs.kafka]]
       brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
       topic = "telegraf"
+      data_format = "json"
       [outputs.kafka.topic_suffix]
         method = "measurement"
         separator = "_"
