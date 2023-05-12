@@ -17,11 +17,11 @@
   shell: |
     helm upgrade --install spark spark-operator/spark-operator \
       --namespace observability \
-      --set enableWebhook=true \
-      --set enableMetrics=false \
+      --set webhook.enable=true \
+      --set metrics.enable=false \
       --set nodeSelector.appstype=observability \
       --set serviceAccounts.spark.name=spark \
-      --set sparkJobNamespace=default \
+      --set sparkJobNamespace=default 
 
 #- name: Install Spark using Helm
 #  when: install_spark
