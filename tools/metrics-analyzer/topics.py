@@ -13,6 +13,6 @@ topics = [
     'telegraf_kubernetes_pod_volume',
     'telegraf_kubernetes_daemonset',
     'telegraf_kubernetes_deployment',
-    'telegraf_kubernetes_service',
-    'telegraf_kubernetes_statefulset'
+    'telegraf_kubernetes_statefulset',
+    'telegraf_kubernetes_service'
 ]

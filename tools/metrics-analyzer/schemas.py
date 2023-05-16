@@ -195,3 +195,92 @@ schema_k8s_pod_net = StructType([
                 ])
                 )
 ])
+
+schema_k8s_deployment = StructType([
+    StructField("name", StringType()),
+    StructField("timestamp", TimestampType()),
+    StructField("fields",
+                StructType([
+                    StructField("created", LongType()),
+                    StructField("replicas_unavailable", LongType()),
+                    StructField("replicas_available", LongType())
+                ])
+                ),
+    StructField("tags",
+                StructType([
+                    StructField("namespace", StringType()),
+                    StructField("deployment_name", StringType()),
+                    StructField("host", StringType()),
+                    StructField("selector_select1", StringType())
+                ])
+                )
+])
+
+schema_k8s_daemonset = StructType([
+    StructField("name", StringType()),
+    StructField("timestamp", TimestampType()),
+    StructField("fields",
+                StructType([
+                    StructField("number_unavailable", LongType()),
+                    StructField("desired_number_scheduled", LongType()),
+                    StructField("number_available", LongType()),
+                    StructField("number_misscheduled", LongType()),
+                    StructField("number_ready", LongType()),
+                    StructField("updated_number_scheduled", LongType()),
+                    StructField("created", LongType()),
+                    StructField("generation", LongType()),
+                    StructField("current_number_scheduled", LongType())
+
+                ])
+                ),
+    StructField("tags",
+                StructType([
+                    StructField("namespace", StringType()),
+                    StructField("daemonset_name", StringType()),
+                    StructField("selector_select1", StringType())
+                ])
+                )
+])
+
+schema_k8s_statefulset = StructType([
+    StructField("name", StringType()),
+    StructField("timestamp", TimestampType()),
+    StructField("fields",
+                StructType([
+                    StructField("replicas_updated", LongType()),
+                    StructField("spec_replicas", LongType()),
+                    StructField("observed_generation", LongType()),
+                    StructField("created", LongType()),
+                    StructField("generation", LongType()),
+                    StructField("replicas", LongType()),
+                    StructField("replicas_current", LongType()),
+                    StructField("replicas_ready", LongType())
+                ])
+                ),
+    StructField("tags",
+                StructType([
+                    StructField("namespace", StringType()),
+                    StructField("statefulset_name", StringType()),
+                    StructField("selector_select1", StringType())
+                ])
+                )
+])
+
+schema_k8s_service = StructType([
+    StructField("name", StringType()),
+    StructField("timestamp", TimestampType()),
+    StructField("fields",
+                StructType([
+                    StructField("created", LongType()),
+                    StructField("generation", LongType()),
+                    StructField("port", LongType()),
+                    StructField("target_port", LongType())
+                ])
+                ),
+    StructField("tags",
+                StructType([
+                    StructField("namespace", StringType()),
+                    StructField("service_name", StringType())
+                ])
+                )
+])
