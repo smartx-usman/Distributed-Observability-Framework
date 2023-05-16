@@ -1,8 +1,9 @@
 import logging
 import os
+from datetime import datetime
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import round, col, from_json, year, month, dayofmonth
+from pyspark.sql.functions import round, col, from_json
 
 import schemas
 import topics as topics_list
@@ -15,7 +16,17 @@ es_nodes = os.environ['ES_NODES']
 
 window_size, window_slide, threshold = 30, 10, 2
 
+# file_name = "/home/metrics"
+data_dir = "/home"
+checkpoint_dir = f'{data_dir}/checkpoint/dir'
+
 logging.info(f'Number of Kafka topic to start reading data: {len(topics_list.topics)}.')
+
+# Create directories for storing data
+for directory in ["disk", "diskio", "mem", "cpu", "net", "system", "k8s_pod_con", "k8s_pod_net", "k8s_pod_vol",
+                  "k8s_pod_deployment", "k8s_pod_daemonset", "k8s_pod_statefulset", "k8s_pod_service"]:
+    if not os.path.exists(f"{data_dir}/{directory}"):
+        os.makedirs(f"{data_dir}/{directory}")
 
 # Create a SparkSessions
 spark = SparkSession \
@@ -26,18 +37,8 @@ spark = SparkSession \
 
 spark.sparkContext.setLogLevel("WARN")
 
-# file_name = "/home/metrics"
-data_dir = "/home"
-checkpoint_dir = f'{data_dir}/checkpoint/dir'
-
-# 1. application metrics
-# 2. environment metrics
-# 1. environment metrics to detect application faults without app knoweldge
-# 2. two types of logs
-# lttng logs and ordinary text file logs
-
 # Disk metrics stream processing
-df_disk = spark \
+input_disk = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -51,34 +52,34 @@ df_disk = spark \
             round("data.fields.used_percent", 2).alias("used_percent")) \
     .withWatermark("timestamp", "30 seconds")
 #    .select("data.*")
-df_disk.printSchema()
+input_disk.printSchema()
 
-formatted_df_disk = df_disk \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+
+def process_disk(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/disk-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/disk/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_disk = input_disk \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_disk) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_disk = df_disk \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_disk = input_disk \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # Diskio metrics stream processing
-df_diskio = spark \
+input_diskio = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -93,34 +94,34 @@ df_diskio = spark \
             "data.fields.write_time", "data.fields.writes") \
     .withWatermark("timestamp", "30 seconds")
 
-df_diskio.printSchema()
+input_diskio.printSchema()
 
-formatted_df_diskio = df_diskio \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+
+def process_diskio(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/diskio/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_diskio = input_diskio \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_diskio) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_diskio = df_diskio \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_diskio = df_diskio \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # Memory metrics stream processing
-df_mem = spark \
+input_mem = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -133,34 +134,49 @@ df_mem = spark \
     .select("data.timestamp", "data.tags.host", "data.name",
             round("data.fields.used_percent", 2).alias("used_percent")) \
     .withWatermark("timestamp", "30 seconds")
-df_mem.printSchema()
+input_mem.printSchema()
 
-formatted_df_mem = df_mem \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+
+# formatted_df_mem = input_mem \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir + "/mem") \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .option("truncate", "false") \
+#     .start()
+
+
+def process_mem(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/mem/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_mem = input_mem \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_mem) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_mem = df_mem \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_mem = df_mem \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # CPU metrics stream processing
-df_cpu = spark \
+input_cpu = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -182,34 +198,51 @@ df_cpu = spark \
             round("data.fields.usage_guest", 2).alias("usage_guest"),
             round("data.fields.usage_guest_nice", 2).alias("usage_guest_nice")) \
     .withWatermark("timestamp", "30 seconds")
-df_cpu.printSchema()
 
-formatted_df_cpu = df_cpu \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+input_cpu.printSchema()
+
+
+# formatted_df_cpu = input_cpu \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir) \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .partitionBy("name", "year", "month", "day") \
+#     .option("truncate", "false") \
+#     .start()
+
+
+def process_cpu(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/cpu/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_cpu = input_cpu \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_cpu) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_cpu = df_cpu \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_cpu = df_cpu \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # Network metrics stream processing
-df_net = spark \
+input_net = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -224,34 +257,51 @@ df_net = spark \
             "data.fields.drop_out", "data.fields.err_in", "data.fields.err_out",
             "data.fields.packets_recv", "data.fields.packets_sent") \
     .withWatermark("timestamp", "30 seconds")
-df_net.printSchema()
 
-formatted_df_net = df_net \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+input_net.printSchema()
+
+
+# formatted_df_net = input_net \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir) \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .partitionBy("name", "year", "month", "day") \
+#     .option("truncate", "false") \
+#     .start()
+
+
+def process_net(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/net/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_net = input_net \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_net) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_net = df_net \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_net = df_net \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # System load metrics stream processing
-df_system = spark \
+input_system = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -264,34 +314,51 @@ df_system = spark \
     .select("data.timestamp", "data.tags.host", "data.name",
             "data.fields.load1", "data.fields.load5", "data.fields.load15") \
     .withWatermark("timestamp", "30 seconds")
-df_net.printSchema()
 
-formatted_df_system = df_system \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+input_system.printSchema()
+
+
+# formatted_df_system = input_system \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir) \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .partitionBy("name", "year", "month", "day") \
+#     .option("truncate", "false") \
+#     .start()
+
+
+def process_system(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/system/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_system = input_system \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_system) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_system = df_system \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_system = df_system \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # K8S pod container usage metrics stream processing
-df_k8s_pod_con = spark \
+input_k8s_pod_con = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -312,34 +379,49 @@ df_k8s_pod_con = spark \
             "data.fields.logsfs_used_bytes", ) \
     .withWatermark("timestamp", "30 seconds")
 
-df_k8s_pod_con.printSchema()
+input_k8s_pod_con.printSchema()
 
-formatted_df_k8s_pod_con = df_k8s_pod_con \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+
+def process_k8s_pod_con(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_con/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_k8s_pod_con = input_k8s_pod_con \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_pod_con) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_k8s_pod_con = df_k8s_pod_con \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# formatted_df_k8s_pod_con = input_k8s_pod_con \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir) \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .partitionBy("name", "year", "month", "day") \
+#     .option("truncate", "false") \
+#     .start()
+
+# query_k8s_pod_con = df_k8s_pod_con \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
 
 # K8S pod network usage metrics stream processing
-df_k8s_pod_net = spark \
+input_k8s_pod_net = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -353,34 +435,51 @@ df_k8s_pod_net = spark \
             "data.fields.rx_bytes", "data.fields.rx_errors", "data.fields.tx_bytes", "data.fields.tx_errors") \
     .withWatermark("timestamp", "30 seconds")
 
-df_k8s_pod_net.printSchema()
+input_k8s_pod_net.printSchema()
 
-formatted_df_k8s_pod_net = df_k8s_pod_net \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+
+# formatted_df_k8s_pod_net = input_k8s_pod_net \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir) \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .partitionBy("name", "year", "month", "day") \
+#     .option("truncate", "false") \
+#     .start()
+
+
+def process_k8s_pod_net(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_net/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_k8s_pod_net = input_k8s_pod_net \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_pod_net) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_k8s_pod_net = df_k8s_pod_net \
-    .writeStream \
-    .trigger(processingTime='30 seconds') \
-    .outputMode("Append") \
-    .format("console") \
-    .option("truncate", "false") \
-    .option("numRows", 10) \
-    .start()
+# query_k8s_pod_net = df_k8s_pod_net \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("Append") \
+#     .format("console") \
+#     .option("truncate", "false") \
+#     .option("numRows", 10) \
+#     .start()
+
 
 # K8S pod volume usage metrics stream processing
-df_k8s_pod_vol = spark \
+input_k8s_pod_vol = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_broker) \
@@ -394,30 +493,179 @@ df_k8s_pod_vol = spark \
             "data.tags.volume_name",
             "data.fields.available_bytes", "data.fields.capacity_bytes", "data.fields.used_bytes") \
     .withWatermark("timestamp", "30 seconds")
-df_k8s_pod_vol.printSchema()
 
-formatted_df_k8s_pod_vol = df_k8s_pod_vol \
-    .withColumn("year", year("timestamp")) \
-    .withColumn("month", month("timestamp")) \
-    .withColumn("day", dayofmonth("timestamp")) \
+input_k8s_pod_vol.printSchema()
+
+
+# formatted_df_k8s_pod_vol = input_k8s_pod_vol \
+#     .withColumn("year", year("timestamp")) \
+#     .withColumn("month", month("timestamp")) \
+#     .withColumn("day", dayofmonth("timestamp")) \
+#     .writeStream \
+#     .trigger(processingTime='30 seconds') \
+#     .outputMode("append") \
+#     .format("csv") \
+#     .option("header", "true") \
+#     .option("path", data_dir) \
+#     .option("checkpointLocation", checkpoint_dir) \
+#     .partitionBy("name", "year", "month", "day") \
+#     .option("truncate", "false") \
+#     .start()
+
+
+def process_k8s_pod_vol(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_vol/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_k8s_pod_vol = input_k8s_pod_vol \
     .writeStream \
     .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_pod_vol) \
     .outputMode("append") \
-    .format("csv") \
-    .option("header", "true") \
-    .option("path", data_dir) \
-    .option("checkpointLocation", checkpoint_dir) \
-    .partitionBy("name", "year", "month", "day") \
-    .option("truncate", "false") \
     .start()
 
-query_k8s_pod_vol = df_k8s_pod_vol \
+query_k8s_pod_vol = input_k8s_pod_vol \
     .writeStream \
     .trigger(processingTime='30 seconds') \
     .outputMode("Append") \
     .format("console") \
     .option("truncate", "false") \
     .option("numRows", 10) \
+    .start()
+
+# K8S daemonset metrics stream processing
+input_k8s_daemonset = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", kafka_broker) \
+    .option("subscribe", topics_list.topics[11]) \
+    .option("startingOffsets", "latest") \
+    .option("failOnDataLoss", "false") \
+    .load() \
+    .selectExpr("CAST(value AS STRING)") \
+    .select(from_json("value", schemas.schema_k8s_daemonset).alias("data")) \
+    .select("data.timestamp", "data.name",
+            "data.tags.namespace", "data.tags.daemonset_name",
+            "data.fields.created", "data.fields.generation",
+            "data.fields.number_available", "data.fields.number_unavailable",
+            "data.fields.desired_number_scheduled", "data.fields.number_misscheduled", "data.fields.number_ready",
+            "data.fields.updated_number_scheduled", "data.fields.current_number_scheduled") \
+    .withWatermark("timestamp", "30 seconds")
+
+input_k8s_daemonset.printSchema()
+
+
+def process_k8s_daemonset(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_daemonset/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_k8s_daemonset = input_k8s_daemonset \
+    .writeStream \
+    .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_daemonset) \
+    .outputMode("append") \
+    .start()
+
+# K8S deployment metrics stream processing
+input_k8s_deployment = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", kafka_broker) \
+    .option("subscribe", topics_list.topics[12]) \
+    .option("startingOffsets", "latest") \
+    .option("failOnDataLoss", "false") \
+    .load() \
+    .selectExpr("CAST(value AS STRING)") \
+    .select(from_json("value", schemas.schema_k8s_deployment).alias("data")) \
+    .select("data.timestamp", "data.name",
+            "data.tags.namespace", "data.tags.deployment_name", "data.tags.host",
+            "data.fields.created", "data.fields.replicas_available", "data.fields.replicas_unavailable") \
+    .withWatermark("timestamp", "30 seconds")
+
+input_k8s_deployment.printSchema()
+
+
+def process_k8s_deployment(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_deployment/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_k8s_deployment = input_k8s_deployment \
+    .writeStream \
+    .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_deployment) \
+    .outputMode("append") \
+    .start()
+
+# K8S statefulset metrics stream processing
+input_k8s_statefulset = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", kafka_broker) \
+    .option("subscribe", topics_list.topics[13]) \
+    .option("startingOffsets", "latest") \
+    .option("failOnDataLoss", "false") \
+    .load() \
+    .selectExpr("CAST(value AS STRING)") \
+    .select(from_json("value", schemas.schema_k8s_statefulset).alias("data")) \
+    .select("data.timestamp", "data.name",
+            "data.tags.namespace", "data.tags.statefulset_name",
+            "data.fields.created", "data.fields.replicas", "data.fields.replicas_current", "data.fields.replicas_ready",
+            "data.fields.replicas_updated", "data.fields.spec_replicas") \
+    .withWatermark("timestamp", "30 seconds")
+
+input_k8s_statefulset.printSchema()
+
+
+def process_k8s_statefulset(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_statefulset/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_statefulset = input_k8s_statefulset \
+    .writeStream \
+    .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_statefulset) \
+    .outputMode("append") \
+    .start()
+
+# K8S service metrics stream processing
+input_k8s_service = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", kafka_broker) \
+    .option("subscribe", topics_list.topics[14]) \
+    .option("startingOffsets", "latest") \
+    .option("failOnDataLoss", "false") \
+    .load() \
+    .selectExpr("CAST(value AS STRING)") \
+    .select(from_json("value", schemas.schema_k8s_service).alias("data")) \
+    .select("data.timestamp", "data.name",
+            "data.tags.namespace", "data.tags.service_name",
+            "data.fields.created", "data.fields.generation", "data.fields.port", "data.fields.target_port") \
+    .withWatermark("timestamp", "30 seconds")
+
+input_k8s_service.printSchema()
+
+
+def process_k8s_service(df, batch_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H")
+    pandas_df = df.toPandas()
+    pandas_df.to_csv(data_dir + "/k8s_pod_service/" + timestamp + ".csv", mode='a', index=False)
+
+
+formatted_df_k8s_pod_vol = input_k8s_service \
+    .writeStream \
+    .trigger(processingTime='30 seconds') \
+    .foreachBatch(process_k8s_service) \
+    .outputMode("append") \
     .start()
 
 # formatted_df_disk.awaitTermination()
