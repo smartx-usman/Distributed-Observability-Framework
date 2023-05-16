@@ -29,7 +29,7 @@ spec:
         value: "es-master-headless.observability.svc.cluster.local"
     cores: 1
       #coreLimit: "200m"
-    memory: "512m"
+    memory: "1000m"
     labels:
       version: 3.1.1
     serviceAccount: spark
