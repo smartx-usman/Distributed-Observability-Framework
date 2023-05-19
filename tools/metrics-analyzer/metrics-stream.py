@@ -16,7 +16,7 @@ es_nodes = os.environ['ES_NODES']
 
 window_size, window_slide, threshold = 30, 10, 2
 
-# file_name = "/home/metrics"
+# Declare the data directory and checkpoint directory
 data_dir = "/home"
 checkpoint_dir = f'{data_dir}/checkpoint/dir'
 
@@ -52,6 +52,7 @@ input_disk = spark \
             round("data.fields.used_percent", 2).alias("used_percent")) \
     .withWatermark("timestamp", "30 seconds")
 #    .select("data.*")
+
 input_disk.printSchema()
 
 
@@ -59,7 +60,7 @@ def process_disk(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/disk-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/disk/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/disk/disk-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_disk = input_disk \
@@ -101,7 +102,7 @@ def process_diskio(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/diskio/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/diskio/diskio-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_diskio = input_diskio \
@@ -134,6 +135,7 @@ input_mem = spark \
     .select("data.timestamp", "data.tags.host", "data.name",
             round("data.fields.used_percent", 2).alias("used_percent")) \
     .withWatermark("timestamp", "30 seconds")
+
 input_mem.printSchema()
 
 
@@ -156,7 +158,7 @@ def process_mem(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/mem/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/mem/mem-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_mem = input_mem \
@@ -222,7 +224,7 @@ def process_cpu(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/cpu/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/cpu/cpu-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_cpu = input_cpu \
@@ -281,7 +283,7 @@ def process_net(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/net/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/net/net-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_net = input_net \
@@ -338,7 +340,7 @@ def process_system(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/system/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/system/system-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_system = input_system \
@@ -386,7 +388,7 @@ def process_k8s_pod_con(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_con/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_con/k8s-pod-con-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_k8s_pod_con = input_k8s_pod_con \
@@ -458,7 +460,7 @@ def process_k8s_pod_net(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_net/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_net/k8s-pod-net-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_k8s_pod_net = input_k8s_pod_net \
@@ -497,27 +499,11 @@ input_k8s_pod_vol = spark \
 input_k8s_pod_vol.printSchema()
 
 
-# formatted_df_k8s_pod_vol = input_k8s_pod_vol \
-#     .withColumn("year", year("timestamp")) \
-#     .withColumn("month", month("timestamp")) \
-#     .withColumn("day", dayofmonth("timestamp")) \
-#     .writeStream \
-#     .trigger(processingTime='30 seconds') \
-#     .outputMode("append") \
-#     .format("csv") \
-#     .option("header", "true") \
-#     .option("path", data_dir) \
-#     .option("checkpointLocation", checkpoint_dir) \
-#     .partitionBy("name", "year", "month", "day") \
-#     .option("truncate", "false") \
-#     .start()
-
-
 def process_k8s_pod_vol(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     # df.write.mode("append").csv(data_dir + "/diskio-" + timestamp)
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_vol/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_vol/k8s-pod-vol-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_k8s_pod_vol = input_k8s_pod_vol \
@@ -561,7 +547,7 @@ input_k8s_daemonset.printSchema()
 def process_k8s_daemonset(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_daemonset/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_daemonset/k8s-pod-ds-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_k8s_daemonset = input_k8s_daemonset \
@@ -593,7 +579,7 @@ input_k8s_deployment.printSchema()
 def process_k8s_deployment(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_deployment/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_deployment/k8s-pod-dep-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_k8s_deployment = input_k8s_deployment \
@@ -626,7 +612,7 @@ input_k8s_statefulset.printSchema()
 def process_k8s_statefulset(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_statefulset/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_statefulset/k8s-pod-ss-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_statefulset = input_k8s_statefulset \
@@ -658,7 +644,7 @@ input_k8s_service.printSchema()
 def process_k8s_service(df, batch_id):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H")
     pandas_df = df.toPandas()
-    pandas_df.to_csv(data_dir + "/k8s_pod_service/" + timestamp + ".csv", mode='a', index=False)
+    pandas_df.to_csv(data_dir + "/k8s_pod_service/k8s-pod-svc-" + timestamp + ".csv", mode='a', index=False)
 
 
 formatted_df_k8s_pod_vol = input_k8s_service \
