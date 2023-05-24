@@ -8,7 +8,7 @@ metadata:
 data:
  telegraf.conf: |+
    [agent]
-     interval= "1s"
+     interval= "5s"
      round_interval= true
      metric_batch_size= 1000
      metric_buffer_limit= 10000
@@ -23,8 +23,8 @@ data:
      omit_hostname= false
 
    [[outputs.kafka]]
-     brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
-     topic = "telegraf"
+     brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:30092"]
+      topic = "overcloud"
      data_format = "json"
      [outputs.kafka.topic_suffix]
        method = "measurement"
