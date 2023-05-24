@@ -24,7 +24,7 @@ data:
 
    [[outputs.kafka]]
      brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
-      topic = "overcloud"
+     topic = "overcloud"
      data_format = "json"
      [outputs.kafka.topic_suffix]
        method = "measurement"
