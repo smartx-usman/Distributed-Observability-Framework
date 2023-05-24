@@ -1,6 +1,38 @@
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType, LongType, DoubleType
 
 # Define the schema for the incoming Kafka data
+schema_temp = StructType([
+    StructField("name", StringType()),
+    StructField("timestamp", TimestampType()),
+    StructField("fields",
+                StructType([
+                    StructField("temp", LongType())
+                ])
+                ),
+    StructField("tags",
+                StructType([
+                    StructField("host", StringType()),
+                    StructField("sensor", StringType())
+                ])
+                )
+])
+
+schema_power = StructType([
+    StructField("name", StringType()),
+    StructField("timestamp", TimestampType()),
+    StructField("fields",
+                StructType([
+                    StructField("current_power_consumption_watts", DoubleType())
+                ])
+                ),
+    StructField("tags",
+                StructType([
+                    StructField("host", StringType()),
+                    StructField("package_id", StringType())
+                ])
+                )
+])
+
 schema_disk = StructType([
     StructField("name", StringType()),
     StructField("timestamp", TimestampType()),
