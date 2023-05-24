@@ -68,8 +68,7 @@ data:
       fieldpass = ["load1", "load5", "load15"]
     [[inputs.temp]]
     [[inputs.intel_powerstat]]
-      package_metrics = ["current_power_consumption", "current_dram_power_consumption", "thermal_design_power"]
-      cpu_metrics = ["cpu_frequency", "cpu_temperature"]
+      package_metrics = ["current_power_consumption"]
     [[inputs.kubernetes]]
       interval = "10s"
       url = "https://$HOSTIP:10250"
