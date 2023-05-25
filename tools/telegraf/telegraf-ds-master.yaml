@@ -64,12 +64,19 @@ data:
      resource_include = [ "pods", "deployments", "daemonsets", "services", "statefulsets" ]
      namespace = ""
      insecure_skip_verify = true
-    [[inputs.kubernetes]]
-      interval = "10s"
-      url = "https://$HOSTIP:10250"
-      bearer_token_string = "$TELEGRAF_TOKEN"
-      insecure_skip_verify = true
-      namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]
+   [[inputs.kubernetes]]
+     interval = "10s"
+     url = "https://$HOSTIP:10250"
+     bearer_token_string = "$TELEGRAF_TOKEN"
+     insecure_skip_verify = true
+     namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]
+   [[inputs.docker]]
+     endpoint = "unix:///var/run/docker.sock"
+     perdevice = true
+     total = true
+     perdevice_include = ["cpu", "blkio", "network"]
+     total_include = ["cpu", "blkio", "network"]
+   
 
 ---
 # Section: Daemonset
