@@ -16,6 +16,15 @@
     - include_tasks: 20-install-deps-obs-server.yaml
       when: install_deps_obs_server
 
+- hosts: all
+  gather_facts: true
+  become: yes
+  vars:
+    create_user: false
+  tasks:
+    - include_tasks: 30-create-user.yaml
+      when: create_user
+
 - hosts: master
   gather_facts: true
   vars:
@@ -34,7 +43,7 @@
     install_promtail: false
     install_kc_nm: false
   tasks:
-    - include_tasks: 30-create-kubernetes-objects.yaml
+    - include_tasks: 35-create-kubernetes-objects.yaml
       when: create_kubernetes_objects
 
     - include_tasks: 40-install-delivery-services.yaml
