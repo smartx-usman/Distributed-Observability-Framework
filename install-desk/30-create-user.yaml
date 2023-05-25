@@ -1,0 +1,12 @@
+---
+- name: Add a system user for telegraf
+  when: create_user
+  shell: useradd -M telegraf
+
+- name: Add telegraf user to docker group
+  when: create_user
+  shell: usermod -aG docker telegraf
+
+- name: Set groupmod for telegraf user
+  when: create_user
+  shell: groupmod -g 1002 telegraf
