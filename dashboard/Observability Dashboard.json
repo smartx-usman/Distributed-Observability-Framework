@@ -21,7 +21,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.3.8"
+      "version": "9.5.2"
     },
     {
       "type": "datasource",
@@ -690,7 +690,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.3.8",
+      "pluginVersion": "9.5.2",
       "targets": [
         {
           "alias": "",
@@ -808,6 +808,162 @@
           "legendFormat": "{{host}} - {{cpu}} ",
           "range": true,
           "refId": "H"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu8\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "I"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu9\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "J"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu10\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "K"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu11\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "L"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu12\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "M"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu13\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "N"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu14\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "O"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu15\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "P"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu16\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "Q"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu17\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "R"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu18\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "S"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu19\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "T"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_system{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu20\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}} ",
+          "range": true,
+          "refId": "U"
         }
       ],
       "title": "CPU Usage (System)",
@@ -861,7 +1017,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.3.8",
+      "pluginVersion": "9.5.2",
       "targets": [
         {
           "alias": "",
@@ -979,6 +1135,150 @@
           "legendFormat": "{{host}} - {{cpu}}",
           "range": true,
           "refId": "H"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu8\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "I"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu9\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "J"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu10\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "K"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu11\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "L"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu12\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "M"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu13\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "N"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu14\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "O"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu15\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "P"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu16\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "Q"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu17\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "R"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu18\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "S"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "cpu_usage_user{host=~\"^$Node$\", job=\"telegraf\", cpu=\"cpu19\"}",
+          "hide": false,
+          "legendFormat": "{{host}} - {{cpu}}",
+          "range": true,
+          "refId": "T"
         }
       ],
       "title": "CPU Usage (User)",
@@ -1642,7 +1942,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval]))",
+          "expr": "rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval])",
           "interval": "",
           "legendFormat": "{{host}} - recv",
           "metrics": [
@@ -1662,7 +1962,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- sum(rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval]))",
+          "expr": "- rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval])",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host}} - sent",
@@ -1670,7 +1970,7 @@
           "refId": "B"
         }
       ],
-      "title": "Network Packets (sent/recv)",
+      "title": "Network Data Rate (sent/recv)",
       "type": "timeseries"
     },
     {
@@ -2912,7 +3212,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"kube-system\",  pod_name=~\"metric.*\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host}}",
@@ -2928,7 +3228,7 @@
           "timeField": "@timestamp"
         }
       ],
-      "title": "Jaeger - Pod Memory Usage (Bytes)",
+      "title": "Metricbeat - Pod Memory Usage (Bytes)",
       "type": "timeseries"
     },
     {
@@ -3016,7 +3316,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}",
+          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"kube-system\",  pod_name=~\"metric.*\"}",
           "hide": false,
           "legendFormat": "{{host}}",
           "range": true,
@@ -3112,7 +3412,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__rate_interval])",
+          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"kube-system\",  pod_name=~\"metric.*\"}[$__rate_interval])",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host}} ",
@@ -3125,7 +3425,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__rate_interval])",
+          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"kube-system\",  pod_name=~\"metric.*\"}[$__rate_interval])",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host}} ",
@@ -3214,7 +3514,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.8",
+      "pluginVersion": "9.5.2",
       "targets": [
         {
           "datasource": {
@@ -3246,7 +3546,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 37,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -3299,13 +3599,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 15,
+  "version": 3,
   "weekStart": ""
 }
