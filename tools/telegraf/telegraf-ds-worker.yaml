@@ -77,8 +77,6 @@ data:
       namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]    
     [[inputs.docker]]
       endpoint = "unix:///var/run/docker.sock"
-      perdevice = true
-      total = true
       perdevice_include = ["cpu", "blkio", "network"]
       total_include = ["cpu", "blkio", "network"]
 
@@ -110,6 +108,7 @@ spec:
         name: telegraf
     spec:
       serviceAccountName: telegraf
+      hostNetwork: true
       containers:
         - name: edge-metrics-analyzer
           image: usman476/telegraf-data-analyzer:latest
