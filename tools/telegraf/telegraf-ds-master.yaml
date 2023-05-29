@@ -50,7 +50,7 @@ data:
    [[inputs.mem]]
      fieldpass = ["available", "free", "total", "used_percent"]
    [[inputs.net]]
-     interfaces= ["eth*", "ens*"]
+     interfaces= ["eth*", "ens*", "eno*"]
      ignore_protocol_stats= true
    [[inputs.system]]
      fieldpass = ["load1", "load5", "load15"]
