@@ -1599,7 +1599,7 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "decbytes"
         },
         "overrides": [
           {
@@ -1609,7 +1609,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker3 - eno1"
+                  "worker1 - eno1"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -3016,6 +3016,6 @@
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 6,
+  "version": 9,
   "weekStart": ""
 }
