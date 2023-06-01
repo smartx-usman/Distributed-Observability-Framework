@@ -1599,7 +1599,7 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "bytes"
         },
         "overrides": [
           {
@@ -1609,7 +1609,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker1 - eno1"
+                  "worker3 - eno1"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -1695,7 +1695,7 @@
           "refId": "B"
         }
       ],
-      "title": "Data Rate (sent/recv)",
+      "title": "Data Rate (uplink/downlink)",
       "type": "timeseries"
     },
     {
@@ -2435,7 +2435,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker1"
+                  "worker3"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -3016,6 +3016,6 @@
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 9,
+  "version": 11,
   "weekStart": ""
 }
