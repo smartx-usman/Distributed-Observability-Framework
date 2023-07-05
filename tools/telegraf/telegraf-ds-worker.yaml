@@ -8,7 +8,7 @@ metadata:
 data:
   telegraf.conf: |+
     [agent]
-      interval= "5s"
+      interval= "10s"
       round_interval= true
       metric_batch_size= 1000
       metric_buffer_limit= 10000
@@ -17,36 +17,24 @@ data:
       flush_jitter= "0s"
       precision= ""
       debug= false
-      quiet= true
+      quiet= false
       logfile= ""
       hostname= "$HOSTNAME"
       omit_hostname= false
     
-    [[outputs.kafka]]
-      brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
-      topic = "overcloud"
-      data_format = "json"
-      [outputs.kafka.topic_suffix]
-        method = "measurement"
-        separator = "_"
+      #[[outputs.kafka]]
+      #brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
+      #topic = "overcloud"
+      #data_format = "json"
+      #[outputs.kafka.topic_suffix]
+      #  method = "measurement"
+      #  separator = "_"
     
     [[outputs.prometheus_client]]
           ## Address to listen on.
           listen = ":9126"
           collectors_exclude = ["gocollector", "process"]
 
-    [[outputs.amqp]]
-      namepass = ["kubernetes_pod_container"]
-      brokers = ["amqp://rabbitmq-headless.measurement.svc.cluster.local:5672"]
-      exchange = "telegraf"
-      exchange_type = "direct"
-      exchange_durability = "transient"
-      routing_key = "telegraf-kubernetes"
-      auth_method = "PLAIN"
-      username = "user"
-      password = "user"
-      headers = {"database" = "telegraf", "retention_policy" = "default"}
-                   
     [[inputs.cpu]]
       percpu = true
       totalcpu = true
@@ -59,26 +47,27 @@ data:
     [[inputs.diskio]]
       devices = ["sda", "sdb", "sdc", "vda"]
       fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
+    [[inputs.docker]]
+      endpoint = "unix:///var/run/docker.sock"
+      perdevice_include = ["cpu", "blkio", "network"]
+      total_include = ["cpu", "blkio", "network"]
     [[inputs.mem]]
       fieldpass = ["available", "free", "total", "used_percent"]
     [[inputs.net]]
-      interfaces= ["eth*", "ens*", "eno*"]
+      interfaces= ["eth*", "ens*", "tap*"]
       ignore_protocol_stats= true
     [[inputs.system]]
       fieldpass = ["load1", "load5", "load15"]
-    [[inputs.temp]]
-    [[inputs.intel_powerstat]]
-      package_metrics = ["current_power_consumption"]
+    [[inputs.exec]]
+      commands = ["bash /scripts/parse-vpp-metrics.sh"]
+      data_format = "influx"
     [[inputs.kubernetes]]
       interval = "10s"
       url = "https://$HOSTIP:10250"
       bearer_token_string = "$TELEGRAF_TOKEN"
       insecure_skip_verify = true
-      namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]    
-    [[inputs.docker]]
-      endpoint = "unix:///var/run/docker.sock"
-      perdevice_include = ["cpu", "blkio", "network"]
-      total_include = ["cpu", "blkio", "network"]
+      namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]
+
 
 #    [[outputs.execd]]
 #      namepass = ["kubernetes_pod_container"]
@@ -88,6 +77,33 @@ data:
 #      period = "10s"        # send & clear the aggregate every 30s.
 #      drop_original = false  # drop the original metrics.
 #      namepass = ["kubernetes"]   # only "pass" swap metrics through the aggregator.
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vpp-metrics-parser
+  namespace: measurement
+data:
+  parse-vpp-metrics.sh: |
+    #!/bin/bash
+    
+    input_file="/vpp-metrics/vpp-metrics.txt"
+
+    cat "$input_file" | awk 'BEGIN { FS = "[[:space:]]+" } /^memif0\/[0-9]+/  {
+      interface=$1
+      state=$3
+      mtu=$4
+      rx_packets=$7
+    
+      getline; rx_bytes=$4
+      getline; tx_packets=$4
+      getline; tx_bytes=$4
+      getline; tx_error=$3
+
+    printf "vpp,interface=%s,state=%s,mtu=%s rx_packets=%si,tx_packets=%si,rx_bytes=%si,tx_bytes=%si,tx_errors=%si\n", interface, state, mtu, rx_packets, tx_packets, rx_bytes, tx_bytes, tx_error
+    }'
 
 ---
 # Section: Daemonset
@@ -107,47 +123,23 @@ spec:
       labels:
         name: telegraf
     spec:
-      serviceAccountName: telegraf
       hostNetwork: true
+      serviceAccountName: telegraf
       containers:
-        - name: edge-metrics-analyzer
-          image: usman476/telegraf-data-analyzer:latest
-          command: [ "python3" ]
-          args: [ "data-analyzer.py", "-n", "uc1", "-a", "app-1-pod", "-m", "memory_usage_bytes", "-v", "50000000", "-r", "amqp://user:user@rabbitmq-headless.measurement.svc.cluster.local:5672/%2F" ]
-          imagePullPolicy: "Always"
-          resources:
-            limits:
-              memory: 100Mi
-            requests:
-              cpu: 100m
-              memory: 50Mi
-          securityContext:
-            runAsUser: 0
-            runAsGroup: 0
-          env:
-            - name: HOSTIP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: HOSTNAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-
         - name: telegraf
           image: telegraf:latest
           #args:
           #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
           resources:
             limits:
-              cpu: 100m
-              memory: 80Mi
+              cpu: 200m
+              memory: 200Mi
             requests:
               cpu: 25m
-              memory: 25Mi
-          #securityContext:
-          #  runAsUser: 1001
-          #  runAsGroup: 1001
+              memory: 50Mi
+          securityContext:
+            runAsUser: 995
+            runAsGroup: 995
           env:
             - name: HOSTIP
               valueFrom:
@@ -180,6 +172,12 @@ spec:
               readOnly: true
             - name: config
               mountPath: /etc/telegraf
+            - name: vpp-metrics-parser-volume
+              mountPath: /scripts
+            - name: vpp-metrics-volume
+              mountPath: /vpp-metrics/vpp-metrics.txt
+            #- name: vpp-cli-dir
+              #mountPath: /host-vppctl
       terminationGracePeriodSeconds: 10
       volumes:
         - name: sys
@@ -197,3 +195,12 @@ spec:
         - name: config
           configMap:
             name: telegraf-worker
+        - name: vpp-metrics-parser-volume
+          configMap:
+            name: vpp-metrics-parser
+        - name: vpp-metrics-volume
+          hostPath:
+            path: /opt/vpp-metrics.txt
+            #- name: vpp-cli-dir
+            #hostPath:
+            #path: /usr/bin/
