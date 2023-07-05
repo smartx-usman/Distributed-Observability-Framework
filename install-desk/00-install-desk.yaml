@@ -1,4 +1,33 @@
 ---
+- hosts: all
+  gather_facts: true
+  vars:
+    vpp_script_all: true
+  tasks:
+    - name: Copy vpp metrics measurement script to remote hosts
+      become: yes
+      copy:
+        src: "{{ playbook_dir }}/../tools/telegraf/vpp-metrics.sh"
+        dest: /opt/vpp-metrics.sh
+        mode: 0755
+      when: vpp_script_all
+
+    - name: Add cron job to run vpp metrics measurement script on system reboot
+      become: yes
+      become_user: "{{ ansible_user }}"
+      cron:
+        name: Run script on system reboot
+        special_time: reboot
+        job: /opt/vpp-metrics.sh
+      when: vpp_script_all
+
+    - name: Start vpp metrics measurement script in the background
+      become: yes
+      ansible.builtin.shell: nohup /opt/vpp-metrics.sh >/dev/null 2>&1 &
+      async: 0
+      poll: 0
+      when: vpp_script_all
+
 - hosts: master
   become: yes
   gather_facts: true
