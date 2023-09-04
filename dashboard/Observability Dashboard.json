@@ -21,7 +21,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.3.8"
+      "version": "9.5.1"
     },
     {
       "type": "datasource",
@@ -690,7 +690,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.3.8",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "alias": "",
@@ -861,7 +861,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.3.8",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "alias": "",
@@ -1599,9 +1599,34 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "bytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "worker3 - eno1"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 7,
@@ -1642,9 +1667,9 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval]))",
+          "expr": "rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^ens.*|^eth.*\"}[$__rate_interval])",
           "interval": "",
-          "legendFormat": "{{host}} - recv",
+          "legendFormat": "{{host}} - {{interface}}",
           "metrics": [
             {
               "id": "1",
@@ -1662,15 +1687,15 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- sum(rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval]))",
+          "expr": "- rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^ens.*|^eth.*\"}[$__rate_interval])",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{host}} - sent",
+          "legendFormat": "{{host}} - {{interface}}",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "Network Packets (sent/recv)",
+      "title": "Data Rate (uplink/downlink)",
       "type": "timeseries"
     },
     {
@@ -2402,7 +2427,32 @@
           },
           "unit": "bytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "worker3"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 11,
@@ -2797,352 +2847,12 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 1,
-            "pointSize": 3,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "always",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "stress-abnormal-pod"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 9,
-        "x": 0,
-        "y": 71
-      },
-      "id": 54,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.3.4",
-      "targets": [
-        {
-          "alias": "",
-          "bucketAggs": [
-            {
-              "field": "@timestamp",
-              "id": "2",
-              "settings": {
-                "interval": "auto"
-              },
-              "type": "date_histogram"
-            }
-          ],
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host}}",
-          "metrics": [
-            {
-              "id": "1",
-              "type": "count"
-            }
-          ],
-          "query": "",
-          "range": true,
-          "refId": "A",
-          "timeField": "@timestamp"
-        }
-      ],
-      "title": "Jaeger - Pod Memory Usage (Bytes)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "ns"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 8,
-        "x": 9,
-        "y": 71
-      },
-      "id": 57,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.3.4",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}",
-          "hide": false,
-          "legendFormat": "{{host}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Pod CPU Usage Nano Cores",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 7,
-        "x": 17,
-        "y": 71
-      },
-      "id": 58,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.3.4",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__rate_interval])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host}} ",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"observability\",  pod_name=~\"jaeger-agent.*\"}[$__rate_interval])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host}} ",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Pod Network Usage",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 71
       },
       "id": 61,
       "panels": [],
@@ -3197,7 +2907,7 @@
         "h": 15,
         "w": 24,
         "x": 0,
-        "y": 83
+        "y": 72
       },
       "id": 59,
       "options": {
@@ -3214,7 +2924,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.8",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -3246,7 +2956,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 37,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -3306,6 +3016,6 @@
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 15,
+  "version": 11,
   "weekStart": ""
 }

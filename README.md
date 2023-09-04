@@ -25,6 +25,12 @@ sudo ./install-deps.sh
 #### Setup Ansible Inventory and SSH Access
 Modify [install-desk/hosts](install-desk/hosts) file to specify correct ansible_user and IP addresses of the Kubernetes cluster nodes. Also, make sure password-less SSH access is enabled to all the cluster nodes from the master node.
 
+#### Taint Kubernetes Master Node
+Set taint on the master node to avoid scheduling of pods on it. Change <master-node-name> to the actual name of the master node.
+```shell
+kubectl taint nodes <master-node-name> node-role.kubernetes.io/control-plane=:NoSchedule
+```
+
 #### Create Node Label
 Set label on the kubernetes nodes where these monitoring services will be installed (if not already done).
 ```shell
