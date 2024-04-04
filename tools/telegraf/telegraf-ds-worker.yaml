@@ -89,21 +89,120 @@ data:
   parse-vpp-metrics.sh: |
     #!/bin/bash
     
-    input_file="/vpp-metrics/vpp-metrics.txt"
-
-    cat "$input_file" | awk 'BEGIN { FS = "[[:space:]]+" } /^memif0\/[0-9]+/  {
-      interface=$1
-      state=$3
-      mtu=$4
-      rx_packets=$7
+    metrics_file="/vpp-metrics/metrics.txt"
     
-      getline; rx_bytes=$4
-      getline; tx_packets=$4
-      getline; tx_bytes=$4
-      getline; tx_error=$3
-
-    printf "vpp,interface=%s,state=%s,mtu=%s rx_packets=%si,tx_packets=%si,rx_bytes=%si,tx_bytes=%si,tx_errors=%si\n", interface, state, mtu, rx_packets, tx_packets, rx_bytes, tx_bytes, tx_error
-    }'
+    if [ ! -f "$metrics_file" ]; then
+        echo "Error: File '$raw_file' not found!"
+        exit 1
+    fi
+    
+    # Initialize variables to hold interface details
+    interface=""
+    idx=""
+    state=""
+    mtu=""
+    current_counters=""
+    rx_packets=0
+    tx_packets=0
+    rx_bytes=0
+    tx_bytes=0
+    rx_errors=0
+    tx_errors=0
+    
+    # Function to print current interface details
+    print_interface_details() {
+        if [ -n "$interface" ]; then
+            echo "$interface,$idx,$state,$mtu$current_counters"
+        fi
+    }
+    
+    # Flag to skip the first two lines
+    skip_lines=2
+    
+    # Loop through each line in the file
+    while IFS= read -r line; do
+        if [ $skip_lines -gt 0 ]; then
+            ((skip_lines--))
+            continue
+        fi
+    
+        # If the line starts with spaces, it's a continuation of the previous line
+        if [[ $line == " "* ]]; then
+            # Check for lines with "tx packets", "tx bytes", "rx packets", and "rx bytes"
+            if [[ $line == *"tx packets"* ]]; then
+                current_counters="$current_counters,tx-packets=$(echo "$line" | awk '{print $NF}')"
+                tx_packets="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+            elif [[ $line == *"tx bytes"* ]]; then
+                tx_bytes="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+                current_metric="$(echo "$line" | awk '{print $NF}')"
+                current_counters="$current_counters,tx-bytes=$current_metric" 
+            elif [[ $line == *"tx-error"* ]]; then
+                tx_errors="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+            elif [[ $line == *"rx packets"* ]]; then
+                rx_packets="$(echo "$line" | awk '{print $NF}')"
+                current_counters="$current_counters,rx-packets=$(echo "$line" | awk '{print $NF}')"
+            elif [[ $line == *"rx bytes"* ]]; then
+                rx_bytes="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+                current_counters="$current_counters,rx-bytes=$(echo "$line" | awk '{print $NF}')"
+            elif [[ $line == *"rx-error"* ]]; then
+                rx_errors="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"  
+            else
+                # Extract other metrics from the continued line
+                metric_name=$(echo "$line" | awk '{print $1}')
+                metric_value=$(echo "$line" | awk '{print $NF}' | tr -d '\r')
+                # Append metric to current counters
+                current_counters="$current_counters,$metric_name=$metric_value"
+            fi
+        else
+            # Print previous interface details, if any
+            #print_interface_details
+            if [ -n "$interface" ]; then
+                echo "vpp,interface=$interface,idx=$idx,state=$state,mtu=$mtu rx_packets=${rx_packets}i,tx_packets=${tx_packets}i,rx_bytes=${rx_bytes}i,tx_bytes=${tx_bytes}i,rx_errors=${rx_errors}i,tx_errors=${tx_errors}i"    
+            fi
+            
+            # Extract new interface details from the line
+            interface=$(echo "$line" | awk '{print $1}')
+            idx=$(echo "$line" | awk '{print $2}')
+            state=$(echo "$line" | awk '{print $3}')
+            mtu=$(echo "$line" | awk '{print $4}')
+            # Extract metrics from the line
+            metrics=$(echo "$line" | awk '{$1=""; $2=""; $3=""; $4=""; print}')
+    
+            # Reset current counters
+            rx_packets=0
+            tx_packets=0 
+            rx_bytes=0
+            tx_bytes=0
+            rx_errors=0
+            tx_errors=0
+            current_counters=""
+            # Append metrics to current counters
+            while IFS= read -r metric; do
+                if [[ $line == *"tx packets"* ]]; then
+                    tx_packets="$(echo "$metric" | awk '{print $NF}' | tr -d '\r')"
+                elif [[ $line == *"tx bytes"* ]]; then
+                    tx_bytes="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+                elif [[ $line == *"tx-error"* ]]; then
+                    tx_errors="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+                elif [[ $line == *"rx packets"* ]]; then
+                    rx_packets="$(echo "$metric" | awk '{print $NF}' | tr -d '\r')"
+                elif [[ $line == *"rx bytes"* ]]; then
+                    rx_bytes="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"
+                elif [[ $line == *"rx-error"* ]]; then
+                    rx_errors="$(echo "$line" | awk '{print $NF}' | tr -d '\r')"  
+                else
+                    metric_name=$(echo "$metric" | awk '{print $1}')
+                    metric_value=$(echo "$metric" | awk '{print $NF}' | tr -d '\r')
+                fi
+    
+                current_counters="$current_counters,$metric_name=$metric_value"
+            done <<< "$metrics"
+        fi
+        
+    done < "$metrics_file"
+    if [ -n "$interface" ]; then
+        echo "vpp,interface=$interface,idx=$idx,state=$state,mtu=$mtu rx_packets=${rx_packets}i,tx_packets=${tx_packets}i,rx_bytes=${rx_bytes}i,tx_bytes=${tx_bytes}i,rx_errors=${rx_errors}i,tx_errors=${tx_errors}i"
+    fi
 
 ---
 # Section: Daemonset
