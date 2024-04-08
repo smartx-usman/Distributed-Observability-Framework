@@ -40,26 +40,26 @@ data:
       totalcpu = true
       collect_cpu_time = false
       report_active = false
-      fieldpass = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
+      fieldinclude = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
     [[inputs.disk]]
       ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
-      fieldpass = ["free", "used", "total", "used_percent"]
+      fieldinclude = ["free", "used", "total", "used_percent"]
     [[inputs.diskio]]
       devices = ["sda", "sdb", "sdc", "vda"]
-      fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
+      fieldinclude = ["read_time", "write_time", "reads", "writes", "io_time"]
     [[inputs.docker]]
       endpoint = "unix:///var/run/docker.sock"
       perdevice_include = ["cpu", "blkio", "network"]
       total_include = ["cpu", "blkio", "network"]
     [[inputs.mem]]
-      fieldpass = ["available", "free", "total", "used_percent"]
+      fieldinclude = ["available", "free", "total", "used_percent"]
     [[inputs.net]]
       interfaces= ["eth*", "ens*", "tap*"]
       ignore_protocol_stats= true
     [[inputs.system]]
-      fieldpass = ["load1", "load5", "load15"]
+      fieldinclude = ["load1", "load5", "load15"]
     [[inputs.exec]]
-      commands = ["bash /scripts/parse-vpp-metrics.sh"]
+      commands = ["bash /scripts/vpp-interfaces-parser.sh", "bash /scripts/vpp-rate-parser.sh"]
       data_format = "influx"
     [[inputs.kubernetes]]
       interval = "10s"
@@ -79,20 +79,70 @@ data:
 #      namepass = ["kubernetes"]   # only "pass" swap metrics through the aggregator.
 
 
+#---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: vpp-rate-parser
+#  namespace: measurement
+#data:
+#  vpp-rate-parser.sh: |
+#    #!/bin/bash
+    
+#    vpp_rate_file="/vpp-metrics/vpp_rate.txt"
+    
+#    if [ ! -f "$vpp_rate_file" ]; then
+#        echo "Error: File '$vpp_rate_file' not found!"
+#        exit 1
+#    fi
+    
+#    # Parse the file and print the metrics
+#    awk '{interface=$1; state=$2; calls=$3; vectors=$4; suspends=$5; clocks=$6; rate=$7; printf "vpp_rate,interface=%s,state=%s calls=%si,vectors=%si,suspends=%si,clocks=%si,rate=%si\n", interface, state, calls, vectors, suspends, clocks, rate}' "$vpp_rate_file"
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: vpp-metrics-parser
+  name: vpp-interfaces-parser
   namespace: measurement
 data:
-  parse-vpp-metrics.sh: |
+  vpp-rate-parser.sh: |
     #!/bin/bash
     
-    metrics_file="/vpp-metrics/metrics.txt"
+    vpp_rate_file="/vpp-metrics/vpp_rate.txt"
+    
+    if [ ! -f "$vpp_rate_file" ]; then
+        echo "Error: File '$vpp_rate_file' not found!"
+        exit 1
+    fi
+    
+    # Parse the file and print the metrics
+    while IFS= read -r line; do
+      # Skip empty lines
+      if [[ -z "$line" ]]; then
+          continue
+      fi
+
+      interface=$(echo "$line" | awk '{print $1}')
+      state=$(echo "$line" | awk '{print $2}')
+      calls=$(echo "$line" | awk '{print $3}')
+      vectors=$(echo "$line" | awk '{print $4}')
+      suspends=$(echo "$line" | awk '{print $5}')
+      clocks=$(echo "$line" | awk '{print sprintf("%.0f", $6)}')
+      rate=$(echo "$line" | awk '{print sprintf("%.0f", $7)}')
+    
+      echo "vpp_rate,interface=$interface,state=$state calls=${calls}i,vectors=${vectors}i,suspends=${suspends}i,clocks=${clocks}i,rate=${rate}"
+    
+      #awk '{interface=$1; state=$2; calls=$3; vectors=$4; suspends=$5; clocks=sprintf("%.0f", $6); rate=$7; printf "vpp_rate,interface=%s,state=%s calls=%si,vectors=%si,suspends=%si,clocks=%si,rate=%si\n", interface, state, calls, vectors, suspends, clocks, rate}' "$vpp_rate_file"
+    done < "$vpp_rate_file"
+
+  vpp-interfaces-parser.sh: |
+    #!/bin/bash
+    
+    metrics_file="/vpp-metrics/interface_metrics.txt"
     
     if [ ! -f "$metrics_file" ]; then
-        echo "Error: File '$raw_file' not found!"
+        echo "Error: File '$metrics_file' not found!"
         exit 1
     fi
     
@@ -271,10 +321,14 @@ spec:
               readOnly: true
             - name: config
               mountPath: /etc/telegraf
-            - name: vpp-metrics-parser-volume
+            - name: vpp-interfaces-parser-volume
               mountPath: /scripts
-            - name: vpp-metrics-volume
-              mountPath: /vpp-metrics/vpp-metrics.txt
+            #- name: vpp-rate-parser-volume
+            #  mountPath: /scripts
+            - name: vpp-interfaces-volume
+              mountPath: /vpp-metrics/interface_metrics.txt
+            - name: vpp-rate-volume
+              mountPath: /vpp-metrics/vpp_rate.txt
             #- name: vpp-cli-dir
               #mountPath: /host-vppctl
       terminationGracePeriodSeconds: 10
@@ -294,12 +348,18 @@ spec:
         - name: config
           configMap:
             name: telegraf-worker
-        - name: vpp-metrics-parser-volume
+        - name: vpp-interfaces-parser-volume
           configMap:
-            name: vpp-metrics-parser
-        - name: vpp-metrics-volume
+            name: vpp-interfaces-parser
+       # - name: vpp-rate-parser-volume
+       #   configMap:
+       #     name: vpp-rate-parser
+        - name: vpp-interfaces-volume
           hostPath:
-            path: /opt/vpp-metrics.txt
+            path: /opt/interface_metrics.txt
+        - name: vpp-rate-volume
+          hostPath:
+            path: /opt/vpp_rate.txt
             #- name: vpp-cli-dir
             #hostPath:
             #path: /usr/bin/
