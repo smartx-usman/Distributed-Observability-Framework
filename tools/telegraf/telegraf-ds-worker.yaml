@@ -79,31 +79,11 @@ data:
 #      namepass = ["kubernetes"]   # only "pass" swap metrics through the aggregator.
 
 
-#---
-#apiVersion: v1
-#kind: ConfigMap
-#metadata:
-#  name: vpp-rate-parser
-#  namespace: measurement
-#data:
-#  vpp-rate-parser.sh: |
-#    #!/bin/bash
-    
-#    vpp_rate_file="/vpp-metrics/vpp_rate.txt"
-    
-#    if [ ! -f "$vpp_rate_file" ]; then
-#        echo "Error: File '$vpp_rate_file' not found!"
-#        exit 1
-#    fi
-    
-#    # Parse the file and print the metrics
-#    awk '{interface=$1; state=$2; calls=$3; vectors=$4; suspends=$5; clocks=$6; rate=$7; printf "vpp_rate,interface=%s,state=%s calls=%si,vectors=%si,suspends=%si,clocks=%si,rate=%si\n", interface, state, calls, vectors, suspends, clocks, rate}' "$vpp_rate_file"
-
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: vpp-interfaces-parser
+  name: vpp-parsers
   namespace: measurement
 data:
   vpp-rate-parser.sh: |
@@ -133,7 +113,6 @@ data:
     
       echo "vpp_rate,interface=$interface,state=$state calls=${calls}i,vectors=${vectors}i,suspends=${suspends}i,clocks=${clocks}i,rate=${rate}"
     
-      #awk '{interface=$1; state=$2; calls=$3; vectors=$4; suspends=$5; clocks=sprintf("%.0f", $6); rate=$7; printf "vpp_rate,interface=%s,state=%s calls=%si,vectors=%si,suspends=%si,clocks=%si,rate=%si\n", interface, state, calls, vectors, suspends, clocks, rate}' "$vpp_rate_file"
     done < "$vpp_rate_file"
 
   vpp-interfaces-parser.sh: |
@@ -321,10 +300,8 @@ spec:
               readOnly: true
             - name: config
               mountPath: /etc/telegraf
-            - name: vpp-interfaces-parser-volume
+            - name: vpp-parsers-volume
               mountPath: /scripts
-            #- name: vpp-rate-parser-volume
-            #  mountPath: /scripts
             - name: vpp-interfaces-volume
               mountPath: /vpp-metrics/interface_metrics.txt
             - name: vpp-rate-volume
@@ -348,12 +325,9 @@ spec:
         - name: config
           configMap:
             name: telegraf-worker
-        - name: vpp-interfaces-parser-volume
+        - name: vpp-parsers-volume
           configMap:
-            name: vpp-interfaces-parser
-       # - name: vpp-rate-parser-volume
-       #   configMap:
-       #     name: vpp-rate-parser
+            name: vpp-parsers
         - name: vpp-interfaces-volume
           hostPath:
             path: /opt/interface_metrics.txt
