@@ -45,21 +45,23 @@
       command: swapoff -a
       #when: ansible_swaptotal_mb > 0
 
-    - name: Add Kubernetes apt-key
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-
-    - name: Add Kubernetes' apt repository
-      apt_repository:
-        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-        filename: 'kubernetes'
-
     - name: Create keyrings directory
       file:
         path: /etc/apt/keyrings
         state: directory
+
+    - name: Add Kubernetes apt-key
+      apt_key:
+        url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+        keyring: /etc/apt/keyrings/kubernetes.gpg
+        state: present
+
+    - name: Add Kubernetes' apt repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+        state: present
+        filename: 'kubernetes'
+        update_cache: true
 
     - name: Add Docker's apt-key
       apt_key:
