@@ -8,7 +8,7 @@ metadata:
 data:
  telegraf.conf: |+
    [agent]
-     interval= "5s"
+     interval= "10s"
      round_interval= true
      metric_batch_size= 1000
      metric_buffer_limit= 10000
@@ -40,25 +40,25 @@ data:
      totalcpu = true
      collect_cpu_time = false
      report_active = false
-       fieldpass = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
+       fieldinclude = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
    [[inputs.disk]]
      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
-     fieldpass = ["free", "used", "total", "used_percent"]
+     fieldinclude = ["free", "used", "total", "used_percent"]
    [[inputs.diskio]]
      devices = ["sda", "sdb", "sdc", "nvme0n1p3", "vda"]
-     fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
+     fieldinclude = ["read_time", "write_time", "reads", "writes", "io_time"]
    [[inputs.mem]]
-     fieldpass = ["available", "free", "total", "used_percent"]
+     fieldinclude = ["available", "free", "total", "used_percent"]
    [[inputs.net]]
      interfaces= ["eth*", "ens*", "eno*"]
      ignore_protocol_stats= true
    [[inputs.system]]
-     fieldpass = ["load1", "load5", "load15"]
+     fieldinclude = ["load1", "load5", "load15"]
    [[inputs.temp]]
    [[inputs.intel_powerstat]]
      package_metrics = ["current_power_consumption"]
    [[inputs.kube_inventory]]
-     interval = "60s"
+     interval = "6000s"
      url = "https://$HOSTIP:6443"
      bearer_token_string = "$TELEGRAF_TOKEN"
      resource_include = [ "pods", "deployments", "daemonsets", "services", "statefulsets" ]
@@ -140,6 +140,10 @@ spec:
           mountPath: /var/run/docker.sock
         - name: utmp
           mountPath: /var/run/utmp
+        - name: cpu
+          mountPath: /dev/cpu
+        - name: devices
+          mountPath: /sys/devices
           readOnly: true
         - name: config
           mountPath: /etc/telegraf
@@ -157,6 +161,12 @@ spec:
       - name: utmp
         hostPath:
           path: /var/run/utmp
+      - name: cpu
+        hostPath:
+          path: /dev/cpu
+      - name: devices
+        hostPath:
+          path: /sys/devices
       - name: config
         configMap:
           name: telegraf-master
