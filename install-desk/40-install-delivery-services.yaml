@@ -11,6 +11,7 @@
     kubeconfig: "{{ kubernetes_config_path }}"
     name: bitnami
     chart_ref: bitnami/kafka
+    chart_version: 23.0.0
     release_namespace: observability
     values_files:
       - "{{ playbook_dir }}/../helm-configs/kafka-values.yaml"
