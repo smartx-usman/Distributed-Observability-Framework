@@ -603,67 +603,67 @@ datasources:
   datasources.yaml:
   apiVersion: 1
   datasources:
-   - name: Prometheus
-     type: prometheus
-     url: http://prometheus-server.observability.svc.cluster.local
-     access: proxy
-     isDefault: true
-   - name: Jaeger
-     type: jaeger
-     access: browser
-     orgId: 1
-     uid: jaeger
-     url: http://jaeger-query.observability.svc.cluster.local:80
-     isDefault: false
-     editable: true
-     jsonData:
-       tracesToLogs:
-         # Field with internal link pointing to a logs data source in Grafana.
-         # datasourceUid value must match the datasourceUid value of the logs data source.
-         datasourceUid: 'loki'
-         tags: [ 'job', 'instance', 'pod', 'namespace' ]
-         mappedTags: [ { key: 'service.name', value: 'service' } ]
-         mapTagNamesEnabled: false
-         spanStartTimeShift: '1h'
-         spanEndTimeShift: '1h'
-         filterByTraceID: false
-         filterBySpanID: false
-       tracesToMetrics:
-         datasourceUid: 'prometheus'
-         tags: [ { key: 'service.name', value: 'service' }, { key: 'job' } ]
-         queries:
-           - name: 'Sample query'
-             query: 'sum(rate(tempo_spanmetrics_latency_bucket{$__tags}[5m]))'
+  - name: Prometheus
+    type: prometheus
+    url: http://prometheus-server.observability.svc.cluster.local
+    access: proxy
+    isDefault: true
+  - name: Jaeger
+    type: jaeger
+    access: browser
+    orgId: 1
+    uid: jaeger
+    url: http://jaeger-query.observability.svc.cluster.local:80
+    isDefault: false
+    editable: true
+    jsonData:
+      tracesToLogs:
+        # Field with internal link pointing to a logs data source in Grafana.
+        # datasourceUid value must match the datasourceUid value of the logs data source.
+        datasourceUid: 'loki'
+        tags: [ 'job', 'instance', 'pod', 'namespace' ]
+        mappedTags: [ { key: 'service.name', value: 'service' } ]
+        mapTagNamesEnabled: false
+        spanStartTimeShift: '1h'
+        spanEndTimeShift: '1h'
+        filterByTraceID: false
+        filterBySpanID: false
+      tracesToMetrics:
+        datasourceUid: 'prometheus'
+        tags: [ { key: 'service.name', value: 'service' }, { key: 'job' } ]
+        queries:
+          - name: 'Sample query'
+            query: 'sum(rate(tempo_spanmetrics_latency_bucket{$__tags}[5m]))'
 
-   - name: Elasticsearch
-     type: elasticsearch
-     access: browser
-     url: http://es-master-headless.observability.svc.cluster.local:9200
-     isDefault: false
-     editable: true
-     jsonData:
-       timeField: '@timestamp'
+  - name: Elasticsearch
+    type: elasticsearch
+    access: browser
+    url: http://es-master-headless.observability.svc.cluster.local:9200
+    isDefault: false
+    editable: true
+    jsonData:
+      timeField: '@timestamp'
 
-   - name: Loki
-     type: loki
-     access: browser
-     orgId: 1
-     uid: loki
-     url: http://loki-headless.observability.svc.cluster.local:3100
-     isDefault: false
-     editable: true
-     jsonData:
-       derivedFields:
-         - datasourceName: Tempo
-           matcherRegex: "traceID=(\\w+)"
-           name: TraceID
-           url: "$${__value.raw}"
-           datasourceUid: tempo
-         - datasourceName: Jaeger
-           matcherRegex: "trace_id=([A-Za-z0-9]+)"
-           name: TraceID
-           url: "$${__value.raw}"
-           datasourceUid: jaeger
+  - name: Loki
+    type: loki
+    access: browser
+    orgId: 1
+    uid: loki
+    url: http://loki-headless.observability.svc.cluster.local:3100
+    isDefault: false
+    editable: true
+    jsonData:
+      derivedFields:
+        - datasourceName: Tempo
+          matcherRegex: "traceID=(\\w+)"
+          name: TraceID
+          url: "$${__value.raw}"
+          datasourceUid: tempo
+        - datasourceName: Jaeger
+          matcherRegex: "trace_id=([A-Za-z0-9]+)"
+          name: TraceID
+          url: "$${__value.raw}"
+          datasourceUid: jaeger
 
 ## Configure grafana alerting (can be templated)
 ## ref: http://docs.grafana.org/administration/provisioning/#alerting
