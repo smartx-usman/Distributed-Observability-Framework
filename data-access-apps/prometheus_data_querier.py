@@ -67,7 +67,7 @@ def query_metrics(metric, start_timestamp, end_timestamp, namespace, step, type,
 def main():
     """Main function."""
     print(len(sys.argv))
-    if len(sys.argv) != 7:
+    if len(sys.argv) != 8:
         print('Usage: {0} http://localhost:9090'.format(sys.argv[0]))
         sys.exit(1)
 
@@ -77,9 +77,10 @@ def main():
     namespace = sys.argv[4]
     step = sys.argv[5]
     filter_container = sys.argv[6]
+    output = sys.argv[7]
 
-    query_metrics(metrics_list[0], start_timestamp, end_timestamp, namespace, step, "query", filter_container, "telegraf_memory_result_1s.csv")
-    query_metrics(metrics_list[1], start_timestamp, end_timestamp, namespace, step, "query", filter_container, "telegraf_cpu_result_1s.csv")
+    query_metrics(metrics_list[0], start_timestamp, end_timestamp, namespace, step, "query", filter_container, f'telegraf_memory_result_{output}.csv')
+    query_metrics(metrics_list[1], start_timestamp, end_timestamp, namespace, step, "query", filter_container, f'telegraf_cpu_result_{output}.csv')
 
     # metrixNames = GetMetrixNames(sys.argv[1])
 
@@ -92,4 +93,4 @@ if __name__ == '__main__':
 # python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_network_tx_bytes 2023-01-02T12:31:01.000Z 2023-01-02T13:29:59.000Z 10s measurement | grep -e 'name' | grep -v -e edge-metrics-analyzer -e promtail -e master>> telegraf_network_result_250ms.csv
 # python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_container_memory_usage_bytes 2023-01-13T12:00:00.000Z 2023-01-13T13:59:59.000Z 10s measurement | grep -e 'name' | grep -v -e rabbitmq -e edge-metrics-analyzer >> loki_mem_result_200-pods.csv
 # python3 prometheus_data_querier.py x.x.x.x:32099 kubernetes_pod_container_cpu_usage_nanocores 2023-01-20T14:00:00.000Z 2023-01-20T14:59:59.000Z 10s observability | grep -e 'name' grep -e 'jaeger-agent' >> jaeger_cpu_result_200-pods.csv
-# python3 prometheus_data_querier.py x.x.x.x:32099 2023-02-28T13:00:00.000Z 2023-02-28T13:59:59.000Z measurement 10s telegraf
+# python3 prometheus_data_querier.py x.x.x.x:32099 2023-02-28T13:00:00.000Z 2023-02-28T13:59:59.000Z measurement 10s telegraf 1s

@@ -2,7 +2,7 @@
   "__inputs": [
     {
       "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
+      "label": "prometheus",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.3.8"
+      "version": "10.4.1"
     },
     {
       "type": "datasource",
@@ -60,14 +60,16 @@
   "liveNow": false,
   "panels": [
     {
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 34,
-      "title": "MySQL Server",
+      "id": 38,
+      "panels": [],
+      "title": "Flask Web Server",
       "type": "row"
     },
     {
@@ -81,6 +83,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -94,6 +97,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -134,7 +138,7 @@
         "x": 0,
         "y": 1
       },
-      "id": 35,
+      "id": 39,
       "options": {
         "legend": {
           "calcs": [],
@@ -154,7 +158,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"web-ui.*\"}",
           "legendFormat": "{{pod_name}}",
           "range": true,
           "refId": "A"
@@ -174,6 +178,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -187,6 +192,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -227,7 +233,7 @@
         "x": 8,
         "y": 1
       },
-      "id": 36,
+      "id": 40,
       "options": {
         "legend": {
           "calcs": [],
@@ -247,7 +253,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}",
+          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"web-ui.*\"}",
           "legendFormat": "{{pod_name}}",
           "range": true,
           "refId": "A"
@@ -267,6 +273,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -280,6 +287,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -341,7 +349,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}[$__rate_interval])",
+          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"web-ui.*\"}[$__rate_interval])",
           "interval": "60s",
           "legendFormat": "{{host}} - {{pod_name}}",
           "range": true,
@@ -353,7 +361,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}[$__rate_interval])",
+          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"web-ui.*\"}[$__rate_interval])",
           "hide": false,
           "interval": "60s",
           "legendFormat": "{{host}} - {{pod_name}}",
@@ -371,8 +379,8 @@
         "x": 0,
         "y": 12
       },
-      "id": 26,
-      "title": "MQTT Broker",
+      "id": 34,
+      "title": "MySQL Server",
       "type": "row"
     },
     {
@@ -386,6 +394,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -399,6 +408,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -438,6 +448,317 @@
         "w": 8,
         "x": 0,
         "y": 13
+      },
+      "id": 35,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "kubernetes_pod_container_memory_usage_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}",
+          "legendFormat": "{{pod_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Pod Memory Usage (Bytes)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ns"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 8,
+        "x": 8,
+        "y": 13
+      },
+      "id": 36,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "kubernetes_pod_container_cpu_usage_nanocores{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}",
+          "legendFormat": "{{pod_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Pod CPU Usage Nano Cores",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 8,
+        "x": 16,
+        "y": 13
+      },
+      "id": 41,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.2.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "rate(kubernetes_pod_network_tx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}[$__rate_interval])",
+          "interval": "60s",
+          "legendFormat": "{{host}} - {{pod_name}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "- rate(kubernetes_pod_network_rx_bytes{host=~\"^$Node$\", namespace=~\"^$Namespace$\",  pod_name=~\"mysql.*\"}[$__rate_interval])",
+          "hide": false,
+          "interval": "60s",
+          "legendFormat": "{{host}} - {{pod_name}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Pod Network Usage",
+      "type": "timeseries"
+    },
+    {
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 26,
+      "title": "MQTT Broker",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 8,
+        "x": 0,
+        "y": 25
       },
       "id": 28,
       "options": {
@@ -479,6 +800,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -492,6 +814,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -530,7 +853,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 13
+        "y": 25
       },
       "id": 31,
       "options": {
@@ -572,6 +895,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -585,6 +909,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -625,7 +950,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "worker2 - mqtt-mosquitto-6f5cc8c7-r5mml"
+                  "worker1 - mqtt-mosquitto-85b687bbff-8kqt9"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -648,7 +973,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 13
+        "y": 25
       },
       "id": 32,
       "options": {
@@ -699,7 +1024,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 36
       },
       "id": 24,
       "title": "Kafka Broker",
@@ -716,6 +1041,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -729,6 +1055,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -767,7 +1094,7 @@
         "h": 11,
         "w": 8,
         "x": 0,
-        "y": 25
+        "y": 37
       },
       "id": 27,
       "options": {
@@ -809,6 +1136,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -822,6 +1150,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -860,7 +1189,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 25
+        "y": 37
       },
       "id": 29,
       "options": {
@@ -902,6 +1231,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -915,6 +1245,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -978,7 +1309,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 25
+        "y": 37
       },
       "id": 30,
       "options": {
@@ -1030,7 +1361,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 48
       },
       "id": 6,
       "panels": [],
@@ -1048,6 +1379,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1061,6 +1393,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1099,7 +1432,7 @@
         "h": 11,
         "w": 8,
         "x": 0,
-        "y": 37
+        "y": 49
       },
       "id": 2,
       "options": {
@@ -1142,6 +1475,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1155,6 +1489,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1193,7 +1528,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 37
+        "y": 49
       },
       "id": 3,
       "options": {
@@ -1236,6 +1571,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1249,6 +1585,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1287,7 +1624,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 37
+        "y": 49
       },
       "id": 4,
       "options": {
@@ -1340,7 +1677,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 60
       },
       "id": 8,
       "panels": [],
@@ -1358,6 +1695,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1371,6 +1709,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1409,7 +1748,7 @@
         "h": 11,
         "w": 8,
         "x": 0,
-        "y": 49
+        "y": 61
       },
       "id": 9,
       "options": {
@@ -1451,6 +1790,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1464,6 +1804,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1502,7 +1843,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 49
+        "y": 61
       },
       "id": 10,
       "options": {
@@ -1544,6 +1885,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1557,6 +1899,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1595,7 +1938,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 49
+        "y": 61
       },
       "id": 11,
       "options": {
@@ -1647,7 +1990,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 60
+        "y": 72
       },
       "id": 13,
       "panels": [],
@@ -1665,6 +2008,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1678,6 +2022,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1716,7 +2061,7 @@
         "h": 11,
         "w": 8,
         "x": 0,
-        "y": 61
+        "y": 73
       },
       "id": 14,
       "options": {
@@ -1758,6 +2103,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1771,6 +2117,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1809,7 +2156,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 61
+        "y": 73
       },
       "id": 15,
       "options": {
@@ -1851,6 +2198,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1864,6 +2212,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1902,7 +2251,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 61
+        "y": 73
       },
       "id": 16,
       "options": {
@@ -1954,7 +2303,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 84
       },
       "id": 19,
       "panels": [],
@@ -1972,6 +2321,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1985,6 +2335,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2023,7 +2374,7 @@
         "h": 11,
         "w": 8,
         "x": 0,
-        "y": 73
+        "y": 85
       },
       "id": 20,
       "options": {
@@ -2065,6 +2416,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2078,6 +2430,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2116,7 +2469,7 @@
         "h": 11,
         "w": 8,
         "x": 8,
-        "y": 73
+        "y": 85
       },
       "id": 21,
       "options": {
@@ -2158,6 +2511,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2171,6 +2525,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2209,7 +2564,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 73
+        "y": 85
       },
       "id": 22,
       "options": {
@@ -2257,8 +2612,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 37,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
@@ -2317,6 +2671,6 @@
   "timezone": "utc",
   "title": "IoT Application Dashboard",
   "uid": "BQTMW0dVk",
-  "version": 18,
+  "version": 4,
   "weekStart": ""
 }

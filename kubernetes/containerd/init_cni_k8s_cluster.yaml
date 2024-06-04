@@ -37,7 +37,7 @@
         kubeconfig: "{{ ansible_user_dir }}/.kube/config"
         name: cilium
         chart_ref: cilium/cilium
-        chart_version: 1.13.0
+        chart_version: 1.15.4
         release_namespace: kube-system
         values:
           kubeProxyReplacement: strict
@@ -50,7 +50,7 @@
     - name: Enable UI and Relay for Cilium using Helm
       become: yes
       become_user: aida
-      shell: helm upgrade cilium cilium/cilium --version 1.13.0 --namespace kube-system --reuse-values --set hubble.relay.enabled=true --set hubble.ui.enabled=true --set hubble.ui.service.type=NodePort
+      shell: helm upgrade cilium cilium/cilium --version 1.15.4 --namespace kube-system --reuse-values --set hubble.relay.enabled=true --set hubble.ui.enabled=true --set hubble.ui.service.type=NodePort
 
 #    - name: install Pod network
 #      become: yes

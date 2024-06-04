@@ -52,20 +52,20 @@ data:
       totalcpu = true
       collect_cpu_time = false
       report_active = false
-      fieldpass = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
+      fieldinclude = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
     [[inputs.disk]]
       ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
-      fieldpass = ["free", "used", "total", "used_percent"]
+      fieldinclude = ["free", "used", "total", "used_percent"]
     [[inputs.diskio]]
       devices = ["sda", "sdb", "sdc", "vda"]
-      fieldpass = ["read_time", "write_time", "reads", "writes", "io_time"]
+      fieldinclude = ["read_time", "write_time", "reads", "writes", "io_time"]
     [[inputs.mem]]
-      fieldpass = ["available", "free", "total", "used_percent"]
+      fieldinclude = ["available", "free", "total", "used_percent"]
     [[inputs.net]]
       interfaces= ["eth*", "ens*", "eno*"]
       ignore_protocol_stats= true
     [[inputs.system]]
-      fieldpass = ["load1", "load5", "load15"]
+      fieldinclude = ["load1", "load5", "load15"]
     [[inputs.temp]]
     [[inputs.intel_powerstat]]
       package_metrics = ["current_power_consumption"]
