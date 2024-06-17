@@ -45,8 +45,8 @@ data:
      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
      fieldinclude = ["free", "used", "total", "used_percent"]
    [[inputs.diskio]]
-     devices = ["sda", "sdb", "sdc", "nvme0n1p3", "vda"]
-     fieldinclude = ["read_time", "write_time", "reads", "writes", "io_time"]
+     devices = ["sd*", "nvme*", "vda"]
+     fieldinclude = ["read_time", "write_time", "read_bytes", "write_bytes", "io_time"]
    [[inputs.mem]]
      fieldinclude = ["available", "free", "total", "used_percent"]
    [[inputs.net]]
@@ -55,6 +55,7 @@ data:
    [[inputs.system]]
      fieldinclude = ["load1", "load5", "load15"]
    [[inputs.temp]]
+     metric_format = "v2"
    [[inputs.intel_powerstat]]
      package_metrics = ["current_power_consumption"]
    [[inputs.kube_inventory]]
