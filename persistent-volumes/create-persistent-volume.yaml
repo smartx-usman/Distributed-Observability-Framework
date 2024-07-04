@@ -176,6 +176,31 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  name: influxdb-pv-1
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: DATA_DIR/influxdb
+  claimRef:
+    namespace: observability
+    name: data-influxdb-0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: appstype
+          operator: In
+          values:
+          - observability
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
   name: grafana-pv-1
 spec:
   capacity:

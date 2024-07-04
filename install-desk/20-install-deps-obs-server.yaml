@@ -12,6 +12,7 @@
     - "{{ ansible_user_dir }}/observability/grafana"
     - "{{ ansible_user_dir }}/observability/loki"
     - "{{ ansible_user_dir }}/observability/prometheus"
+    - "{{ ansible_user_dir }}/observability/influxdb"
 
 - name: Create required directories for data storage
   file:
