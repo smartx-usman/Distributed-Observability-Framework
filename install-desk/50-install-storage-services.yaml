@@ -25,6 +25,19 @@
     name: prometheus-community
     repo_url: "https://prometheus-community.github.io/helm-charts"
 
+#- name: Delete Prometheus using Helm
+#  when: install_prometheus
+#  kubernetes.core.helm:
+#    kubeconfig: "{{ kubernetes_config_path }}"
+#    name: prometheus
+#    chart_ref: prometheus-community/prometheus
+#    release_namespace: observability
+#    state: absent
+
+#- name: Wait for Pods to delete
+#  when: install_prometheus
+#  ansible.builtin.shell: sleep 30
+
 - name: Install Prometheus using Helm
   when: install_prometheus
   kubernetes.core.helm:
@@ -34,6 +47,25 @@
     release_namespace: observability
     values_files:
       - "{{ playbook_dir }}/../helm-configs/prometheus-values.yaml"
+
+#- name: Delete InfluxDB using Helm
+#  when: install_influxdb
+#  kubernetes.core.helm:
+#    kubeconfig: "{{ kubernetes_config_path }}"
+#    name: influxdb-6gpath
+#    chart_ref: influxdata/influxdb2
+#    release_namespace: measurement
+#    state: absent
+
+- name: Install InfluxDB using Helm
+  when: install_influxdb
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    name: influxdb-6gpath
+    chart_ref: influxdata/influxdb2
+    release_namespace: observability
+    values_files:
+      - "{{ playbook_dir }}/../helm-configs/influxdb-values.yaml"
 
 - name: Wait for Pods to start
   when: install_prometheus
@@ -59,15 +91,6 @@
 - name: Wait for Pods to start
   ansible.builtin.shell: sleep 30
   when: install_loki
-
-#    - name: Install Tempo using Helm
-#      kubernetes.core.helm:
-#        kubeconfig: /home/aida/.kube/config
-#        name: tempo
-#        chart_ref: grafana/tempo
-#        release_namespace: observability
-#        values_files:
-#          - "{{ playbook_dir }}/../helm-configs/tempo-values.yaml"
 
 - name: Add Jaeger Helm repo
   when: install_jaeger

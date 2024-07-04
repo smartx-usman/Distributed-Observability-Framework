@@ -8,7 +8,7 @@
     - include_tasks: 10-install-deps-master.yaml
       when: install_deps_master
 
-- hosts: observability
+- hosts: master
   gather_facts: true
   vars:
     install_deps_obs_server: true
@@ -28,7 +28,7 @@
 - hosts: master
   gather_facts: true
   vars:
-    kubernetes_config_path: "{{ ansible_user_dir }}/.kube/config"
+    kubernetes_config_path: "/var/snap/microk8s/current/credentials/client.config"
     create_kubernetes_objects: false
     install_kafka: false
     install_rabbitmq: false
@@ -36,6 +36,7 @@
     install_elasticsearch: false
     install_grafana: false
     install_prometheus: false
+    install_influxdb: false
     install_loki: false
     install_jaeger: false
     install_spark: false

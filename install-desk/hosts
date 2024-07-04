@@ -1,16 +1,11 @@
 [master]
-master1 ansible_host=10.20.20.10 ansible_user=aida
+master1 ansible_host=10.200.1.1 ansible_user=root
 
 [workers]
-worker1 ansible_host=10.20.20.11 ansible_user=aida
-observability ansible_host=10.20.20.12 ansible_user=aida
-worker3 ansible_host=10.20.20.13 ansible_user=aida
-worker4 ansible_host=10.20.20.14 ansible_user=aida
-worker5 ansible_host=10.20.20.15 ansible_user=aida
-worker6 ansible_host=10.20.20.16 ansible_user=aida
-worker7 ansible_host=10.20.20.17 ansible_user=aida
-worker8 ansible_host=10.20.20.18 ansible_user=aida
-worker9 ansible_host=10.20.20.19 ansible_user=aida
+worker1 ansible_host=10.200.1.2 ansible_user=root
+worker2 ansible_host=10.200.1.3 ansible_user=root
+worker3 ansible_host=10.200.1.4 ansible_user=root
+worker4 ansible_host=10.200.1.5 ansible_user=root
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
