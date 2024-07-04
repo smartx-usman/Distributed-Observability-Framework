@@ -223,7 +223,8 @@ service:
   loadBalancerIP: ""
   loadBalancerClass: ""
   loadBalancerSourceRanges: []
-  port: 30005
+  #port: 30005
+  nodePort: 30005
   targetPort: 3000
     # targetPort: 4181 To be used with a proxy extraContainer
   ## Service annotations. Can be templated.
