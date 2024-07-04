@@ -50,7 +50,7 @@ data:
    [[inputs.mem]]
      fieldinclude = ["available", "free", "total", "used_percent"]
    [[inputs.net]]
-     interfaces= ["eth*", "ens*", "eno*"]
+     interfaces= ["eth*", "ens*", "eno*", "enp*"]
      ignore_protocol_stats= true
    [[inputs.system]]
      fieldinclude = ["load1", "load5", "load15"]
