@@ -24,18 +24,25 @@
   kubernetes.core.k8s:
     kubeconfig: "{{ kubernetes_config_path }}"
     state: present
-    src: "{{ playbook_dir }}/../tools/telegraf/telegraf-serviceaccount.yaml"
+    src: "{{ playbook_dir }}/../tools/telegraf/serviceaccount.yaml"
 
-- name: Deploy Telegraf Agent on Workers Node
+- name: Deploy Telegraf Agent on amd64 Worker Nodes
   when: install_telegraf
   kubernetes.core.k8s:
     kubeconfig: "{{ kubernetes_config_path }}"
     state: present
-    src: "{{ playbook_dir }}/../tools/telegraf/telegraf-ds-worker.yaml"
+    src: "{{ playbook_dir }}/../tools/telegraf/amd64-workers.yaml"
+
+- name: Deploy Telegraf Agent on arm64 Worker Nodes
+  when: install_telegraf
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubernetes_config_path }}"
+    state: present
+    src: "{{ playbook_dir }}/../tools/telegraf/arm64-workers.yaml"
 
 - name: Deploy Telegraf Agent on Master Node
   when: install_telegraf
   kubernetes.core.k8s:
     kubeconfig: "{{ kubernetes_config_path }}"
     state: present
-    src: "{{ playbook_dir }}/../tools/telegraf/telegraf-ds-master.yaml"
+    src: "{{ playbook_dir }}/../tools/telegraf/master.yaml"
