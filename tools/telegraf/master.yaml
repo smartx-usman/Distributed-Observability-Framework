@@ -103,12 +103,17 @@ spec:
       containers:
       - name: telegraf
         image: telegraf:latest
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
         #args:
         #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
         resources:
           limits:
             cpu: 100m
-            memory: 60Mi
+            memory: 100Mi
           requests:
             cpu: 25m
             memory: 25Mi

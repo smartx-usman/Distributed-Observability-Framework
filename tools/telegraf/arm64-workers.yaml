@@ -147,12 +147,17 @@ spec:
 
         - name: telegraf
           image: telegraf:1.29.5-alpine
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - SYS_ADMIN
           #args:
           #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
           resources:
             limits:
               cpu: 100m
-              memory: 80Mi
+              memory: 100Mi
             requests:
               cpu: 25m
               memory: 25Mi
