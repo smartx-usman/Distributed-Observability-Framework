@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: telegraf-worker
+  name: telegraf-amd64-worker
   namespace: measurement
   labels:
     k8s-app: telegraf
 data:
   telegraf.conf: |+
     [agent]
-      interval= "5s"
+      interval= "10s"
       round_interval= true
       metric_batch_size= 1000
       metric_buffer_limit= 10000
@@ -22,31 +22,38 @@ data:
       hostname= "$HOSTNAME"
       omit_hostname= false
     
-    [[outputs.kafka]]
-      brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
-      topic = "overcloud"
-      data_format = "json"
-      [outputs.kafka.topic_suffix]
-        method = "measurement"
-        separator = "_"
+      #[[outputs.kafka]]
+      #brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
+      #topic = "overcloud"
+      #data_format = "json"
+      #[outputs.kafka.topic_suffix]
+      #  method = "measurement"
+      #  separator = "_"
+    
+    #[[outputs.influxdb_v2]]
+      #urls=["http://IP-ADDRESS:PORTNO"]
+      #token = "<All access API token generated in UI>"
+      #organization="6gpath"
+      #bucket="observability"
+      #timeout="15s"
     
     [[outputs.prometheus_client]]
-          ## Address to listen on.
-          listen = ":9126"
-          collectors_exclude = ["gocollector", "process"]
+      ## Address to listen on.
+      listen = ":9126"
+      collectors_exclude = ["gocollector", "process"]
 
-    [[outputs.amqp]]
-      namepass = ["kubernetes_pod_container"]
-      brokers = ["amqp://rabbitmq-headless.measurement.svc.cluster.local:5672"]
-      exchange = "telegraf"
-      exchange_type = "direct"
-      exchange_durability = "transient"
-      routing_key = "telegraf-kubernetes"
-      auth_method = "PLAIN"
-      username = "user"
-      password = "user"
-      headers = {"database" = "telegraf", "retention_policy" = "default"}
-      
+    #[[outputs.amqp]]
+       #namepass = ["kubernetes_pod_container"]
+       #brokers = ["amqp://rabbitmq-headless.measurement.svc.cluster.local:5672"]
+       #      exchange = "telegraf"
+       #      exchange_type = "direct"
+       #      exchange_durability = "transient"
+       #      routing_key = "telegraf-kubernetes"
+       #      auth_method = "PLAIN"
+       #      username = "user"
+       #     password = "user"
+       #     headers = {"database" = "telegraf", "retention_policy" = "default"}
+                   
     [[inputs.cpu]]
       percpu = true
       totalcpu = true
@@ -55,20 +62,21 @@ data:
       fieldinclude = ["usage_user", "usage_system", "usage_idle", "usage_active", "usage_nice", "usage_iowait", "usage_irq", "usage_softirq", "usage_steal", "usage_guest", "usage_guest_nice"]
     [[inputs.disk]]
       ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
+      mount_points = ["/", "/home"]
       fieldinclude = ["free", "used", "total", "used_percent"]
     [[inputs.diskio]]
-      devices = ["sd*", "vda", "mmc*"]
-      fieldinclude = ["read_time", "write_time", "reads", "writes", "io_time"]
+      devices = ["sd*", "vda", "nvme*", "mmc*"]
+      fieldinclude = ["read_time", "write_time", "read_bytes", "write_bytes", "io_time"]
     [[inputs.mem]]
       fieldinclude = ["available", "free", "total", "used_percent"]
     [[inputs.net]]
-      interfaces= ["eth*", "ens*", "eno*"]
+      interfaces= ["eth*", "ens*", "eno*", "wg*", "enp*"]
       ignore_protocol_stats= true
     [[inputs.system]]
       fieldinclude = ["load1", "load5", "load15"]
     [[inputs.temp]]
       metric_format = "v2"
-    [[inputs.intel_powerstat]]
+    [inputs.intel_powerstat]]
       package_metrics = ["current_power_consumption"]
     [[inputs.kubernetes]]
       interval = "10s"
@@ -95,7 +103,7 @@ data:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: telegraf-workers
+  name: telegraf-amd64-worker
   namespace: measurement
   labels:
     k8s-app: telegraf
@@ -110,6 +118,8 @@ spec:
     spec:
       serviceAccountName: telegraf
       hostNetwork: true
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: edge-metrics-analyzer
           image: usman476/telegraf-data-analyzer:latest
@@ -136,7 +146,7 @@ spec:
                   fieldPath: spec.nodeName
 
         - name: telegraf
-          image: telegraf:latest
+          image: telegraf:1.29.5-alpine
           #args:
           #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
           resources:
@@ -197,4 +207,4 @@ spec:
             path: /var/run/utmp
         - name: config
           configMap:
-            name: telegraf-worker
+            name: telegraf-amd64-worker
