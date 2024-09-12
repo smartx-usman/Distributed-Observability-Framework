@@ -31,10 +31,10 @@ Set taint on the master node to avoid scheduling of pods on it. Change <master-n
 kubectl taint nodes <master-node-name> node-role.kubernetes.io/control-plane=:NoSchedule
 ```
 
-#### Create Node Label
+#### Create Node Labels
 Set label on the kubernetes nodes where these monitoring services will be installed (if not already done).
 ```shell
-kubectl label nodes worker3 disktype=ssd ostype=normal appstype=observability flavor=large
+kubectl label nodes observability disktype=ssd ostype=normal appstype=observability flavor=large
 ```
 
 ### Install DESK
