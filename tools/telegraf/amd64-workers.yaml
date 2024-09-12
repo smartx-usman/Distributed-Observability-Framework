@@ -89,14 +89,14 @@ data:
       perdevice_include = ["cpu", "blkio", "network"]
       total_include = ["cpu", "blkio", "network"]
 
-#    [[outputs.execd]]
-#      namepass = ["kubernetes_pod_container"]
-#      command = ["python3", "/data-analyzer.py"]
-
-#    [[aggregators.minmax]]
-#      period = "10s"        # send & clear the aggregate every 30s.
-#      drop_original = false  # drop the original metrics.
-#      namepass = ["kubernetes"]   # only "pass" swap metrics through the aggregator.
+    #[[outputs.execd]]
+    #   namepass = ["kubernetes_pod_container"]
+    #   command = ["python3", "/data-analyzer.py"]
+    
+    #[[aggregators.minmax]]
+    #   period = "10s"        # send & clear the aggregate every 30s.
+    #   drop_original = false  # drop the original metrics.
+    #   namepass = ["kubernetes"]   # only "pass" swap metrics through the aggregator.
 
 ---
 # Section: Daemonset
