@@ -21,7 +21,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.4.1"
+      "version": "11.1.0"
     },
     {
       "type": "datasource",
@@ -704,7 +704,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.4.1",
+      "pluginVersion": "11.1.0",
       "targets": [
         {
           "alias": "",
@@ -879,7 +879,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.4.1",
+      "pluginVersion": "11.1.0",
       "targets": [
         {
           "alias": "",
@@ -1068,7 +1068,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 11,
+        "w": 12,
         "x": 0,
         "y": 24
       },
@@ -1221,7 +1221,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"vda1|sda2|nvme0n1p2|mmcblk0p2\"}",
+          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"vda1|sda2|nvme0n1p?[12]?|mmcblk0p2|mapper/vgubuntu-root\"}",
           "interval": "",
           "legendFormat": "{{host}} - {{device}}",
           "metrics": [
@@ -1440,32 +1440,7 @@
           },
           "unit": "ms"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "worker3"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -1497,7 +1472,7 @@
           "expr": "rate(diskio_io_time{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval])",
           "hide": false,
           "interval": "30s",
-          "legendFormat": "{{host}}",
+          "legendFormat": "{{host}} - {{name}}",
           "range": true,
           "refId": "A"
         }
@@ -1715,7 +1690,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^ens.*|^eth.*\"}[$__rate_interval])",
+          "expr": "rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^enp.*|^ens.*|^eth.*\"}[$__rate_interval])",
           "interval": "30s",
           "legendFormat": "{{host}} - {{interface}}",
           "metrics": [
@@ -1735,7 +1710,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^ens.*|^eth.*\"}[$__rate_interval])",
+          "expr": "- rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^enp.*|^ens.*|^eth.*\"}[$__rate_interval])",
           "hide": false,
           "interval": "30s",
           "legendFormat": "{{host}} - {{interface}}",
@@ -2481,32 +2456,7 @@
           },
           "unit": "bytes"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "worker2"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 11,
@@ -2934,7 +2884,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2974,6 +2925,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -2985,7 +2937,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.1",
+      "pluginVersion": "11.1.0",
       "targets": [
         {
           "datasource": {
@@ -3069,13 +3021,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 12,
+  "version": 20,
   "weekStart": ""
 }
