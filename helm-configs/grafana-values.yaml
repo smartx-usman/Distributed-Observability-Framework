@@ -4,7 +4,7 @@ global:
 
   # To help compatibility with other charts which use global.imagePullSecrets.
   # Allow either an array of {name: pullSecret} maps (k8s-style), or an array of strings (more common helm-style).
-  # Can be tempalted.
+  # Can be templated.
   # global:
   #   imagePullSecrets:
   #   - name: pullSecret1
@@ -205,6 +205,10 @@ downloadDashboards:
 ## Pod Annotations
 # podAnnotations: {}
 
+## ConfigMap Annotations
+# configMapAnnotations: {}
+  # argocd.argoproj.io/sync-options: Replace=true
+
 ## Pod Labels
 # podLabels: {}
 
@@ -220,12 +224,16 @@ gossipPortName: gossip
 service:
   enabled: true
   type: NodePort
+  # Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services)
+  ipFamilyPolicy: ""
+  # Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
+  ipFamilies: []
   loadBalancerIP: ""
   loadBalancerClass: ""
   loadBalancerSourceRanges: []
-  #port: 30005
-  nodePort: 30005
+  port: 80
   targetPort: 3000
+  nodePort: 30005
     # targetPort: 4181 To be used with a proxy extraContainer
   ## Service annotations. Can be templated.
   annotations: {}
@@ -235,14 +243,14 @@ service:
   appProtocol: ""
 
 serviceMonitor:
-  ## If true, a ServiceMonitor CRD is created for a prometheus operator
+  ## If true, a ServiceMonitor CR is created for a prometheus operator
   ## https://github.com/coreos/prometheus-operator
   ##
   enabled: false
   path: /metrics
   #  namespace: monitoring  (defaults to use the namespace this chart is deployed to)
   labels: {}
-  interval: 1m
+  interval: 30s
   scheme: http
   tlsConfig: {}
   scrapeTimeout: 30s
@@ -379,6 +387,7 @@ persistence:
   # existingClaim:
   ## Extra labels to apply to a PVC.
   extraPvcLabels: {}
+  disableWarning: true
 
   ## If persistence is not enabled, this allows to mount the
   ## local storage in-memory to improve performance
@@ -390,6 +399,10 @@ persistence:
     ## here and the sum of memory limits of all containers in a pod
     ##
     # sizeLimit: 300Mi
+
+  ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+  ## the current value of 'spec.volumeName' and incorporate it into the template.
+  lookupVolumeName: true
 
 initChownData:
   ## If false, data ownership will not be reset at startup
@@ -474,8 +487,7 @@ admin:
 ## 6. uncomment the annotation section in the serviceAccount: above
 ## make sure to replace arn:aws:iam::123456789000:role/iam-role-name-here with your role arn
 
-env:
-  JAEGER_AGENT_PORT: 6831
+env: {}
 
 ## "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
 ## ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
@@ -600,71 +612,71 @@ plugins: []
 ## Configure grafana datasources
 ## ref: http://docs.grafana.org/administration/provisioning/#datasources
 ##
-datasources:
-  datasources.yaml:
-  apiVersion: 1
-  datasources:
-  - name: Prometheus
-    type: prometheus
-    url: http://prometheus-server.observability.svc.cluster.local
-    access: proxy
-    isDefault: true
-  - name: Jaeger
-    type: jaeger
-    access: browser
-    orgId: 1
-    uid: jaeger
-    url: http://jaeger-query.observability.svc.cluster.local:80
-    isDefault: false
-    editable: true
-    jsonData:
-      tracesToLogs:
-        # Field with internal link pointing to a logs data source in Grafana.
-        # datasourceUid value must match the datasourceUid value of the logs data source.
-        datasourceUid: 'loki'
-        tags: [ 'job', 'instance', 'pod', 'namespace' ]
-        mappedTags: [ { key: 'service.name', value: 'service' } ]
-        mapTagNamesEnabled: false
-        spanStartTimeShift: '1h'
-        spanEndTimeShift: '1h'
-        filterByTraceID: false
-        filterBySpanID: false
-      tracesToMetrics:
-        datasourceUid: 'prometheus'
-        tags: [ { key: 'service.name', value: 'service' }, { key: 'job' } ]
-        queries:
-          - name: 'Sample query'
-            query: 'sum(rate(tempo_spanmetrics_latency_bucket{$__tags}[5m]))'
-
-  - name: Elasticsearch
-    type: elasticsearch
-    access: browser
-    url: http://es-master-headless.observability.svc.cluster.local:9200
-    isDefault: false
-    editable: true
-    jsonData:
-      timeField: '@timestamp'
-
-  - name: Loki
-    type: loki
-    access: browser
-    orgId: 1
-    uid: loki
-    url: http://loki-headless.observability.svc.cluster.local:3100
-    isDefault: false
-    editable: true
-    jsonData:
-      derivedFields:
-        - datasourceName: Tempo
-          matcherRegex: "traceID=(\\w+)"
-          name: TraceID
-          url: "$${__value.raw}"
-          datasourceUid: tempo
-        - datasourceName: Jaeger
-          matcherRegex: "trace_id=([A-Za-z0-9]+)"
-          name: TraceID
-          url: "$${__value.raw}"
-          datasourceUid: jaeger
+datasources: {}
+#  datasources.yaml:
+#  apiVersion: 1
+#  datasources:
+#  - name: Prometheus
+#    type: prometheus
+#    url: http://prometheus-server.observability.svc.cluster.local
+#    access: proxy
+#    isDefault: true
+#  - name: Jaeger
+#    type: jaeger
+#    access: browser
+#    orgId: 1
+#    uid: jaeger
+#    url: http://jaeger-query.observability.svc.cluster.local:80
+#    isDefault: false
+#    editable: true
+#    jsonData:
+#      tracesToLogs:
+#        # Field with internal link pointing to a logs data source in Grafana.
+#        # datasourceUid value must match the datasourceUid value of the logs data source.
+#        datasourceUid: 'loki'
+#        tags: [ 'job', 'instance', 'pod', 'namespace' ]
+#        mappedTags: [ { key: 'service.name', value: 'service' } ]
+#        mapTagNamesEnabled: false
+#        spanStartTimeShift: '1h'
+#        spanEndTimeShift: '1h'
+#        filterByTraceID: false
+#        filterBySpanID: false
+#      tracesToMetrics:
+#        datasourceUid: 'prometheus'
+#        tags: [ { key: 'service.name', value: 'service' }, { key: 'job' } ]
+#        queries:
+#          - name: 'Sample query'
+#            query: 'sum(rate(tempo_spanmetrics_latency_bucket{$__tags}[5m]))'
+#
+#  - name: Elasticsearch
+#    type: elasticsearch
+#    access: browser
+#    url: http://es-master-headless.observability.svc.cluster.local:9200
+#    isDefault: false
+#    editable: true
+#    jsonData:
+#      timeField: '@timestamp'
+#
+#  - name: Loki
+#    type: loki
+#    access: browser
+#    orgId: 1
+#    uid: loki
+#    url: http://loki-headless.observability.svc.cluster.local:3100
+#    isDefault: false
+#    editable: true
+#    jsonData:
+#      derivedFields:
+#        - datasourceName: Tempo
+#          matcherRegex: "traceID=(\\w+)"
+#          name: TraceID
+#          url: "$${__value.raw}"
+#          datasourceUid: tempo
+#        - datasourceName: Jaeger
+#          matcherRegex: "trace_id=([A-Za-z0-9]+)"
+#          name: TraceID
+#          url: "$${__value.raw}"
+#          datasourceUid: jaeger
 
 ## Configure grafana alerting (can be templated)
 ## ref: http://docs.grafana.org/administration/provisioning/#alerting
@@ -965,6 +977,19 @@ sidecar:
     enabled: false
     # Additional environment variables for the dashboards sidecar
     env: {}
+    ## "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
+    ## ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
+    ## Renders in container spec as:
+    ##   env:
+    ##     ...
+    ##     - name: <key>
+    ##       valueFrom:
+    ##         <value rendered as YAML>
+    envValueFrom: {}
+    #  ENV_NAME:
+    #    configMapKeyRef:
+    #      name: configmap-name
+    #      key: value_key
     # Do not reprocess already processed unchanged resources on k8s API reconnect.
     # ignoreAlreadyProcessed: true
     SCProvider: true
@@ -1012,6 +1037,8 @@ sidecar:
       orgid: 1
       # folder in which the dashboards should be imported in grafana
       folder: ''
+      # <string> folder UID. will be automatically generated if not specified
+      folderUid: ''
       # type of the provider
       type: file
       # disableDelete to activate a import-only behaviour
@@ -1028,7 +1055,19 @@ sidecar:
     enabled: false
     # Additional environment variables for the datasourcessidecar
     env: {}
+    ## "valueFrom" environment variable references that will be added to deployment pods. Name is templated.
+    ## ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core
+    ## Renders in container spec as:
+    ##   env:
+    ##     ...
+    ##     - name: <key>
+    ##       valueFrom:
+    ##         <value rendered as YAML>
     envValueFrom: {}
+    #  ENV_NAME:
+    #    configMapKeyRef:
+    #      name: configmap-name
+    #      key: value_key
     # Do not reprocess already processed unchanged resources on k8s API reconnect.
     # ignoreAlreadyProcessed: true
     # label that the configmaps with datasources are marked with
@@ -1285,6 +1324,18 @@ imageRenderer:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   # schedulerName: "default-scheduler"
+
+  # Extra configmaps to mount in image-renderer pods
+  extraConfigmapMounts: []
+
+  # Extra secrets to mount in image-renderer pods
+  extraSecretMounts: []
+
+  # Extra volumes to mount in image-renderer pods
+  extraVolumeMounts: []
+
+  # Extra volumes for image-renderer pods
+  extraVolumes: []
 
 networkPolicy:
   ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources. Only Ingress traffic is filtered for now.
