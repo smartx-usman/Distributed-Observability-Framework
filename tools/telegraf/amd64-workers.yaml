@@ -22,13 +22,14 @@ data:
       hostname= "$HOSTNAME"
       omit_hostname= false
     
-      #[[outputs.kafka]]
+    [[outputs.kafka]]
+      brokers = ["192.168.60.142:30092"]
       #brokers = ["bitnami-kafka-headless.observability.svc.cluster.local:9092"]
-      #topic = "overcloud"
-      #data_format = "json"
-      #[outputs.kafka.topic_suffix]
-      #  method = "measurement"
-      #  separator = "_"
+      topic = "undercloud"
+      data_format = "json"
+      [outputs.kafka.topic_suffix]
+        method = "measurement"
+        separator = "_"
     
     #[[outputs.influxdb_v2]]
       #urls=["http://IP-ADDRESS:PORTNO"]
@@ -76,18 +77,19 @@ data:
       fieldinclude = ["load1", "load5", "load15"]
     [[inputs.temp]]
       metric_format = "v2"
-    [inputs.intel_powerstat]]
+    [[inputs.intel_powerstat]]
       package_metrics = ["current_power_consumption"]
     [[inputs.kubernetes]]
       interval = "10s"
       url = "https://$HOSTIP:10250"
-      bearer_token_string = "$TELEGRAF_TOKEN"
       insecure_skip_verify = true
+      #label_include = []
       namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]    
-    [[inputs.docker]]
-      endpoint = "unix:///var/run/docker.sock"
-      perdevice_include = ["cpu", "blkio", "network"]
-      total_include = ["cpu", "blkio", "network"]
+    
+    #[[inputs.docker]]
+    #  endpoint = "unix:///var/run/docker.sock"
+    #  perdevice_include = ["cpu", "blkio", "network"]
+    #  total_include = ["cpu", "blkio", "network"]
 
     #[[outputs.execd]]
     #   namepass = ["kubernetes_pod_container"]
@@ -146,7 +148,7 @@ spec:
                   fieldPath: spec.nodeName
 
         - name: telegraf
-          image: telegraf:1.29.5-alpine
+          image: telegraf:1.35.2-alpine
           securityContext:
             privileged: true
             capabilities:
@@ -156,8 +158,8 @@ spec:
           #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
           resources:
             limits:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 150m
+              memory: 150Mi
             requests:
               cpu: 25m
               memory: 25Mi
