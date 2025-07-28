@@ -79,9 +79,9 @@ data:
     #[[inputs.intel_powerstat]]
     #  package_metrics = ["current_power_consumption"]
     [[inputs.kubernetes]]
-      interval = "60s"
+      interval = "10s"
       url = "https://$HOSTIP:10250"
-      bearer_token_string = "$TELEGRAF_TOKEN"
+      #bearer_token_string = "$TELEGRAF_TOKEN"
       insecure_skip_verify = true
       namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]    
     [[inputs.docker]]
@@ -177,11 +177,11 @@ spec:
               value: "/rootfs/proc"
             - name: "HOST_SYS"
               value: "/rootfs/sys"
-            - name: "TELEGRAF_TOKEN"
-              valueFrom:
-                secretKeyRef:
-                  name: telegraf-measurement-secret
-                  key: token
+            #- name: "TELEGRAF_TOKEN"
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: telegraf-measurement-secret
+            #      key: token
           volumeMounts:
             - name: sys
               mountPath: /rootfs/sys
