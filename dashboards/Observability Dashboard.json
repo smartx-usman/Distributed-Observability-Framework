@@ -2,7 +2,7 @@
   "__inputs": [
     {
       "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
+      "label": "prometheus",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
@@ -21,7 +21,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.5.1"
+      "version": "11.1.0"
     },
     {
       "type": "datasource",
@@ -95,6 +95,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -108,6 +109,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -203,6 +205,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -216,6 +219,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -232,6 +236,7 @@
               "mode": "off"
             }
           },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -245,7 +250,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "watt"
         },
         "overrides": []
       },
@@ -278,10 +284,28 @@
           "editorMode": "code",
           "exemplar": true,
           "expr": "powerstat_package_current_power_consumption_watts{host=~\"^$Node$\", job=\"telegraf\"}",
+          "hide": false,
           "interval": "1m",
           "legendFormat": "{{host}}",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "intel_powerstat_current_power_consumption_watts{host=~\"^$Node$\",job=\"telegraf\",package_id=\"0\"}",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "{{host}}",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
         }
       ],
       "title": "Node Power Usage",
@@ -325,6 +349,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -338,6 +363,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -354,6 +380,7 @@
               "mode": "off"
             }
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -537,6 +564,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -550,6 +578,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -566,6 +595,7 @@
               "mode": "off"
             }
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -653,6 +683,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -679,6 +710,8 @@
       },
       "id": 62,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -688,9 +721,10 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "11.1.0",
       "targets": [
         {
           "alias": "",
@@ -824,6 +858,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -850,6 +885,8 @@
       },
       "id": 63,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -859,9 +896,10 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "11.1.0",
       "targets": [
         {
           "alias": "",
@@ -989,12 +1027,14 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1008,6 +1048,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "fill": "solid"
@@ -1041,7 +1082,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -1081,8 +1122,9 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "mem_used_percent{host=~\"^$Node$\", job=\"telegraf\"}",
+          "expr": "mem_total{host=~\"^$Node$\", job=\"telegraf\"} - mem_available{host=~\"^$Node$\", job=\"telegraf\"}",
           "interval": "",
           "legendFormat": "{{host}}",
           "metrics": [
@@ -1092,11 +1134,12 @@
             }
           ],
           "query": "",
+          "range": true,
           "refId": "A",
           "timeField": "@timestamp"
         }
       ],
-      "title": "Memory Used (%)",
+      "title": "Memory Used (GiB)",
       "type": "timeseries"
     },
     {
@@ -1110,6 +1153,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1123,6 +1167,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1139,6 +1184,7 @@
               "mode": "off"
             }
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1195,7 +1241,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"vda1|sda2|nvme0n1p2\"}",
+          "expr": "disk_used_percent{host=~\"^$Node$\", job=\"telegraf\", device=~\"vda.*|sda.*|nvme.*|mmcblk0p2|mapper.*\"}",
           "interval": "",
           "legendFormat": "{{host}} - {{device}}",
           "metrics": [
@@ -1218,12 +1264,14 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1237,13 +1285,21 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": true,
             "stacking": {
               "group": "A",
@@ -1258,8 +1314,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1267,7 +1322,7 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "binBps"
         },
         "overrides": []
       },
@@ -1285,6 +1340,9 @@
           "placement": "bottom",
           "showLegend": true
         },
+        "timezone": [
+          "browser"
+        ],
         "tooltip": {
           "mode": "single",
           "sort": "none"
@@ -1298,9 +1356,11 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(diskio_reads{host=~\"^$Node$\", job=\"telegraf\"}[$__interval])",
+          "exemplar": false,
+          "expr": "rate(diskio_read_bytes{host=~\"^$Node$\", job=\"telegraf\"}[$__interval])",
+          "format": "time_series",
           "hide": false,
-          "interval": "60s",
+          "interval": "30s",
           "legendFormat": "{{host}} - reads",
           "range": true,
           "refId": "B"
@@ -1323,8 +1383,8 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "- rate(diskio_writes{host=~\"^$Node$\", job=\"telegraf\"}[$__interval])",
-          "interval": "60s",
+          "expr": "- rate(diskio_write_bytes{host=~\"^$Node$\", job=\"telegraf\"}[$__interval])",
+          "interval": "30s",
           "legendFormat": "{{host}} - writes",
           "metrics": [
             {
@@ -1338,7 +1398,7 @@
           "timeField": "@timestamp"
         }
       ],
-      "title": "DiskIO (Reads/Writes)",
+      "title": "DiskIO (Read_bytes/Write_bytes)",
       "type": "timeseries"
     },
     {
@@ -1352,6 +1412,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1365,6 +1426,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1386,8 +1448,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1428,7 +1489,8 @@
           "editorMode": "code",
           "expr": "rate(diskio_io_time{host=~\"^$Node$\", job=\"telegraf\"}[$__rate_interval])",
           "hide": false,
-          "legendFormat": "{{host}}",
+          "interval": "30s",
+          "legendFormat": "{{host}} - {{name}}",
           "range": true,
           "refId": "A"
         }
@@ -1447,6 +1509,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1460,6 +1523,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1481,8 +1545,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1523,7 +1586,7 @@
           "editorMode": "code",
           "expr": "rate(diskio_write_time{host=~\"^$Node$\", job=\"telegraf\"}[$__interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "30s",
           "legendFormat": "{{host}} - reads",
           "range": true,
           "refId": "B"
@@ -1536,7 +1599,7 @@
           "editorMode": "code",
           "expr": "- rate(diskio_read_time{host=~\"^$Node$\", job=\"telegraf\"}[$__interval])",
           "hide": false,
-          "interval": "60s",
+          "interval": "30s",
           "legendFormat": "{{host}} -writes",
           "range": true,
           "refId": "C"
@@ -1556,6 +1619,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1569,6 +1633,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1590,8 +1655,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1601,32 +1665,7 @@
           },
           "unit": "bytes"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "worker3 - eno1"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 7,
@@ -1667,8 +1706,8 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^ens.*|^eth.*\"}[$__rate_interval])",
-          "interval": "",
+          "expr": "rate(net_bytes_sent{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^enp.*|^ens.*|^eth.*\"}[$__rate_interval])",
+          "interval": "30s",
           "legendFormat": "{{host}} - {{interface}}",
           "metrics": [
             {
@@ -1687,9 +1726,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "- rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^ens.*|^eth.*\"}[$__rate_interval])",
+          "expr": "- rate(net_bytes_recv{host=~\"^$Node$\", job=\"telegraf\", interface=~\"^eno.*|^enp.*|^ens.*|^eth.*\"}[$__rate_interval])",
           "hide": false,
-          "interval": "",
+          "interval": "30s",
           "legendFormat": "{{host}} - {{interface}}",
           "range": true,
           "refId": "B"
@@ -2152,6 +2191,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2165,6 +2205,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineStyle": {
               "fill": "solid"
@@ -2189,8 +2230,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2287,6 +2327,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2300,6 +2341,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2321,8 +2363,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2382,6 +2423,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2395,6 +2437,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2416,8 +2459,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2427,32 +2469,7 @@
           },
           "unit": "bytes"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "worker3"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 11,
@@ -2517,6 +2534,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2530,6 +2548,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineStyle": {
               "fill": "solid"
@@ -2554,8 +2573,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2652,6 +2670,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2665,6 +2684,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2686,8 +2706,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2747,6 +2766,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2760,6 +2780,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2781,8 +2802,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2874,8 +2894,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2915,6 +2934,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -2922,9 +2942,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "11.1.0",
       "targets": [
         {
           "datasource": {
@@ -2956,8 +2978,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
@@ -3009,13 +3030,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Observability Dashboard",
   "uid": "UGLPd-Q7k",
-  "version": 11,
+  "version": 23,
   "weekStart": ""
 }

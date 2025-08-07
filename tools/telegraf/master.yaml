@@ -45,29 +45,28 @@ data:
      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "loop*"]
      fieldinclude = ["free", "used", "total", "used_percent"]
    [[inputs.diskio]]
-     devices = ["sda", "sdb", "sdc", "nvme0n1p3", "vda"]
-     fieldinclude = ["read_time", "write_time", "reads", "writes", "io_time"]
+     devices = ["sd*", "nvme*", "vda"]
+     fieldinclude = ["read_time", "write_time", "read_bytes", "write_bytes", "io_time"]
    [[inputs.mem]]
      fieldinclude = ["available", "free", "total", "used_percent"]
    [[inputs.net]]
-     interfaces= ["eth*", "ens*", "eno*"]
+     interfaces= ["eth*", "ens*", "eno*", "enp*"]
      ignore_protocol_stats= true
    [[inputs.system]]
      fieldinclude = ["load1", "load5", "load15"]
    [[inputs.temp]]
+     metric_format = "v2"
    [[inputs.intel_powerstat]]
      package_metrics = ["current_power_consumption"]
    [[inputs.kube_inventory]]
      interval = "6000s"
      url = "https://$HOSTIP:6443"
-     bearer_token_string = "$TELEGRAF_TOKEN"
-     resource_include = [ "pods", "deployments", "daemonsets", "services", "statefulsets" ]
+     resource_include = [ "pods", "deployments", "daemonsets", "statefulsets" ]
      namespace = ""
      insecure_skip_verify = true
    [[inputs.kubernetes]]
      interval = "10s"
      url = "https://$HOSTIP:10250"
-     bearer_token_string = "$TELEGRAF_TOKEN"
      insecure_skip_verify = true
      namepass = ["kubernetes_pod_container", "kubernetes_pod_volume", "kubernetes_pod_network"]
    [[inputs.docker]]
@@ -94,6 +93,7 @@ spec:
       labels:
         name: telegraf
     spec:
+      serviceAccountName: telegraf
       tolerations:
       - operator: "Exists"
       nodeSelector:
@@ -101,16 +101,21 @@ spec:
       hostNetwork: true
       containers:
       - name: telegraf
-        image: telegraf:latest
+        image: telegraf:1.35.2-alpine
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
         #args:
         #  - "--user telegraf:$(stat -c '%g' /var/run/docker.sock)"
         resources:
           limits:
-            cpu: 100m
-            memory: 60Mi
+            cpu: 150m
+            memory: 200Mi
           requests:
-            cpu: 25m
-            memory: 25Mi
+            cpu: 50m
+            memory: 50Mi
         env:
         - name: HOSTIP
           valueFrom:
@@ -124,11 +129,11 @@ spec:
           value: "/rootfs/proc"
         - name: "HOST_SYS"
           value: "/rootfs/sys"
-        - name: "TELEGRAF_TOKEN"
-          valueFrom:
-            secretKeyRef:
-              name: telegraf-measurement-secret
-              key: token
+        #- name: "TELEGRAF_TOKEN"
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: telegraf-measurement-secret
+        #      key: token
         volumeMounts:
         - name: sys
           mountPath: /rootfs/sys
