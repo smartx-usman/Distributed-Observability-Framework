@@ -46,7 +46,7 @@ ansible-playbook -i hosts 00-install-desk.yaml
 
 ### Citation
 This work is published in EuCNC/6G Summit'23. Please add citation:
-```shell
+```bibtex
 @INPROCEEDINGS{10188344,
   author={Usman, Muhammad and Ferlin, Simone and Brunstrom, Anna and Taheri, Javid},
   booktitle={2023 Joint European Conference on Networks and Communications & 6G Summit (EuCNC/6G Summit)}, 
