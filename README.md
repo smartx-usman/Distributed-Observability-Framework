@@ -43,3 +43,16 @@ Before starting the installation process, please modify 00-install-desk.yaml fil
 cd install-desk
 ansible-playbook -i hosts 00-install-desk.yaml 
 ```
+
+### Citation
+This work is published in EuCNC/6G Summit'23. Please add citation:
+```bibtex
+@INPROCEEDINGS{10188344,
+  author={Usman, Muhammad and Ferlin, Simone and Brunstrom, Anna and Taheri, Javid},
+  booktitle={2023 Joint European Conference on Networks and Communications & 6G Summit (EuCNC/6G Summit)}, 
+  title={DESK: Distributed Observability Framework for Edge-Based Containerized Microservices}, 
+  year={2023},
+  pages={617-622},
+  keywords={Image edge detection;Microservice architectures;Data visualization;Integrated design;Hardware;Internet of Things;Observability;Edge Computing;Internet of Things (IoT);Microservices;Monitoring;Observability;5G/6G},
+  doi={10.1109/EuCNC/6GSummit58263.2023.10188344}}
+```
